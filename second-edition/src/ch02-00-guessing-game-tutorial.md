@@ -1,12 +1,12 @@
 # Guessing Game
 
-Entrons dans le vif du sujet en travaillant ensemble sur un projet concrêt.
+Entrons dans le vif du sujet en travaillant ensemble sur un projet concret.
 Ce chapitre présente quelques concepts couramment utilisés en Rust en les
 mettant en place dans un véritable programme. Nous verrons par exemple les
 mots clés `let` et `match`, les méthodes et fonctions associées, ainsi que
 l'utilisation de librairies externes (les `crates`) et bien plus encore.
 Au cours de ce chapitre, nous verrons les bases de ces concepts à l'aide
-d'exemples concrêts, et les chapitres qui suivent les présenteront en détails.
+d'exemples concrets, et les chapitres qui suivent les présenteront en détails.
 
 <!--Let’s jump into Rust by working through a hands-on project together! This
 chapter introduces you to a few common Rust concepts by showing you how to use
