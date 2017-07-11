@@ -1,16 +1,33 @@
 # Guessing Game
 
-Let’s jump into Rust by working through a hands-on project together! This
+Entrons dans le vif du sujet en travaillant ensemble sur un projet concrêt.
+Ce chapitre présente quelques concepts couramment utilisés en Rust en les
+mettant en place dans un véritable programme. Nous verrons par exemple les
+mots clés `let` et `match`, les méthodes et fonctions associées, ainsi que
+l'utilisation de librairies externes (les `crates`) et bien plus encore.
+Au cours de ce chapitre, nous verrons les bases de ces concepts à l'aide
+d'exemples concrêts, et les chapitres qui suivent les présenteront en détails.
+
+<!--Let’s jump into Rust by working through a hands-on project together! This
 chapter introduces you to a few common Rust concepts by showing you how to use
 them in a real program. You’ll learn about `let`, `match`, methods, associated
 functions, using external crates, and more! The following chapters will explore
-these ideas in more detail. In this chapter, you’ll practice the fundamentals.
+these ideas in more detail. In this chapter, you’ll practice the fundamentals.-->
 
-We’ll implement a classic beginner programming problem: a guessing game. Here’s
+Nous allons créer un programme fréquemment réalisé par les débutants en
+programmation, un jeu de devinette. Le principe de ce jeu est le suivant:
+Le programme va générer un nombre aléatoire entre 1 et 100. Ce sera ensuite au
+joueur d'entrer un nombre qu'il aura deviné, et le programme indiquera si le
+nombre fourni par le joueur est trop grand ou trop petit. Si le nombre deviné
+par le joueur est le bon, le programme affiche un message de félicitation
+et se termine.
+
+<!--We’ll implement a classic beginner programming problem: a guessing game. Here’s
 how it works: the program will generate a random integer between 1 and 100. It
 will then prompt the player to enter a guess. After entering a guess, it will
 indicate whether the guess is too low or too high. If the guess is correct, the
-game will print congratulations and exit.
+game will print congratulations and exit.-->
+
 
 ## Setting Up a New Project
 
