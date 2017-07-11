@@ -10,10 +10,10 @@ d'exemples concrets, et les chapitres qui suivent les présenteront en détails.
 
 Nous allons créer un programme fréquemment réalisé par les débutants en
 programmation, un jeu de devinette. Le principe de ce jeu est le suivant:
-Le programme va générer un nombre aléatoire entre 1 et 100. Ce sera ensuite au
+le programme va générer un nombre aléatoire entre 1 et 100. Ce sera ensuite au
 joueur d'entrer un nombre qu'il aura deviné, et le programme indiquera si le
 nombre fourni par le joueur est trop grand ou trop petit. Si le nombre deviné
-par le joueur est le bon, le programme affiche un message de félicitation
+par le joueur est le bon, le programme affiche un message de félicitations
 et se termine.
 
 
