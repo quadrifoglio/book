@@ -1,4 +1,4 @@
-# Guessing Game
+# Jeu de devinette
 
 Entrons dans le vif du sujet en travaillant ensemble sur un projet concret.
 Ce chapitre présente quelques concepts couramment utilisés en Rust en les
@@ -8,12 +8,6 @@ l'utilisation de librairies externes (les `crates`) et bien plus encore.
 Au cours de ce chapitre, nous verrons les bases de ces concepts à l'aide
 d'exemples concrets, et les chapitres qui suivent les présenteront en détails.
 
-<!--Let’s jump into Rust by working through a hands-on project together! This
-chapter introduces you to a few common Rust concepts by showing you how to use
-them in a real program. You’ll learn about `let`, `match`, methods, associated
-functions, using external crates, and more! The following chapters will explore
-these ideas in more detail. In this chapter, you’ll practice the fundamentals.-->
-
 Nous allons créer un programme fréquemment réalisé par les débutants en
 programmation, un jeu de devinette. Le principe de ce jeu est le suivant:
 Le programme va générer un nombre aléatoire entre 1 et 100. Ce sera ensuite au
@@ -22,48 +16,45 @@ nombre fourni par le joueur est trop grand ou trop petit. Si le nombre deviné
 par le joueur est le bon, le programme affiche un message de félicitation
 et se termine.
 
-<!--We’ll implement a classic beginner programming problem: a guessing game. Here’s
-how it works: the program will generate a random integer between 1 and 100. It
-will then prompt the player to enter a guess. After entering a guess, it will
-indicate whether the guess is too low or too high. If the guess is correct, the
-game will print congratulations and exit.-->
 
+## Mise en place du projet
 
-## Setting Up a New Project
-
-To set up a new project, go to the *projects* directory that you created in
-Chapter 1, and make a new project using Cargo, like so:
+Pour créer un nouveau projet, rendez-vous dans le dossier *projets* que
+vous avez créé au chapitre 1, et utilisez Cargo pour initialiser votre projet.
 
 ```text
-$ cargo new guessing_game --bin
-$ cd guessing_game
+$ cargo new deviner_nombre --bin
+$ cd deviner_nombre
 ```
 
-The first command, `cargo new`, takes the name of the project (`guessing_game`)
-as the first argument. The `--bin` flag tells Cargo to make a binary project,
-similar to the one in Chapter 1. The second command changes to the new
-project’s directory.
+La première commande, `cargo new`, requiert le nom de notre projet (`deviner_nombre`)
+en tant que premier argument. L'option `--bin` informe Cargo que notre projet
+formera un programme exécutable, comme celui du chapitre 1, et non une librairie.
+La seconde commande nous place dans le dossier de notre projet nouvellement
+crée par Cargo.
 
-Look at the generated *Cargo.toml* file:
+Regardons le fichier *Cargo.toml* automatiquement crée:
 
-<span class="filename">Filename: Cargo.toml</span>
+<span class="filename">Fichier: Cargo.toml</span>
 
 ```toml
 [package]
-name = "guessing_game"
+name = "deviner_nombre"
 version = "0.1.0"
-authors = ["Your Name <you@example.com>"]
+authors = ["Votre Nom <vous@exemple.com>"]
 
 [dependencies]
 ```
 
-If the author information that Cargo obtained from your environment is not
-correct, fix that in the file and save it again.
+Si le nom d'auteur que Cargo a obtenu depuis votre environnement n'est pas
+correct, vous pouvez le changer dans ce fichier et le sauvegarder.
 
-As you saw in Chapter 1, `cargo new` generates a “Hello, world!” program for
-you. Check out the *src/main.rs* file:
+Tel qu'expérimenté dans le chapitre 1, `cargo new` génère un programme de base,
+un “Hello, world!” (que l'on pourrait traduire par “Bonjour tout le monde”).
 
-<span class="filename">Filename: src/main.rs</span>
+Jetez un oeil au fichier *src/mais.rs*:
+
+<span class="filename">Fichier: src/main.rs</span>
 
 ```rust
 fn main() {
@@ -71,21 +62,24 @@ fn main() {
 }
 ```
 
-Now let’s compile this “Hello, world!” program and run it in the same step
-using the `cargo run` command:
+Maintenant, lançons la compilation de ce programme “Hello, world!”, et
+démarrons-le. Il est possible de faire ces deux actions en une seule commande,
+`cargo run`:
 
 ```text
 $ cargo run
-   Compiling guessing_game v0.1.0 (file:///projects/guessing_game)
-     Running `target/debug/guessing_game`
+   Compiling deviner_nombre v0.1.0 (file:///projects/deviner_nombre)
+     Running `target/debug/deviner_nombre`
 Hello, world!
 ```
 
-The `run` command comes in handy when you need to rapidly iterate on a project,
-and this game is such a project: we want to quickly test each iteration
-before moving on to the next one.
+Cette commande `run` est très pratique lorsque vous souhaitez itérer rapidement
+sur un projet, et c'est le cas ici: on veut lancer notre jeu, le tester,
+faire une modification, et passer à l'essai suivant.
 
-Reopen the *src/main.rs* file. You’ll be writing all the code in this file.
+Ouvrez à nouveau le fichier *src/main.rs*. C'est ici que nous écrirons la totalité
+de notre code Rust.
+
 
 ## Processing a Guess
 
