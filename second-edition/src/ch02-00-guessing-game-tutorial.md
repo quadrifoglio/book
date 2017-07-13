@@ -81,71 +81,73 @@ Ouvrez à nouveau le fichier *src/main.rs*. C'est ici que nous écrirons la tota
 de notre code Rust.
 
 
-## Processing a Guess
+## Traitement des entrées utilisateur
 
-The first part of the program will ask for user input, process that input, and
-check that the input is in the expected form. To start, we’ll allow the player
-to input a guess. Enter the code in Listing 2-1 into *src/main.rs*.
+La première partie du programme consiste à demander au joueur de fournir un nombre,
+et à vérifier que ce que l'utilisateur entre correspond au format attendu.
+Commençons par permettre au joueur d'entrer le nombre qu'il a deviné.
+Ajoutez le code de la Figure 2-1 dans le fichier *src/main.rs*.
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Fichier: src/main.rs</span>
 
 ```rust,ignore
 use std::io;
 
 fn main() {
-    println!("Guess the number!");
+    println!("Jeu de Plus ou Moins");
 
-    println!("Please input your guess.");
+    println!("Entrez votre déduction.");
 
-    let mut guess = String::new();
+    let mut deduction = String::new();
 
-    io::stdin().read_line(&mut guess)
-        .expect("Failed to read line");
+    io::stdin().read_line(&mut deduction)
+        .expect("Echec de la lecture de l'entrée utilisateur");
 
-    println!("You guessed: {}", guess);
+    println!("Votre déduction: {}", deducation);
 }
 ```
 
-<span class="caption">Listing 2-1: Code to get a guess from the user and print it out</span>
+<span class="caption">Figure 2-1: Code permettant de lire une entrée utilisateur et de l'afficher</span>
 
-This code contains a lot of information, so let’s go over it bit by bit. To
-obtain user input and then print the result as output, we need to bring the
-`io` (input/output) library into scope. The `io` library comes from the
-standard library (which is known as `std`):
+Ce code contient beaucoup d'information, nous allons donc le détailler petit
+à petit. Pour obtenir l'entrée utilisateur et l'afficher, nous avons besoin d'importer
+la librairie `io` (pour input/output, entrée/sortie) afin de pouvoir l'utiliser.
+La librairie `io` provient de `std`, la librairie standard du langage Rust.
 
 ```rust,ignore
 use std::io;
 ```
 
-By default, Rust brings only a few types into the scope of every program in
-[the *prelude*][prelude]<!-- ignore -->. If a type you want to use isn’t in the
-prelude, you have to bring that type into scope explicitly with a `use`
-statement. Using the `std::io` library provides you with a number of useful
-`io`-related features, including the functionality to accept user input.
+Par défaut, Rust n'importe que quelques types utilisables dans les programmes,
+ceux qui sont listés dans le [le *prelude*][prelude]<!-- ignore -->. Si vous
+voulez utiliser un type qui ne s'y trouve pas, vous devrez l'importer au moyen
+du mot clé `use`. Lorsque l'on importe `std::io`, on rend disponible de nombreuses
+fonctionnalités du domaine des entrées/sorties, comme par exemple la possibilité
+de traiter les entrées de l'utilisateur.
 
 [prelude]: ../../std/prelude/index.html
 
-As you saw in Chapter 1, the `main` function is the entry point into the
-program:
+Tel qu'expliqué au Chapitre 1, la fonction `main` est le point d'entrée
+dans le programme, c'est ici que l'exécution démarre.
 
 ```rust,ignore
 fn main() {
 ```
 
-The `fn` syntax declares a new function, the `()` indicate there are no
-parameters, and `{` starts the body of the function.
+Le mot clé `fn` déclare une nouvelle fonction, les `()` indiquent que cette
+fonction n'accepte aucun paramètre, et `{` marque le début du corps de la fonction.
 
-As you also learned in Chapter 1, `println!` is a macro that prints a string to
-the screen:
+Vous avez également vu lors de votre lecture du Chapitre 1 que `println!` est une
+macro qui affiche une chaine de caractères à l'écran.
 
 ```rust,ignore
-println!("Guess the number!");
+println!("Jeu de Plus ou Moins");
 
-println!("Please input your guess.");
+println!("Entrez votre déduction.");
 ```
 
-This code is just printing a prompt stating what the game is and requesting
-input from the user.
+Ce code permet simplement d'afficher le titre de notre jeu, et de demander
+au joueur d'entrer un nombre.
 
 ### Storing Values with Variables
 
