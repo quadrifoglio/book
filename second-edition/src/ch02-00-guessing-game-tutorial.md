@@ -1,4 +1,4 @@
-# Jeu de devinette
+# Plus ou Moins
 
 Entrons dans le vif du sujet en travaillant ensemble sur un projet concret.
 Ce chapitre présente quelques concepts couramment utilisés en Rust en les
@@ -9,7 +9,7 @@ Au cours de ce chapitre, nous verrons les bases de ces concepts à l'aide
 d'exemples concrets, et les chapitres qui suivent les présenteront en détails.
 
 Nous allons créer un programme fréquemment réalisé par les débutants en
-programmation, un jeu de devinette. Le principe de ce jeu est le suivant:
+programmation, le jeu du "Plus ou Moins". Le principe de ce jeu est le suivant:
 le programme va générer un nombre aléatoire entre 1 et 100. Ce sera ensuite au
 joueur d'entrer un nombre qu'il aura deviné, et le programme indiquera si le
 nombre fourni par le joueur est trop grand ou trop petit. Si le nombre deviné
