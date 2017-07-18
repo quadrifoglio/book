@@ -149,62 +149,67 @@ println!("Entrez votre déduction.");
 Ce code permet simplement d'afficher le titre de notre jeu, et de demander
 au joueur d'entrer un nombre.
 
-### Storing Values with Variables
+### Enregistrer des données grace aux variables
 
-Next, we’ll create a place to store the user input, like this:
+Créons maintenant un emplacement pour enregistrer l'entrée utilisateur:
 
 ```rust,ignore
-let mut guess = String::new();
+let mut deduction = String::new();
 ```
 
-Now the program is getting interesting! There’s a lot going on in this little
-line. Notice that this is a `let` statement, which is used to create
-*variables*. Here’s another example:
+Le programme commence à devenir intéressant ! Il se passe beaucoup de choses
+lorsque cette simple ligne est exécutée. Vous remarquerez qu'elle commence par
+le mot clé `let`, qui sert à créer des *variables*. En voici un autre exemple:
 
 ```rust,ignore
 let foo = bar;
 ```
 
-This line will create a new variable named `foo` and bind it to the value
-`bar`. In Rust, variables are immutable by default. The following example shows
-how to use `mut` before the variable name to make a variable mutable:
+Cette ligne permet de créer une nouvelle variable nommée `foo` et à lui
+assigner la valeur de `bar`. Par défaut en Rust, les variables sont immuables,
+c'est-à-dire qu'il est impossible de modifier leur valeur. Le prochain exemple
+montre comment utiliser le mot clé `mut` pour autoriser la modification de la
+valeur d'une variable.
 
 ```rust
-let foo = 5; // immutable
-let mut bar = 5; // mutable
+let foo = 5; // immuable
+let mut bar = 5; // modifiable
 ```
 
-> Note: The `//` syntax starts a comment that continues until the end of the
-> line. Rust ignores everything in comments.
+> Note: Les `//` permettent de commencer un commentaire s'étendant jusqu'à la fin
+> de la ligne. Rust ignore le texte se trouvant dans un commentaire.
 
-Now you know that `let mut guess` will introduce a mutable variable named
-`guess`. On the other side of the equal sign (`=`) is the value that `guess` is
-bound to, which is the result of calling `String::new`, a function that returns
-a new instance of a `String`. [`String`][string]<!-- ignore --> is a string
-type provided by the standard library that is a growable, UTF-8 encoded bit of
-text.
+Vous comprenez donc maintenant que la ligne `let mut deduction` permet de créer une
+variable modifiable nommée `deduction`. De l'autre côté du signe égal (`=`) se trouve
+la valeur de cette variable. Ici il s'agit du retour de l'appel de la fonction
+`String::new`, qui renvoie une nouvelle instance d'un `String`.
+[`String`][string]<!-- ignore --> est un type qui représente une chaine de caractères,
+et qui nous est fournit par la librairie standard. Les `String` représentent du texte
+encodé en UTF-8, et il est possible de les étendre.
 
 [string]: ../../std/string/struct.String.html
 
-The `::` syntax in the `::new` line indicates that `new` is an *associated
-function* of the `String` type. An associated function is implemented on a type,
-in this case `String`, rather than on a particular instance of a `String`. Some
-languages call this a *static method*.
+Les `::` de qui précèdent `::new` indiquent que la fonction `new` est une *fonction
+associée* du type `String`. Une fonction associée est implémentée sur un type, dans
+ce cas `String` plutot que sur une instance particulière de `String`. Ce concept
+est parfois appelé une *méthode statique*.
 
-This `new` function creates a new, empty `String`. You’ll find a `new` function
-on many types, because it’s a common name for a function that makes a new value
-of some kind.
+Cette fonction `new` crée une nouvelle chaine de caractères vide, un nouveau `String`.
+Vous trouverez fréquemment une fonction `new` sur les types, c'est un nom souvent
+donné à une fonction qui crée une nouvelle valeur ou instance.
 
-To summarize, the `let mut guess = String::new();` line has created a mutable
-variable that is currently bound to a new, empty instance of a `String`. Whew!
+Pour résumer, la ligne `let mut deduction = String::new();` crée une nouvelle
+variable modifiable nommée `deduction` qui contient une nouvelle chaine de caractères,
+un `String`. Ouf !
 
-Recall that we included the input/output functionality from the standard
-library with `use std::io;` on the first line of the program. Now we’ll call an
-associated function, `stdin`, on `io`:
+Rappellez-vous que qu'on a importé les fonctionnalités d'entrée/sortie de la
+librairie standard, au moyen de la ligne `use std::io;`, dès la première ligne
+de notre programme. Nous allons maintenant appeler la fonction `stdin`, associée
+au module `io`:
 
 ```rust,ignore
-io::stdin().read_line(&mut guess)
-    .expect("Failed to read line");
+io::stdin().read_line(&mut deduction)
+    .expect("Echec de la lecture de l'entrée utilisateur");
 ```
 
 If we didn’t have the `use std::io` line at the beginning of the program, we
