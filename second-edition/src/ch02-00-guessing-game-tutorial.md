@@ -212,52 +212,58 @@ io::stdin().read_line(&mut deduction)
     .expect("Echec de la lecture de l'entrée utilisateur");
 ```
 
-If we didn’t have the `use std::io` line at the beginning of the program, we
-could have written this function call as `std::io::stdin`. The `stdin` function
-returns an instance of [`std::io::Stdin`][iostdin]<!-- ignore -->, which is a
-type that represents a handle to the standard input for your terminal.
+Si la ligne `use std::io` n'était pas présente au début du programme, on aurait
+dû écrire l'appel à la fonction de cette manière: `std::io::stdin`. La fonction
+`stdin` retourne une instance de [`std::io::Stdin`][iostdin]<!-- ignore -->, qui
+est un type qui représente une référence vers l'entrée standard de notre programme,
+liée au terminal dans lequel il est lancé.
+
+<!-- TODO: Vérifier traduction de 'handle' en 'référence' -->
 
 [iostdin]: ../../std/io/struct.Stdin.html
 
-The next part of the code, `.read_line(&mut guess)`, calls the
-[`read_line`][read_line]<!-- ignore --> method on the standard input handle to
-get input from the user. We’re also passing one argument to `read_line`: `&mut
-guess`.
+La ligne suivante, `.read_line(&mut deduction)` appelle la méthode
+[`read_line`][read_line]<!-- ignore --> de notre référence vers l'entrée standard,
+ce qui permet d'obtenir ce que l'utilisateur a entré au clavier. On passe à la
+méthode `read_line` un argument, `&mut deduction`.
 
 [read_line]: ../../std/io/struct.Stdin.html#method.read_line
 
-The job of `read_line` is to take whatever the user types into standard input
-and place that into a string, so it takes that string as an argument. The
-string argument needs to be mutable so the method can change the string’s
-content by adding the user input.
+L'objectif de `read_line` est de prendre ce que l'utilisateur écrit dans
+l'entrée standard, et de le placer dans une chaine de caractères, c'est pourquoi
+on passe à la méthode cet argument. Ce dernier se doit d'être modifiable, puisque
+`read_line` va le modifier afin d'y placer l'entrée de l'utilisateur.
 
-The `&` indicates that this argument is a *reference*, which gives you a way to
-let multiple parts of your code access one piece of data without needing to
-copy that data into memory multiple times. References are a complex feature,
-and one of Rust’s major advantages is how safe and easy it is to use
-references. You don’t need to know a lot of those details to finish this
-program: Chapter 4 will explain references more thoroughly. For now, all you
-need to know is that like variables, references are immutable by default.
-Hence, we need to write `&mut guess` rather than `&guess` to make it mutable.
+Le signe `&` indique que cet argument est une *référence*, ce qui permet de laisser
+plusieurs morceaux de code accéder à un même bloc de données, sans avoir besoin
+de copier ces données plusieurs fois. Les références sont une fonctionnalité
+complexe, et un des avantages majeurs de Rust est qu'il rend simple et sécurisé
+l'utilisation des références. Il est inutile de détailler plus que nécessaire
+les références pour finir ce programme. Le chapitre 4 les présentera en détails.
+Pour l'instant, tout ce que vous devez savoir est que comme les variables,
+les références sont immuables par défaut, il est donc nécessaire d'écrire
+`&mut deduction` plutot que `&deduction` pour rendre la référence modifiable.
 
-We’re not quite done with this line of code. Although it’s a single line of
-text, it’s only the first part of the single logical line of code. The second
-part is this method:
-
-```rust,ignore
-.expect("Failed to read line");
-```
-
-When you call a method with the `.foo()` syntax, it’s often wise to introduce a
-newline and other whitespace to help break up long lines. We could have
-written this code as:
+Nous n'avons pas tout à fait finit de détailler ce bout de code. C'est une ligne
+de texte, mais ce n'est que la première partie de la ligne de code complète.
+Voici la suite:
 
 ```rust,ignore
-io::stdin().read_line(&mut guess).expect("Failed to read line");
+.expect("Echec de la lecture de l'entrée utilisateur");
 ```
 
-However, one long line is difficult to read, so it’s best to divide it, two
-lines for two method calls. Now let’s discuss what this line does.
+Lorsque l'on appelle une méthode avec la syntaxe `.foo()`, il est généralement
+préférable de passer une ligne puis d'indenter à l'aide de caractères espace
+avant d'écrire la suite du code. Ceci permet d'aider à séparer les longues lignes
+de code. On aurait pu écrire le même code de cette manière:
+
+```rust,ignore
+io::stdin().read_line(&mut deduction).expect("Echec de la lecture de l'entrée utilisateur");
+```
+
+Cependant, une longue ligne de code n'est pas toujours facile à lire, il est donc
+considéré comme une bonne pratique de la diviser, deux lignes de texte pour deux
+appels de méthodes. Voyons maintenant l'effet de l'appel à `expect`.
 
 ### Handling Potential Failure with the `Result` Type
 
