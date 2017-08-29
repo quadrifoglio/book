@@ -265,44 +265,48 @@ Cependant, une longue ligne de code n'est pas toujours facile à lire, il est do
 considéré comme une bonne pratique de la diviser, deux lignes de texte pour deux
 appels de méthodes. Voyons maintenant l'effet de l'appel à `expect`.
 
-### Handling Potential Failure with the `Result` Type
+### Gérer les potentielles erreurs avec `Result`
 
-As mentioned earlier, `read_line` puts what the user types into the string we’re
-passing it, but it also returns a value—in this case, an
-[`io::Result`][ioresult]<!-- ignore -->. Rust has a number of types named
-`Result` in its standard library: a generic [`Result`][result]<!-- ignore --> as
-well as specific versions for submodules, such as `io::Result`.
+Tel qu'expliqué plus haut, `read_line` permet de stocker ce que l'utilisateur a
+écrit au clavier dans la variable que l'on spécifie, mais cette fonction retourne
+également une valeur, de type [`io::Result`][ioresult]<!-- ignore -->. Il existe
+plusieurs types nommés `Result` dans la librairie standard de Rust: un type
+générique [`Result`][result]<!-- ignore -->, ainsi que des versions spécifiques
+à un sous-module, comme `io::Result`.
 
 [ioresult]: ../../std/io/type.Result.html
 [result]: ../../std/result/enum.Result.html
 
-The `Result` types are [*enumerations*][enums]<!-- ignore -->, often referred
-to as *enums*. An enumeration is a type that can have a fixed set of values,
-and those values are called the enum’s *variants*. Chapter 6 will cover enums
-in more detail.
+Les types `Result` sont des [*énumerations*][enums]<!-- ignore -->, aussi
+appelées *enums*. Une énumération est un type qui peut avoir un certain nombre
+de valeurs définies par le programmeur. Les différentes valeurs possibles d'un
+*enum* sont appelées *variantes*. Le chapitre 6 explorera les énumération plus
+en détails.
 
 [enums]: ch06-00-enums.html
 
-For `Result`, the variants are `Ok` or `Err`. `Ok` indicates the operation was
-successful, and inside the `Ok` variant is the successfully generated value.
-`Err` means the operation failed, and `Err` contains information about how or
-why the operation failed.
+Pour `Result`, il existe deux variantes: `Ok` et `Err`. `Ok` indique qu'une
+opération est un succès, et à l'intérieur de la variante `Ok` se trouve le
+résultat attendu. A l'inverse, la variante `Err` de `Result` signifie que
+l'opération a échouée, et à l'intérieur se trouve les informations décrivant
+les raisons de l'échec.
 
-The purpose of these `Result` types is to encode error handling information.
-Values of the `Result` type, like any type, have methods defined on them. An
-instance of `io::Result` has an [`expect` method][expect]<!-- ignore --> that
-you can call. If this instance of `io::Result` is an `Err` value, `expect` will
-cause the program to crash and display the message that you passed as an
-argument to `expect`. If the `read_line` method returns an `Err`, it would
-likely be the result of an error coming from the underlying operating system.
-If this instance of `io::Result` is an `Ok` value, `expect` will take the
-return value that `Ok` is holding and return just that value to you so you
-could use it. In this case, that value is the number of bytes in what the user
-entered into standard input.
+L'objectif du type `Result` est d'encoder les informations nécessaires à une
+bonne gestion des erreurs. Les types `Result`, comme tous les types, ont des
+méthodes associées. Par exemple, `io::Result` propose
+[la méthode `expect`][expect]<!-- ignore -->. Si une instance de `io::Result` est
+la variante `Err`, un appel à `expect` sur l'instance de `io::Result` causera
+un crash du programme, et affichera le message que vous aurez passé en argument.
+Si l'appel à `read_line` retourne une variante `Err`, ce sera probablement
+dû à une erreur du système d'exploitation. Si par contre `read_line` retourne
+une variante `Ok`, `expect` prendra le contenu du `Ok`, le résultat de l'operation,
+et vous le retournera afin que vous puissiez l'utiliser. Dans notre exemple,
+ce résultat est le nombre d'octets que l'utilisateur a fournit dans l'entrée
+standard.
 
 [expect]: ../../std/result/enum.Result.html#method.expect
 
-If we don’t call `expect`, the program will compile, but we’ll get a warning:
+Si l'on appelle pas `expect`, le programme compilera, mais avec une mise en garde:
 
 ```text
 $ cargo build
@@ -313,11 +317,12 @@ src/main.rs:10     io::stdin().read_line(&mut guess);
                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ```
 
-Rust warns that we haven’t used the `Result` value returned from `read_line`,
-indicating that the program hasn’t handled a possible error. The right way to
-suppress the warning is to actually write error handling, but since we just
-want to crash this program when a problem occurs, we can use `expect`. You’ll
-learn about recovering from errors in Chapter 9.
+Rust nous informe que l'on ne fait rien du `Result` qui nous fournir `read_line`,
+et que par conséquent nous n'avons pas géré une erreur potentielle. La meilleure
+façon de régler ce programme est d'écrire le code permettant de bien gérer
+l'erreur, mais dans notre cas on souhaite seulement crasher le programme si un
+problème survient, on peut donc se contenter d'appeler `expect`. Nous verrons
+dans le chapitre 9 comment gérer les erreurs proprement.
 
 ### Printing Values with `println!` Placeholders
 
