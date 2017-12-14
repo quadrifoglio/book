@@ -10,11 +10,11 @@ les erreurs correctement avant même que vous déployez votre code en production
 !
 
 Rust classe les erreurs dans deux catégories principales : les erreurs
-*récupérables* et *non récupérables*. Les erreurs récupérables se produisent
+*récupérables* et *irrécupérables*. Les erreurs récupérables se produisent
 dans des situations dans lesquelles il est utile de signaler l'erreur à
 l'utilisateur et de relancer l'opération, comme par exemple une erreur lorsque
 un fichier n'a pas été trouvé.
-Les erreurs non récupérables sont toujours liées à des bogues, comme essayer
+Les erreurs irrécupérables sont toujours liées à des bogues, comme essayer
 d'accéder à un caractère au-delà de la fin d'un tableau.
 
 La plupart des langages de programmation ne font pas de distinction entre ces
