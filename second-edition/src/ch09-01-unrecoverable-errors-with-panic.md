@@ -64,14 +64,14 @@ utiliser la backtrace des fonctions qui appellent le `panic!` pour comprendre
 la partie de notre code qui pose problème. Nous alons maintenant parler plus en
 détail de ce qu'est une backtrace.
 
-### Using a `panic!` Backtrace
+### Utiliser la Batrace de `panic!`
 
-Let’s look at another example to see what it’s like when a `panic!` call comes
-from a library because of a bug in our code instead of from our code calling
-the macro directly. Listing 9-1 has some code that attempts to access an
-element by index in a vector:
+Analysons un autre exemple pour voir ce qui se passe lors d'un appel de
+`panic!` se produit dans un librairie à cause d'un bug dans notre code plutôt
+que d'appeller la macro directent. L'entrée 9-1 montre du code qui essaye
+d'accéder aux éléments d'un vector via leurs index :
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Fichier: src/main.rs</span>
 
 ```rust,should_panic
 fn main() {
@@ -81,26 +81,27 @@ fn main() {
 }
 ```
 
-<span class="caption">Listing 9-1: Attempting to access an element beyond the
-end of a vector, which will cause a `panic!`</span>
+<span class="caption">Entrée 9-1: Tentative d'accéder à un élément en dehors de
+la fin d'un vector, ce qui provoque un `panic!`</span>
 
-Here, we’re attempting to access the hundredth element (hundredth as indexing
-starts at zero) of our vector, but it has only three elements. In this case,
-Rust will panic. Using `[]` is supposed to return an element, but if you pass
-an invalid index, there’s no element that Rust could return here that would be
-correct.
+Ici, nous essayons d'accéder au centième élément (centième car l'indexation
+commence à zero) de notre vector, mais il a seulement trois élements. Dans ce
+cas, Rust va faire un panic. Utiliser `[]` est censé retourner un élement, mais
+si vous lui founissez un index invalide, Rust ne pourra pas retourner un
+élement acceptable.
 
-Other languages, like C, will attempt to give you exactly what you asked for in
-this situation, even though it isn’t what you want: you’ll get whatever is at
-the location in memory that would correspond to that element in the vector,
-even though the memory doesn’t belong to the vector. This is called a *buffer
-overread* and can lead to security vulnerabilities if an attacker is able to
-manipulate the index in such a way as to read data they shouldn’t be allowed to
-that is stored after the array.
+Dans ce cas, d'autre languages, comme le C, vont tenter de vous donner
+exactement ce que vous avez demandé, même si ce n'est pas ce que vous voulez :
+vous allez récupérer quelquechose à l'emplacement mémoire demandé qui
+correspond à l'élément demande démandé dans le vector, même si cette partie de
+la mémoire n'appartient pas au vector. C'est ce qu'on appelle un
+*buffer overread* et peut menner à une faille de sécurité si un attaquant a la
+possibilité de piloter l'index de telle manière qu'il puisse lire les données
+qui ne sont qui ne devraient pas être lisibles en dehors du array.
 
-To protect your program from this sort of vulnerability, if you try to read an
-element at an index that doesn’t exist, Rust will stop execution and refuse to
-continue. Let’s try it and see:
+Afin de protéger votre programme de ce genre de vulnérabilité, si vous essayez
+de lire un élement à un index qui n'existe pas, Rust va arrêter l'exécution et
+refuser de continer. Essayez et vous verrez :
 
 ```text
 $ cargo run
@@ -113,20 +114,26 @@ note: Run with `RUST_BACKTRACE=1` for a backtrace.
 error: Process didn't exit successfully: `target/debug/panic` (exit code: 101)
 ```
 
-This error points at a file we didn’t write, *libcollections/vec.rs*. That’s
-the implementation of `Vec<T>` in the standard library. The code that gets run
-when we use `[]` on our vector `v` is in *libcollections/vec.rs*, and that is
-where the `panic!` is actually happening.
+Cette erreur se réfère à un fichier que nous n'avons pas codé,
+*libcollections/vec.rs*. C'est une implémentation de `Vec<T>` dans la librairie
+standard. Le code qui est lancé quand nous utilisons `[]` sur notre vecteur `v`
+est dans *libcollections/vec.rs*, et c'est ici que le `panic!` se produit.
 
-The next note line tells us that we can set the `RUST_BACKTRACE` environment
-variable to get a backtrace of exactly what happened to cause the error. A
-*backtrace* is a list of all the functions that have been called to get to this
-point. Backtraces in Rust work like they do in other languages: the key to
-reading the backtrace is to start from the top and read until you see files you
-wrote. That’s the spot where the problem originated. The lines above the lines
-mentioning your files are code that your code called; the lines below are code
-that called your code. These lines might include core Rust code, standard
-library code, or crates that you’re using. Let’s try getting a backtrace:
+La ligne suivante nous informe que nous pouvons régler la variable
+d'environnement `RUST_BACKTRACE` pour obtenir la backtrace de ce qui s'est
+exactement passé pour mener à cette erreur. Une *backtrace* est la liste de
+toutes les fonctions qui ont été appellées pour arriver jusqur'à ce point. Dans
+Rust, la backtrace fonctionne comme elle le fait dans d'autres languages : le
+secret pour lire la bracktrace est de commencer d'en haut et lire jusqu'a ce
+que vous voyez des fichiers que vous avez écrit. C'est l'emplacement où s'est
+produit le problème. Les lignes avant celle qui mentionne vos fichier
+représentent le code qu'à appellé votre code; les lignes qui suivent
+représentent le code qui a appellé votre code. Ces lignes peuvent être du code
+de Rust, du code de la librairie standard, ou des crates que vous utilisez.
+Essayons une backtrace: l'entrée 9-2 contient un retour programme similaire à
+celui que vous avez provoqué :
+
+Let’s try getting a backtrace:
 Listing 9-2 shows output similar to what you’ll see:
 
 ```text
