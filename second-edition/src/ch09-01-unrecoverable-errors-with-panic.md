@@ -18,7 +18,7 @@ clair pour le développeur de savoir comment gérer cette erreur.
 > de construire un exécutable le plus petit possible, vous pouvez passer du
 > dévidage à l'abandon lors d'un panic en ajoutant `panic = 'abort'` aux
 > sections `[profile]` appropriées dans votre fichier *Cargo.toml*. Par
-> exemple, si vous voulez abandonner lors d'un panic en mode relase, ajoutez
+> exemple, si vous voulez abandonner lors d'un panic en mode release, ajoutez
 > ceci :
 > 
 > ```toml
@@ -26,7 +26,7 @@ clair pour le développeur de savoir comment gérer cette erreur.
 > panic = 'abort'
 > ```
 
-Essayons d'appeller `panic!` dans un programme simple :
+Essayons d'appeler `panic!` dans un programme simple :
 
 <span class="filename">Fichier: src/main.rs</span>
 
@@ -36,7 +36,7 @@ fn main() {
 }
 ```
 
-Quand vous lancez le programme, vous allez voir quelquechose qui ressemble à
+Quand vous lancez le programme, vous allez voir quelque chose qui ressemble à
 cela :
 
 ```text
@@ -56,19 +56,19 @@ indique que c'est la ligne 2 de notre fichier *src/main.rs*.
 
 Dans cet exemple, la ligne indiquée fait partie de notre code, et si nous
 allons voir cette ligne, nous verrons l'appel à la macro `panic!`. Dans
-d'autres cas, l'appel de `panic!` pourrait se produire dans du code que nôtre
+d'autres cas, l'appel de `panic!` pourrait se produire dans du code que notre
 code utilise. Le nom du fichier et la ligne indiquée par le message d'erreur
-sera alors du code de quelqu'un d'autre où la macro `panic!` est appellée, pas
+sera alors du code de quelqu'un d'autre où la macro `panic!` est appelée, pas
 la ligne de notre code qui pourrait mener à cet appel de `panic!`. Nous pouvons
 utiliser la backtrace des fonctions qui appellent le `panic!` pour comprendre
-la partie de notre code qui pose problème. Nous alons maintenant parler plus en
-détail de ce qu'est une backtrace.
+la partie de notre code qui pose problème. Nous allons maintenant parler plus
+en détail de ce qu'est une backtrace.
 
 ### Utiliser la Batrace de `panic!`
 
 Analysons un autre exemple pour voir ce qui se passe lors d'un appel de
 `panic!` se produit dans un librairie à cause d'un bug dans notre code plutôt
-que d'appeller la macro directent. L'entrée 9-1 montre du code qui essaye
+que d'appeler la macro directent. L'entrée 9-1 montre du code qui essaye
 d'accéder aux éléments d'un vector via leurs index :
 
 <span class="filename">Fichier: src/main.rs</span>
@@ -85,23 +85,23 @@ fn main() {
 la fin d'un vector, ce qui provoque un `panic!`</span>
 
 Ici, nous essayons d'accéder au centième élément (centième car l'indexation
-commence à zero) de notre vector, mais il a seulement trois élements. Dans ce
-cas, Rust va faire un panic. Utiliser `[]` est censé retourner un élement, mais
-si vous lui founissez un index invalide, Rust ne pourra pas retourner un
-élement acceptable.
+commence à zero) de notre vector, mais il a seulement trois éléments. Dans ce
+cas, Rust va faire un panic. Utiliser `[]` est censé retourner un élément, mais
+si vous lui fournissez un index invalide, Rust ne pourra pas retourner un
+élément acceptable.
 
-Dans ce cas, d'autre languages, comme le C, vont tenter de vous donner
+Dans ce cas, d'autres languages, comme le C, vont tenter de vous donner
 exactement ce que vous avez demandé, même si ce n'est pas ce que vous voulez :
-vous allez récupérer quelquechose à l'emplacement mémoire demandé qui
-correspond à l'élément demande démandé dans le vector, même si cette partie de
-la mémoire n'appartient pas au vector. C'est ce qu'on appelle un
-*buffer overread* et peut menner à une faille de sécurité si un attaquant a la
-possibilité de piloter l'index de telle manière qu'il puisse lire les données
-qui ne sont qui ne devraient pas être lisibles en dehors du array.
+vous allez récupérer quelque chose à l'emplacement mémoire demandée qui
+correspond à l'élément démandé dans le vector, même si cette partie de la
+mémoire n'appartient pas au vector. C'est ce qu'on appelle un *buffer overread*
+et peut mener à une faille de sécurité si un attaquant à la possibilité de
+piloter l'index de telle manière qu'il puisse lire les données qui ne devraient
+pas être lisibles en dehors du array.
 
 Afin de protéger votre programme de ce genre de vulnérabilité, si vous essayez
-de lire un élement à un index qui n'existe pas, Rust va arrêter l'exécution et
-refuser de continer. Essayez et vous verrez :
+de lire un élément à un index qui n'existe pas, Rust va arrêter l'exécution et
+refuser de continuer. Essayez et vous verrez :
 
 ```text
 $ cargo run
@@ -122,13 +122,13 @@ est dans *libcollections/vec.rs*, et c'est ici que le `panic!` se produit.
 La ligne suivante nous informe que nous pouvons régler la variable
 d'environnement `RUST_BACKTRACE` pour obtenir la backtrace de ce qui s'est
 exactement passé pour mener à cette erreur. Une *backtrace* est la liste de
-toutes les fonctions qui ont été appellées pour arriver jusqur'à ce point. Dans
-Rust, la backtrace fonctionne comme elle le fait dans d'autres languages : le
-secret pour lire la bracktrace est de commencer d'en haut et lire jusqu'a ce
-que vous voyez des fichiers que vous avez écrit. C'est l'emplacement où s'est
+toutes les fonctions qui ont été appelées pour arriver jusqu'à ce point. Dans
+Rust, la backtrace fonctionne comme elle le fait dans d'autres langages : le
+secret pour lire la bracktrace est de commencer d'en haut et lire jusqu'à ce
+que vous voyez les fichiers que vous avez écrit. C'est l'emplacement où s'est
 produit le problème. Les lignes avant celle qui mentionne vos fichier
-représentent le code qu'à appellé votre code; les lignes qui suivent
-représentent le code qui a appellé votre code. Ces lignes peuvent être du code
+représentent le code qu'à appelé votre code; les lignes qui suivent
+représentent le code qui a appelé votre code. Ces lignes peuvent être du code
 de Rust, du code de la librairie standard, ou des crates que vous utilisez.
 Essayons une backtrace: l'entrée 9-2 contient un retour programme similaire à
 celui que vous avez provoqué :
@@ -180,7 +180,7 @@ est affichée quand la variable d'environnement `RUST_BACKTRACE` est définie
 Cela fait beaucoup de texte ! L'exactitude de votre retour qui est affiché peut
 être différent en fonction de votre système d'exploitation et votre version de
 Rust. Pour avoir la backtrace avec ces informations, les instructions de
-débogage doivent être activés. Ils sont activés par défaut quand on utilise
+déboguage doivent être activés. Ils sont activés par défaut quand on utilise
 `cargo build` ou `cargo run` sans le flag --release, comme c'est le cas ici.
 
 Sur la sortie dans l'entrée 9-2, la ligne 11 de la backtrace nous montre la
@@ -190,7 +190,7 @@ la première ligne qui mentionne le code que nous avons écrit est le premier
 endroit où nous devrions investiguer pour trouver les valeurs qui ont provoqué
 ce panic. Dans l'entrée 9-1 où nous avons délibérément écrit du code qui fait
 un panic dans le but de montrer comment nous utilisons les backtrace, la
-solution pour ne pas provoquer de panic est de ne pas demander l'élement à
+solution pour ne pas provoquer de panic est de ne pas demander l'élément à
 l'index 100 d'un vecteur quand il en contient seulement trois. A l'avenir quand
 votre code provoquera des panic, vous aurez besoin de prendre des dispositions
 dans votre code avec les valeurs qui provoquent un panic et de coder quoi faire
