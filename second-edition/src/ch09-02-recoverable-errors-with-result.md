@@ -1,16 +1,17 @@
-## Recoverable Errors with `Result`
+## Erreurs récupérables avec `Result`
 
-Most errors aren’t serious enough to require the program to stop entirely.
-Sometimes, when a function fails, it’s for a reason that we can easily
-interpret and respond to. For example, if we try to open a file and that
-operation fails because the file doesn’t exist, we might want to create the
-file instead of terminating the process.
+La plupart des erreurs ne sont pas assez grave au point d'arrêter complètement
+le programme. Parfois, quand une fonction échoue, c'est pour une raison que
+nous pouvons facilement comprendre et réagir en conséquence. Par exemple, si
+nous essayons d'ouvrir un fichier et que l'opération échoue parce que le
+fichier n'existe pas, nous pourrions créer le fichier plutôt que d'arrêter le
+processus.
 
-Recall from “[Handling Potential Failure with the `Result`
-Type][handle_failure]<!-- ignore -->” in Chapter 2 that the `Result` enum is
-defined as having two variants, `Ok` and `Err`, as follows:
+Souvenez-vous dans le Chapitre 2 dans la section “[Gérer les potentielles
+erreurs avec `Result`][handle_failure]<!-- ignore -->” quand le enum `Rust` est
+défini selon deux variantes, `Ok` et `Err`, comme ci-dessous :
 
-[handle_failure]: ch02-00-guessing-game-tutorial.html#handling-potential-failure-with-the-result-type
+[handle_failure]: ch02-00-guessing-game-tutorial.html#gérer-les-potentielles-erreurs-avec-result
 
 ```rust
 enum Result<T, E> {
@@ -19,19 +20,20 @@ enum Result<T, E> {
 }
 ```
 
-The `T` and `E` are generic type parameters: we’ll discuss generics in more
-detail in Chapter 10. What you need to know right now is that `T` represents
-the type of the value that will be returned in a success case within the `Ok`
-variant, and `E` represents the type of the error that will be returned in a
-failure case within the `Err` variant. Because `Result` has these generic type
-parameters, we can use the `Result` type and the functions that the standard
-library has defined on it in many different situations where the successful
-value and error value we want to return may differ.
+Le `T` et `E` sont des paramètres de type génériques : nous alons parler plus
+en détail des génériques au Chapitre 10. Ce que vous avez besoin de savoir pour
+le moment c'est que `T` représente le type de valeur nichée dans la variante
+`Ok` qui sera retournée dans le cas d'un succès, et `E` représente le type
+d'erreur nichée dans la variante `Err` qui sera retournée dans le cas d'un
+échec. Parce que `Result` a ces types de paramètres génériques, nous pouvons
+utiliser le type `Result` et les fonctions définies dans la librairie standard
+qui l'utilisent dans différentes situations où les valeurs en cas de succès et
+les valeurs en cas d'erreur que nous attendons en retour peuvent différer.
 
-Let’s call a function that returns a `Result` value because the function could
-fail: in Listing 9-3 we try to open a file:
+Utilisons une fonction qui retourne une valeur de type `Result` car la fonction
+peut échouer : dans l'entrée 9-3 nous essayons d'ouvrir un fichier :
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Fichier : src/main.rs</span>
 
 ```rust
 use std::fs::File;
@@ -41,21 +43,22 @@ fn main() {
 }
 ```
 
-<span class="caption">Listing 9-3: Opening a file</span>
+<span class="caption">Entrée 9-3 : Ouvrir un fichier</span>
 
-How do we know `File::open` returns a `Result`? We could look at the standard
-library API documentation, or we could ask the compiler! If we give `f` a type
-annotation of a type that we know the return type of the function is *not* and
-then we try to compile the code, the compiler will tell us that the types don’t
-match. The error message will then tell us what the type of `f` *is*. Let’s try
-it: we know that the return type of `File::open` isn’t of type `u32`, so let’s
-change the `let f` statement to this:
+Comment nous savons que `File::open` retourne un `Result` ? Nous pouvons
+regarder la documentation de l'API et de la librairie standard, ou nous pouvons
+demander au compilateur ! Si nous affectons un type à `f` dont nous savons que
+le type de retour de la fonction n'est *pas* correcte et puis que nous essayons
+de compiler le code, le compilateur va nous dire que les types ne coïncident
+pas. Le message d'erreur va ensuite nous dire de quel type `f` *est*. Essayons
+cela : nous savons que le retour de `File::open` n'est pas du type `u32`, alors
+essayons de changer l'instruction `let f` comme ceci :
 
 ```rust,ignore
 let f: u32 = File::open("hello.txt");
 ```
 
-Attempting to compile now gives us the following output:
+La compilation nous donne maintenant le résultat suivant :
 
 ```text
 error[E0308]: mismatched types
@@ -66,13 +69,13 @@ error[E0308]: mismatched types
 `std::result::Result`
   |
   = note: expected type `u32`
-             found type `std::result::Result<std::fs::File, std::io::Error>`
+  = note:    found type `std::result::Result<std::fs::File, std::io::Error>`
 ```
 
-This tells us the return type of the `File::open` function is a `Result<T, E>`.
-The generic parameter `T` has been filled in here with the type of the success
-value, `std::fs::File`, which is a file handle. The type of `E` used in the
-error value is `std::io::Error`.
+Cela nous dit que type de retour de la fonction `File::open` est un
+`Result<T, E>`. Le paramètre générique `T` a été remplacé dans ce cas par le
+type en cas de succès, `std::fs::File`, qui est un manipulateur de fichier. Le
+type de `E` utilisé pour la valeur d'erreur est `std::io::Error`.
 
 This return type means the call to `File::open` might succeed and return to us
 a file handle that we can read from or write to. The function call also might
@@ -233,7 +236,7 @@ the `panic!` call that the `unwrap` method makes:
 ```text
 thread 'main' panicked at 'called `Result::unwrap()` on an `Err` value: Error {
 repr: Os { code: 2, message: "No such file or directory" } }',
-src/libcore/result.rs:906:4
+/stable-dist-rustc/build/src/libcore/result.rs:868
 ```
 
 Another method, `expect`, which is similar to `unwrap`, lets us also choose the
@@ -258,7 +261,8 @@ will be the parameter that we pass to `expect`, rather than the default
 
 ```text
 thread 'main' panicked at 'Failed to open hello.txt: Error { repr: Os { code:
-2, message: "No such file or directory" } }', src/libcore/result.rs:906:4
+2, message: "No such file or directory" } }',
+/stable-dist-rustc/build/src/libcore/result.rs:868
 ```
 
 Because this error message starts with the text we specified, `Failed to open
@@ -383,16 +387,18 @@ is an `Err`, the value inside the `Err` will be returned from the whole
 function as if we had used the `return` keyword so the error value gets
 propagated to the calling code.
 
-There is a difference between what the `match` expression from Listing 9-6 and
-the question mark operator do: error values used with `?` go through the `from`
-function, defined in the `From` trait in the standard library, which is used to
-convert errors from one type into another. When the question mark calls the
-`from` function, the error type received is converted into the error type
-defined in the return type of the current function. This is useful when a
-function returns one error type to represent all the ways a function might
-fail, even if parts might fail for many different reasons. As long as each
-error type implements the `from` function to define how to convert itself to
-the returned error type, the question mark operator takes care of the
+The one difference between the `match` expression from Listing 9-6 and what the
+question mark operator does is that when using the question mark operator,
+error values go through the `from` function defined in the `From` trait in the
+standard library. Many error types implement the `from` function to convert an
+error of one type into an error of another type. When used by the question mark
+operator, the call to the `from` function converts the error type that the
+question mark operator gets into the error type defined in the return type of
+the current function that we’re using `?` in. This is useful when parts of a
+function might fail for many different reasons, but the function returns one
+error type that represents all the ways the function might fail. As long as
+each error type implements the `from` function to define how to convert itself
+to the returned error type, the question mark operator takes care of the
 conversion automatically.
 
 In the context of Listing 9-7, the `?` at the end of the `File::open` call will
@@ -455,14 +461,14 @@ fn main() {
 When we compile this code, we get the following error message:
 
 ```text
-error[E0277]: the trait bound `(): std::ops::Try` is not satisfied
+error[E0277]: the `?` operator can only be used in a function that returns
+`Result` (or another type that implements `std::ops::Try`)
  --> src/main.rs:4:13
   |
 4 |     let f = File::open("hello.txt")?;
   |             ------------------------
   |             |
-  |             the `?` operator can only be used in a function that returns
-  `Result` (or another type that implements `std::ops::Try`)
+  |             cannot use the `?` operator in a function that returns `()`
   |             in this macro invocation
   |
   = help: the trait `std::ops::Try` is not implemented for `()`
