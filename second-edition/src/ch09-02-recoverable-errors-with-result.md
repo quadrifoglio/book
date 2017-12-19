@@ -77,25 +77,26 @@ Cela nous dit que type de retour de la fonction `File::open` est un
 type en cas de succès, `std::fs::File`, qui est un manipulateur de fichier. Le
 type de `E` utilisé pour la valeur d'erreur est `std::io::Error`.
 
-This return type means the call to `File::open` might succeed and return to us
-a file handle that we can read from or write to. The function call also might
-fail: for example, the file might not exist or we might not have permission to
-access the file. The `File::open` function needs to have a way to tell us
-whether it succeeded or failed and at the same time give us either the file
-handle or error information. This information is exactly what the `Result` enum
-conveys.
+Ce type de retour veut dire que l'appel à `File::open` peut réussir et nous
+retourner un manipulateur de fichier qui peut le lire ou l'écrire.
+L'utilisation de cette fonction peut aussi échouer : par exemple, le fichier
+peut ne pas exister ou nous n'avons pas le droit d'accéder au fichier. La
+fonction `File::open` doit avoir un moyen de nous dire si son utilisation a
+réussi ou échoué et en même temps nous fournir soit le manipulateur de fichier
+soit des informations sur l'erreur. C'est exactement ces informations que le
+enum `Result` nous transmet.
 
-In the case where `File::open` succeeds, the value we will have in the variable
-`f` will be an instance of `Ok` that contains a file handle. In the case where
-it fails, the value in `f` will be an instance of `Err` that contains more
-information about the kind of error that happened.
+Dans le cas où `File::open` réussit, la valeur que nous aurons dans la variable
+`f` sera une instance de `Ok` qui contiendra un manipulateur de fichier. Dans
+le cas où cela échoue, la valeur dans `f` sera une instance de `Err` qui
+contiendra plus d'information sur le type d'erreur qui a eu lieu.
 
-We need to add to the code in Listing 9-3 to take different actions depending
-on the value `File::open` returned. Listing 9-4 shows one way to handle the
-`Result` using a basic tool: the `match` expression that we discussed in
-Chapter 6.
+Nous avons besoin d'ajouter différentes actions dans le code de l'entrée 9-3 en
+fonction de la valeur que `File::open` a retourné. L'entrée 9-4 montre une
+façon de gérer `Result` en utilisant un outil basique : l'expression `match`
+que nous avons abordé au Chapitre 6.
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Fichier : src/main.rs</span>
 
 ```rust,should_panic
 use std::fs::File;
@@ -112,41 +113,44 @@ fn main() {
 }
 ```
 
-<span class="caption">Listing 9-4: Using a `match` expression to handle the
-`Result` variants we might have</span>
+<span class="caption">Entrée 9-4: Utilisation de l'expression `match` pour
+gérer les variantes que `Result` pourrait retourner.</span>
 
-Note that, like the `Option` enum, the `Result` enum and its variants have been
-imported in the prelude, so we don’t need to specify `Result::` before the `Ok`
-and `Err` variants in the `match` arms.
+Veuillez noter que, comme l'enum `Option`, l'enum `Result` et ses variantes ont
+été importés dans le prelude, donc vous n'avez pas besoin de préciser
+`Result::` avant les variantes `Ok` et `Err` dans le bloc du `match`.
 
-Here we tell Rust that when the result is `Ok`, return the inner `file` value
-out of the `Ok` variant, and we then assign that file handle value to the
-variable `f`. After the `match`, we can then use the file handle for reading or
-writing.
+Ici nous indiquons à Rust que quand le resultat est `Ok`, il faut sortir la
+valeur `file` de la variante `Ok`, et nous assignons ensuite cette valeur à la
+variable `f`. Après le `match`, nous pourrons ensuite utiliser le manipulateur
+de fichier pour lire ou écrire.
 
-The other arm of the `match` handles the case where we get an `Err` value from
-`File::open`. In this example, we’ve chosen to call the `panic!` macro. If
-there’s no file named *hello.txt* in our current directory and we run this
-code, we’ll see the following output from the `panic!` macro:
+L'autre partie du bloc `match` gère le cas où nous obtenons un `Err` de
+l'appel à `File::open`. Dans cet exemple, nous avons choisi d'utiliser la macro
+`panic!`. S'il n'y a pas de fichier qui s'appelle *hello.txt* dans notre
+répertoire actuel et que nous exécutons ce code, nous allons voir le texte
+suivant suite à l'appel de la macro `panic!` :
 
 ```text
 thread 'main' panicked at 'There was a problem opening the file: Error { repr:
 Os { code: 2, message: "No such file or directory" } }', src/main.rs:9:12
 ```
 
-As usual, this output tells us exactly what has gone wrong.
+Comme d'habitude, ce texte nous dit avec précision ce qui s'est mal passé.
 
-### Matching on Different Errors
+### Tester les différentes erreurs
 
-The code in Listing 9-4 will `panic!` no matter the reason that `File::open`
-failed. What we want to do instead is take different actions for different
-failure reasons: if `File::open` failed because the file doesn’t exist, we want
-to create the file and return the handle to the new file. If `File::open`
-failed for any other reason, for example because we didn’t have permission to
-open the file, we still want the code to `panic!` in the same way as it did in
-Listing 9-4. Look at Listing 9-5, which adds another arm to the `match`:
+Le code dans l'entrée 9-4 va faire un `panic!`, peut importe la raison lorsque
+`File::open` échoue. Ce que nous voudrions plutôt faire est de régir
+différemment en fonction des cas d'erreurs : si `File::open` a échoué parce que
+n'existe pas, nous voulons créer le fichier et renvoyer un manipulateur de
+fichier pour ce nouveau fichier. Si `File::open` échoue pour toute autre
+raison, par exemple si nous n'avons pas l'autorisation d'ouvrir le fichier,
+nous voulons quand même que le code fasse un `panic!` de la même manière qu'il
+l'a fait dans l'entrée 9-4. Dans l'entrée 9-5, nous avons ajouté un nouveau cas
+au bloc `match` :
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Fichier : src/main.rs</span>
 
 <!-- ignore this test because otherwise it creates hello.txt which causes other
 tests to fail lol -->
@@ -181,8 +185,8 @@ fn main() {
 }
 ```
 
-<span class="caption">Listing 9-5: Handling different kinds of errors in
-different ways</span>
+<span class="caption">Entrée 9-5 : Gestion des différents cas d'erreurs de
+avec des actions différentes.</span>
 
 The type of the value that `File::open` returns inside the `Err` variant is
 `io::Error`, which is a struct provided by the standard library. This struct
