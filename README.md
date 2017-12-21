@@ -1,3 +1,7 @@
+> **This is a fork of [rust-lang/book](https://github.com/rust-lang/book) in order to translate the English (second-edition) book in French.**
+> 
+> Please read the help [TRANSLATE.md](https://github.com/quadrifoglio/rust-book-fr/blob/master/second-edition/TRANSLATING.md) !
+
 # The Rust Programming Language
 
 [![Build Status](https://travis-ci.org/rust-lang/book.svg?branch=master)](https://travis-ci.org/rust-lang/book)
