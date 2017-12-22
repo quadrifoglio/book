@@ -188,43 +188,49 @@ fn main() {
 <span class="caption">Entrée 9-5 : Gestion des différents cas d'erreurs de
 avec des actions différentes.</span>
 
-The type of the value that `File::open` returns inside the `Err` variant is
-`io::Error`, which is a struct provided by the standard library. This struct
-has a method `kind` that we can call to get an `io::ErrorKind` value.
-`io::ErrorKind` is an enum provided by the standard library that has variants
-representing the different kinds of errors that might result from an `io`
-operation. The variant we want to use is `ErrorKind::NotFound`, which indicates
-the file we’re trying to open doesn’t exist yet.
+La valeur de retour de `File::open` nichée dans la variante `Err` est de type
+`io::Error`, ce qui est un struct fourni par la librairie standard. Ce struct
+a une méthode `kind` que nous pouvons utiliser pour obtenir un retour de type
+`io::ErrorKind`.
+`io::ErrorKind` est un enum fourni lui aussi par la librairie standard qui a
+des variantes qui représentent différents types d'erreurs qui pourraient
+résulter d'une opération dans le module `io`. La variante que nous voulons
+utiliser est `ErrorKind::NotFound`, qui nous informe que le fichier que nous
+essayons d'ouvrir n'existe pas encore.
 
-The condition `if error.kind() == ErrorKind::NotFound` is called a *match
-guard*: it’s an extra condition on a `match` arm that further refines the arm’s
-pattern. This condition must be true for that arm’s code to be run; otherwise,
-the pattern matching will move on to consider the next arm in the `match`. The
-`ref` in the pattern is needed so `error` is not moved into the guard condition
-but is merely referenced by it. The reason `ref` is used to take a reference in
-a pattern instead of `&` will be covered in detail in Chapter 18. In short, in
-the context of a pattern, `&` matches a reference and gives us its value, but
-`ref` matches a value and gives us a reference to it.
+La condition `if error.kind() == ErrorKind::NotFound` est ce qu'ont appelle un
+*match guard* : c'est une condition supplémentaire sur une branche d'un bloc
+`match` qui raffine le pattern d'une branche. Cette condition doit être valide
+pour que le code de cette branche soit exécuté; autrement, le pattern matching
+s'orientera sur la branche suivante dans le `match`. ** (TODO) The `ref` in the
+pattern is needed so `error` is not moved into the guard condition but is
+merely referenced by it.** La raison pour la quelle `ref` est utilisé pour
+stocker une référence dans le pattern plutôt que un `&` va être expliquée en
+détails dans le Chapitre 18. Pour faire court, dans le cas d'un pattern, `&`
+est associé à une référence et nous retourne sa valeur, mais `ref` associe une
+valeur et nous donne une référence vers elle.
 
-The condition we want to check in the match guard is whether the value returned
-by `error.kind()` is the `NotFound` variant of the `ErrorKind` enum. If it is,
-we try to create the file with `File::create`. However, because `File::create`
-could also fail, we need to add an inner `match` statement as well. When the
-file can’t be opened, a different error message will be printed. The last arm
-of the outer `match` stays the same so the program panics on any error besides
-the missing file error.
+Le cas que nous voulons vérifier dans le match guard est lorsque la valeur
+retournée par `error.kind()` est la variante de `NotFound` de l'enum
+`ErrorKind`. Si c'est le cas, nous essayons de créer le fichier avec
+`File::create`. Cependant, parce que `File::create` peut aussi échouer, nous
+avons besoin d'ajouter a nouveau un `match` à l'intérieur du bloc. Quand le
+fichier ne peut pas être ouvert, un message d'erreur différent sera affiché. La
+dernière branche du `match` principal reste identique donc le programme fait un
+panic sur toute autre erreur que celle du fichier inexistant.
 
-### Shortcuts for Panic on Error: `unwrap` and `expect`
+### Raccourci pour faire un Panic sur une erreur : `unwrap` et `expect`
 
-Using `match` works well enough, but it can be a bit verbose and doesn’t always
-communicate intent well. The `Result<T, E>` type has many helper methods
-defined on it to do various tasks. One of those methods, called `unwrap`, is a
-shortcut method that is implemented just like the `match` statement we wrote in
-Listing 9-4. If the `Result` value is the `Ok` variant, `unwrap` will return
-the value inside the `Ok`. If the `Result` is the `Err` variant, `unwrap` will
-call the `panic!` macro for us. Here is an example of `unwrap` in action:
+L'utilisation de `match` fonctionne assez bien, mais il peut être un peux
+verbeux et ne communique pas forcément comme il le faut. Le type `Result<T, R>`
+a de nombreuses méthodes pour nous aider qui lui on été définies pour faire
+plusieurs choses. Une de ces méthodes, qu'on appelle `unwrap`, a été implémenté
+comme le `match` que nous avons écris dans l'entrée 9-4 : si la valeur de
+`Result` est une variante de `Ok`, `unwrap` va retourner la valeur dans le
+`Ok`, et si le `Result` est une variante de `Err`, `unwrap` va appeller la
+macro `panic!` pour nous. Voici un example de `unwrap` à l'action :
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Fichier : src/main.rs</span>
 
 ```rust,should_panic
 use std::fs::File;
@@ -234,8 +240,8 @@ fn main() {
 }
 ```
 
-If we run this code without a *hello.txt* file, we’ll see an error message from
-the `panic!` call that the `unwrap` method makes:
+Si nous exécutons ce code sans le fichier *hello.txt*, nous allons voir un
+message d'erreur d'un appel à `panic!` que la méthode `unwrap` a fait :
 
 ```text
 thread 'main' panicked at 'called `Result::unwrap()` on an `Err` value: Error {
@@ -243,12 +249,13 @@ repr: Os { code: 2, message: "No such file or directory" } }',
 /stable-dist-rustc/build/src/libcore/result.rs:868
 ```
 
-Another method, `expect`, which is similar to `unwrap`, lets us also choose the
-`panic!` error message. Using `expect` instead of `unwrap` and providing good
-error messages can convey your intent and make tracking down the source of a
-panic easier. The syntax of `expect` looks like this:
+L'autre méthode, `expect`, qui est similaire à `unwrap`, nous donne la
+possibilité de choisir le message d'erreur du `panic!`. Utiliser `expect`
+plutôt que `unwrap` et lui fournir des bons messages d'erreurs permet de mieux
+exprimer le problème et faciliter la recherche de la source d'erreur. La
+syntaxe de `expect` est la suivante :
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Fichier : src/main.rs</span>
 
 ```rust,should_panic
 use std::fs::File;
@@ -258,10 +265,11 @@ fn main() {
 }
 ```
 
-We use `expect` in the same way as `unwrap`: to return the file handle or call
-the `panic!` macro. The error message used by `expect` in its call to `panic!`
-will be the parameter that we pass to `expect`, rather than the default
-`panic!` message that `unwrap` uses. Here’s what it looks like:
+Nous utilisons `expect` de la même manière que `unwrap` : pour retourner le
+manipulateur de fichier ou appeller la macro `panic!`. Le message d'erreur
+utilisé par `expect` lors de son appel au `panic!` sera le paramètre que nous
+avons donnée à `expect`, plutôt que le message par défaut de `panic!`
+qu'utilise `unwrap`. Voici ce que cela donne :
 
 ```text
 thread 'main' panicked at 'Failed to open hello.txt: Error { repr: Os { code:
@@ -269,13 +277,14 @@ thread 'main' panicked at 'Failed to open hello.txt: Error { repr: Os { code:
 /stable-dist-rustc/build/src/libcore/result.rs:868
 ```
 
-Because this error message starts with the text we specified, `Failed to open
-hello.txt`, it will be easier to find where in the code this error message is
-coming from. If we use `unwrap` in multiple places, it can take more time to
-figure out exactly which `unwrap` is causing the panic because all `unwrap`
-calls that panic print the same message.
+Parce que ce message d'erreur commence par le texte que nous avons précisé,
+`Failed to open hello.txt`, ce sera plus facile de trouver d'où dans le code
+ce message d'erreur proviens. Si nous utilisons `unwrap` dans plusieurs
+endroits, cela peut prendre plus de temps de comprendre exactement quel
+`unwrap` a déclanché le panic car tous les appels au `unwrap` vont afficher le
+même message.
 
-### Propagating Errors
+### Propager les Erreurs
 
 When you’re writing a function whose implementation calls something that might
 fail, instead of handling the error within this function, you can return the
