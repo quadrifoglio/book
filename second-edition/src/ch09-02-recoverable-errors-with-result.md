@@ -339,43 +339,46 @@ comme type de retour de cette fonction parce que c'est le type d'erreur de
 retour par chacune des opérations qu'on appelle dans le corps de cette fonction
 qui peuvent échouer : la fonction `File::open` et la méthode `read_to_string`.
 
-The body of the function starts by calling the `File::open` function. Then we
-handle the `Result` value returned with a `match` similar to the `match` in
-Listing 9-4, only instead of calling `panic!` in the `Err` case, we return
-early from this function and pass the error value from `File::open` back to the
-calling code as this function’s error value. If `File::open` succeeds, we store
-the file handle in the variable `f` and continue.
+Le corps de la fonction commence par appeller la fonction `File::open`. Ensuite
+nous gérons la valeur `Result` retourné, avec un `match` similaire au `match`
+dans l'entrée 9-4, seulement, au lieu d'appeller `panic!` dans le cas de `Err`,
+nous retournons prématurément la fonction et nous retournons la valeur d'erreur
+de `File::open` au code appellant avec la valeur d'erreur de cette fonction. Si
+`File::open` réussit, nous enregistrons le manipulateur de fichier dans la
+variable `f` et nous continuons.
 
-Then we create a new `String` in variable `s` and call the `read_to_string`
-method on the file handle in `f` to read the contents of the file into `s`. The
-`read_to_string` method also returns a `Result` because it might fail, even
-though `File::open` succeeded. So we need another `match` to handle that
-`Result`: if `read_to_string` succeeds, then our function has succeeded, and we
-return the username from the file that’s now in `s` wrapped in an `Ok`. If
-`read_to_string` fails, we return the error value in the same way that we
-returned the error value in the `match` that handled the return value of
-`File::open`. However, we don’t need to explicitly say `return`, because this
-is the last expression in the function.
+Ensuite nous créons un nouveau `String` dans la variable `s` et nous appellons
+la méthode `read_to_string` sur le manipulateur de fichier dans `f` pour lire
+le contennu du fichier dans `s`. La méthode `read_to_string` retourne aussi un
+`Result` parce qu'elle peut échouer, même si `File::open` réussit. Donc nous
+avons un nouveau `match` pour gérer ce `Result` : si `read_to_string` réussit,
+alors notre fonction a a réussi, et nous retournons le nom d'utilisateur à
+partir du fichier qui est maintenant dans `s`, envelopé dans un `Ok`. Si
+`read_to_string` échoue, nous retournons la valeur d'erreur de la même façon
+que nous avons retourné la valeur d'erreur dans le `match` qui gèrait la valeur
+de retour de `File::open`. Cependant, nous n'avons pas besoin de dire
+explicitement `return`, car c'est la dernière instruction dans la fonction.
 
-The code that calls this code will then handle getting either an `Ok` value
-that contains a username or an `Err` value that contains an `io::Error`. We
-don’t know what the calling code will do with those values. If the calling code
-gets an `Err` value, it could call `panic!` and crash the program, use a
-default username, or look up the username from somewhere other than a file, for
-example. We don’t have enough information on what the calling code is actually
-trying to do, so we propagate all the success or error information upwards for
-it to handle appropriately.
+Le code qui appelle ce code va devoir ensuite gérer soit une valeur `Ok` qui
+contient le nom d'utilisateur, ou une valeur `Err` qui contient une
+`io::Error`. Nous ne savons pas ce que va faire le code appellant avec ces
+valeurs. Si le code appellant obtient une valeur `Err`, il peut utiliser un
+`panic!` et faire planter le programme, utiliser un nom d'utilisateur par
+défaut, ou chercher le nom d'utilisateur autre part que dans ce fichier, par
+example. Nous n'avons n'avons pas assez d'informations sur ce que le code
+appellant a l'intention de faire, donc nous remontons toutes les informations
+de succès ou d'erreur vers le haut pour qu'elles soient traitées correctement.
 
-This pattern of propagating errors is so common in Rust that Rust provides the
-question mark operator `?` to make this easier.
+Cette façon de propager les erreurs est si courrant dans Rust que Rust fournit
+l'opérateur du point d'interrogation `?` pour faciliter ceci.
 
-#### A Shortcut for Propagating Errors: `?`
+#### Un raccourci pour propager les erreurs : `?`
 
-Listing 9-7 shows an implementation of `read_username_from_file` that has the
-same functionality as it had in Listing 9-6, but this implementation uses the
-question mark operator:
+L'entrée 9-7 montre une implémentation de `read_username_from_file` qui a les
+mêmes fonctionnalités qu'elle a dans l'entrée 9-6, mais cette implémentation
+utilise l'opérateur du point d'interrogation :
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Nom du fichier : src/main.rs</span>
 
 ```rust
 use std::io;
@@ -390,8 +393,8 @@ fn read_username_from_file() -> Result<String, io::Error> {
 }
 ```
 
-<span class="caption">Listing 9-7: A function that returns errors to the
-calling code using `?`</span>
+<span class="caption">Entrée 9-7: une fonction qui retourne les erreurs au code
+appellant en utilisant `?`</span>
 
 The `?` placed after a `Result` value is defined to work in almost the same way
 as the `match` expressions we defined to handle the `Result` values in Listing
