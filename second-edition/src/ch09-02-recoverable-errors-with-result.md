@@ -31,9 +31,9 @@ qui l'utilisent dans différentes situations où les valeurs en cas de succès e
 les valeurs en cas d'erreur que nous attendons en retour peuvent différer.
 
 Utilisons une fonction qui retourne une valeur de type `Result` car la fonction
-peut échouer : dans l'entrée 9-3 nous essayons d'ouvrir un fichier :
+peut échouer : dans l'entrée 9-3 nous essayons d'ouvrir un Nom du fichier :
 
-<span class="filename">Fichier : src/main.rs</span>
+<span class="filename">Nom du fichier : src/main.rs</span>
 
 ```rust
 use std::fs::File;
@@ -96,7 +96,7 @@ fonction de la valeur que `File::open` a retourné. L'entrée 9-4 montre une
 façon de gérer `Result` en utilisant un outil basique : l'expression `match`
 que nous avons abordé au Chapitre 6.
 
-<span class="filename">Fichier : src/main.rs</span>
+<span class="filename">Nom du fichier : src/main.rs</span>
 
 ```rust,should_panic
 use std::fs::File;
@@ -150,7 +150,7 @@ nous voulons quand même que le code fasse un `panic!` de la même manière qu'i
 l'a fait dans l'entrée 9-4. Dans l'entrée 9-5, nous avons ajouté un nouveau cas
 au bloc `match` :
 
-<span class="filename">Fichier : src/main.rs</span>
+<span class="filename">Nom du fichier : src/main.rs</span>
 
 <!-- ignore this test because otherwise it creates hello.txt which causes other
 tests to fail lol -->
@@ -230,7 +230,7 @@ comme le `match` que nous avons écris dans l'entrée 9-4 : si la valeur de
 `Ok`, et si le `Result` est une variante de `Err`, `unwrap` va appeller la
 macro `panic!` pour nous. Voici un example de `unwrap` à l'action :
 
-<span class="filename">Fichier : src/main.rs</span>
+<span class="filename">Nom du fichier : src/main.rs</span>
 
 ```rust,should_panic
 use std::fs::File;
@@ -255,7 +255,7 @@ plutôt que `unwrap` et lui fournir des bons messages d'erreurs permet de mieux
 exprimer le problème et faciliter la recherche de la source d'erreur. La
 syntaxe de `expect` est la suivante :
 
-<span class="filename">Fichier : src/main.rs</span>
+<span class="filename">Nom du fichier : src/main.rs</span>
 
 ```rust,should_panic
 use std::fs::File;
@@ -286,18 +286,19 @@ même message.
 
 ### Propager les Erreurs
 
-When you’re writing a function whose implementation calls something that might
-fail, instead of handling the error within this function, you can return the
-error to the calling code so that it can decide what to do. This is known as
-*propagating* the error and gives more control to the calling code where there
-might be more information or logic that dictates how the error should be
-handled than what you have available in the context of your code.
+Quand vous écrivez une fonction dont son implémentation utilise quelque chose
+qui pourrait échouer, plutôt que de gérer l'erreur dans cette fonction, vous
+pouvez retourner cette erreur au code qui l'appelle pour qu'il décide quoi
+faire. C'est ce qu'on appelle *propager* l'erreur et donne ainsi plus de
+pouvoir au code qui appelle la fonction où il pourrait y avoir plus
+d'informations ou d'instructions pour traiter l'erreur que si c'était dans le
+contexte de votre code.
 
-For example, Listing 9-6 shows a function that reads a username from a file. If
-the file doesn’t exist or can’t be read, this function will return those errors
-to the code that called this function:
+Par exemple, l'entrée 9-6 montre une fonction qui lit un nom d'utilisateur à
+partir d'un fichier. Si le fichier n'existe pas ou ne peux pas être lu, cette
+fonction va retourner ces erreurs au code qui a appellé cette fonction :
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Nom du fichier : src/main.rs</span>
 
 ```rust
 use std::io;
@@ -321,22 +322,22 @@ fn read_username_from_file() -> Result<String, io::Error> {
 }
 ```
 
-<span class="caption">Listing 9-6: A function that returns errors to the
-calling code using `match`</span>
+<span class="caption">Entrée 9-6 : une fonction qui retourne les erreurs au
+code qui l'appelle en utilisant `match`</span>
 
-Let’s look at the return type of the function first: `Result<String,
-io::Error>`. This means the function is returning a value of the type
-`Result<T, E>` where the generic parameter `T` has been filled in with the
-concrete type `String`, and the generic type `E` has been filled in with the
-concrete type `io::Error`. If this function succeeds without any problems, the
-code that calls this function will receive an `Ok` value that holds a
-`String`—the username that this function read from the file. If this function
-encounters any problems, the code that calls this function will receive an
-`Err` value that holds an instance of `io::Error` that contains more
-information about what the problems were. We chose `io::Error` as the return
-type of this function because that happens to be the type of the error value
-returned from both of the operations we’re calling in this function’s body that
-might fail: the `File::open` function and the `read_to_string` method.
+Regardons d'abord le type de retour de la fonction :
+`Result<String, io::Error>`. Cela signifie que la fonction retourne une valeur
+de type `Result<T, E>` où le paramètre générique `T` a été rempli avec le type
+`String`, et le paramètre générique `E` a été rempli avec le type `io::Error`.
+Si cette fonction réussi sans aucun problème, le code qui appelle cette
+fonction va récupérer une valeur `Ok` qui contient un `String`, le nom
+d'utilisateur que cette fonction lit dans le fichier. Si cette fonction
+rencontre n'importe quel problème, le code qui appelle cette fonction va
+récupérer une valeur `Err` qui contient une instance de `io::Error` qui apporte
+plus d'informations sur la raison du problème. Nous avons choisi `io::Error`
+comme type de retour de cette fonction parce que c'est le type d'erreur de
+retour par chacune des opérations qu'on appelle dans le corps de cette fonction
+qui peuvent échouer : la fonction `File::open` et la méthode `read_to_string`.
 
 The body of the function starts by calling the `File::open` function. Then we
 handle the `Result` value returned with a `match` similar to the `match` in
