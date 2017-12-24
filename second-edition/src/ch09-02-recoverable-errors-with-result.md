@@ -1,15 +1,15 @@
 ## Erreurs récupérables avec `Result`
 
-La plupart des erreurs ne sont pas assez grave au point d'arrêter complètement
+La plupart des erreurs ne sont pas assez graves au point d'arrêter complètement
 le programme. Parfois, quand une fonction échoue, c'est pour une raison que
 nous pouvons facilement comprendre et réagir en conséquence. Par exemple, si
 nous essayons d'ouvrir un fichier et que l'opération échoue parce que le
 fichier n'existe pas, nous pourrions créer le fichier plutôt que d'arrêter le
 processus.
 
-Souvenez-vous dans le Chapitre 2 dans la section “[Gérer les potentielles
-erreurs avec `Result`][handle_failure]<!-- ignore -->” quand le enum `Rust` est
-défini selon deux variantes, `Ok` et `Err`, comme ci-dessous :
+Souvenez-vous du Chapitre 2 dans la section “[Gérer les potentielles erreurs
+avec `Result`][handle_failure]<!-- ignore -->” quand le enum `Rust` est défini
+selon deux variantes, `Ok` et `Err`, comme ci-dessous :
 
 [handle_failure]: ch02-00-guessing-game-tutorial.html#gérer-les-potentielles-erreurs-avec-result
 
@@ -20,15 +20,15 @@ enum Result<T, E> {
 }
 ```
 
-Le `T` et `E` sont des paramètres de type génériques : nous alons parler plus
-en détail des génériques au Chapitre 10. Ce que vous avez besoin de savoir pour
-le moment c'est que `T` représente le type de valeur nichée dans la variante
-`Ok` qui sera retournée dans le cas d'un succès, et `E` représente le type
-d'erreur nichée dans la variante `Err` qui sera retournée dans le cas d'un
-échec. Parce que `Result` a ces types de paramètres génériques, nous pouvons
-utiliser le type `Result` et les fonctions définies dans la librairie standard
-qui l'utilisent dans différentes situations où les valeurs en cas de succès et
-les valeurs en cas d'erreur que nous attendons en retour peuvent différer.
+Le `T` et `E` sont des paramètres de type générique : nous alons parler plus en
+détail des génériques au Chapitre 10. Ce que vous avez besoin de savoir pour le
+moment c'est que `T` représente le type de valeur nichée dans la variante `Ok`
+qui sera retournée dans le cas d'un succès, et `E` représente le type d'erreur
+nichée dans la variante `Err` qui sera retournée dans le cas d'un échec.
+Puisque `Result` a ces types de paramètres génériques, nous pouvons utiliser le
+type `Result` et les fonctions définies dans la librairie standard qui
+l'utilisent dans différentes situations où les valeurs en cas de succès et les
+valeurs en cas d'erreur que nous attendons en retour peuvent différer.
 
 Utilisons une fonction qui retourne une valeur de type `Result` car la fonction
 peut échouer : dans l'entrée 9-3 nous essayons d'ouvrir un Nom du fichier :
@@ -45,10 +45,10 @@ fn main() {
 
 <span class="caption">Entrée 9-3 : Ouvrir un fichier</span>
 
-Comment nous savons que `File::open` retourne un `Result` ? Nous pouvons
+Comment savons-nous que `File::open` retourne un `Result` ? Nous pouvons
 regarder la documentation de l'API et de la librairie standard, ou nous pouvons
 demander au compilateur ! Si nous affectons un type à `f` dont nous savons que
-le type de retour de la fonction n'est *pas* correcte et puis que nous essayons
+le type de retour de la fonction n'est *pas* correcte et puisque nous essayons
 de compiler le code, le compilateur va nous dire que les types ne coïncident
 pas. Le message d'erreur va ensuite nous dire de quel type `f` *est*. Essayons
 cela : nous savons que le retour de `File::open` n'est pas du type `u32`, alors
@@ -80,7 +80,7 @@ type de `E` utilisé pour la valeur d'erreur est `std::io::Error`.
 Ce type de retour veut dire que l'appel à `File::open` peut réussir et nous
 retourner un manipulateur de fichier qui peut le lire ou l'écrire.
 L'utilisation de cette fonction peut aussi échouer : par exemple, le fichier
-peut ne pas exister ou nous n'avons pas le droit d'accéder au fichier. La
+peut ne pas exister, ou nous n'avons pas le droit d'accéder au fichier. La
 fonction `File::open` doit avoir un moyen de nous dire si son utilisation a
 réussi ou échoué et en même temps nous fournir soit le manipulateur de fichier
 soit des informations sur l'erreur. C'est exactement ces informations que le
@@ -120,7 +120,7 @@ Veuillez noter que, comme l'enum `Option`, l'enum `Result` et ses variantes ont
 été importés dans le prelude, donc vous n'avez pas besoin de préciser
 `Result::` avant les variantes `Ok` et `Err` dans le bloc du `match`.
 
-Ici nous indiquons à Rust que quand le resultat est `Ok`, il faut sortir la
+Ici nous indiquons à Rust que quand le résultat est `Ok`, il faut sortir la
 valeur `file` de la variante `Ok`, et nous assignons ensuite cette valeur à la
 variable `f`. Après le `match`, nous pourrons ensuite utiliser le manipulateur
 de fichier pour lire ou écrire.
@@ -198,13 +198,13 @@ résulter d'une opération dans le module `io`. La variante que nous voulons
 utiliser est `ErrorKind::NotFound`, qui nous informe que le fichier que nous
 essayons d'ouvrir n'existe pas encore.
 
-La condition `if error.kind() == ErrorKind::NotFound` est ce qu'ont appelle un
+La condition `if error.kind() == ErrorKind::NotFound` est ce qu'on appelle un
 *match guard* : c'est une condition supplémentaire sur une branche d'un bloc
 `match` qui raffine le pattern d'une branche. Cette condition doit être valide
-pour que le code de cette branche soit exécuté; autrement, le pattern matching
+pour que le code de cette branche soit exécutée; autrement, le pattern matching
 s'orientera sur la branche suivante dans le `match`. ** (TODO) The `ref` in the
 pattern is needed so `error` is not moved into the guard condition but is
-merely referenced by it.** La raison pour la quelle `ref` est utilisé pour
+merely referenced by it.** La raison pour laquelle `ref` est utilisé pour
 stocker une référence dans le pattern plutôt que un `&` va être expliquée en
 détails dans le Chapitre 18. Pour faire court, dans le cas d'un pattern, `&`
 est associé à une référence et nous retourne sa valeur, mais `ref` associe une
@@ -214,21 +214,21 @@ Le cas que nous voulons vérifier dans le match guard est lorsque la valeur
 retournée par `error.kind()` est la variante de `NotFound` de l'enum
 `ErrorKind`. Si c'est le cas, nous essayons de créer le fichier avec
 `File::create`. Cependant, parce que `File::create` peut aussi échouer, nous
-avons besoin d'ajouter a nouveau un `match` à l'intérieur du bloc. Quand le
+avons besoin d'ajouter à nouveau un `match` à l'intérieur du bloc. Quand le
 fichier ne peut pas être ouvert, un message d'erreur différent sera affiché. La
 dernière branche du `match` principal reste identique donc le programme fait un
 panic sur toute autre erreur que celle du fichier inexistant.
 
 ### Raccourci pour faire un Panic sur une erreur : `unwrap` et `expect`
 
-L'utilisation de `match` fonctionne assez bien, mais il peut être un peux
+L'utilisation de `match` fonctionne assez bien, mais il peut être un peu
 verbeux et ne communique pas forcément comme il le faut. Le type `Result<T, R>`
-a de nombreuses méthodes pour nous aider qui lui on été définies pour faire
+a de nombreuses méthodes pour nous aider qui lui ont été définies pour faire
 plusieurs choses. Une de ces méthodes, qu'on appelle `unwrap`, a été implémenté
-comme le `match` que nous avons écris dans l'entrée 9-4 : si la valeur de
+comme le `match` que nous avons écri dans l'entrée 9-4 : si la valeur de
 `Result` est une variante de `Ok`, `unwrap` va retourner la valeur dans le
-`Ok`, et si le `Result` est une variante de `Err`, `unwrap` va appeller la
-macro `panic!` pour nous. Voici un example de `unwrap` à l'action :
+`Ok`, et si le `Result` est une variante de `Err`, `unwrap` va appeler la
+macro `panic!` pour nous. Voici un exemple de `unwrap` à l'action :
 
 <span class="filename">Nom du fichier : src/main.rs</span>
 
@@ -251,7 +251,7 @@ repr: Os { code: 2, message: "No such file or directory" } }',
 
 L'autre méthode, `expect`, qui est similaire à `unwrap`, nous donne la
 possibilité de choisir le message d'erreur du `panic!`. Utiliser `expect`
-plutôt que `unwrap` et lui fournir des bons messages d'erreurs permet de mieux
+plutôt que `unwrap` et lui fournir de bons messages d'erreurs permet de mieux
 exprimer le problème et faciliter la recherche de la source d'erreur. La
 syntaxe de `expect` est la suivante :
 
@@ -266,9 +266,9 @@ fn main() {
 ```
 
 Nous utilisons `expect` de la même manière que `unwrap` : pour retourner le
-manipulateur de fichier ou appeller la macro `panic!`. Le message d'erreur
+manipulateur de fichier ou appeler la macro `panic!`. Le message d'erreur
 utilisé par `expect` lors de son appel au `panic!` sera le paramètre que nous
-avons donnée à `expect`, plutôt que le message par défaut de `panic!`
+avons donné à `expect`, plutôt que le message par défaut de `panic!`
 qu'utilise `unwrap`. Voici ce que cela donne :
 
 ```text
@@ -281,7 +281,7 @@ Parce que ce message d'erreur commence par le texte que nous avons précisé,
 `Failed to open hello.txt`, ce sera plus facile de trouver d'où dans le code
 ce message d'erreur proviens. Si nous utilisons `unwrap` dans plusieurs
 endroits, cela peut prendre plus de temps de comprendre exactement quel
-`unwrap` a déclanché le panic car tous les appels au `unwrap` vont afficher le
+`unwrap` a déclenché le panic, car tous les appels au `unwrap` vont afficher le
 même message.
 
 ### Propager les Erreurs
@@ -296,7 +296,7 @@ contexte de votre code.
 
 Par exemple, l'entrée 9-6 montre une fonction qui lit un nom d'utilisateur à
 partir d'un fichier. Si le fichier n'existe pas ou ne peux pas être lu, cette
-fonction va retourner ces erreurs au code qui a appellé cette fonction :
+fonction va retourner ces erreurs au code qui a appelé cette fonction :
 
 <span class="filename">Nom du fichier : src/main.rs</span>
 
@@ -329,7 +329,7 @@ Regardons d'abord le type de retour de la fonction :
 `Result<String, io::Error>`. Cela signifie que la fonction retourne une valeur
 de type `Result<T, E>` où le paramètre générique `T` a été rempli avec le type
 `String`, et le paramètre générique `E` a été rempli avec le type `io::Error`.
-Si cette fonction réussi sans aucun problème, le code qui appelle cette
+Si cette fonction réussie sans aucun problème, le code qui appelle cette
 fonction va récupérer une valeur `Ok` qui contient un `String`, le nom
 d'utilisateur que cette fonction lit dans le fichier. Si cette fonction
 rencontre n'importe quel problème, le code qui appelle cette fonction va
@@ -339,37 +339,37 @@ comme type de retour de cette fonction parce que c'est le type d'erreur de
 retour par chacune des opérations qu'on appelle dans le corps de cette fonction
 qui peuvent échouer : la fonction `File::open` et la méthode `read_to_string`.
 
-Le corps de la fonction commence par appeller la fonction `File::open`. Ensuite
+Le corps de la fonction commence par appeler la fonction `File::open`. Ensuite,
 nous gérons la valeur `Result` retourné, avec un `match` similaire au `match`
-dans l'entrée 9-4, seulement, au lieu d'appeller `panic!` dans le cas de `Err`,
+dans l'entrée 9-4, seulement, au lieu d'appeler `panic!` dans le cas de `Err`,
 nous retournons prématurément la fonction et nous retournons la valeur d'erreur
-de `File::open` au code appellant avec la valeur d'erreur de cette fonction. Si
+de `File::open` au code appelant avec la valeur d'erreur de cette fonction. Si
 `File::open` réussit, nous enregistrons le manipulateur de fichier dans la
 variable `f` et nous continuons.
 
-Ensuite nous créons un nouveau `String` dans la variable `s` et nous appellons
+Ensuite, nous créons un nouveau `String` dans la variable `s` et nous appelons
 la méthode `read_to_string` sur le manipulateur de fichier dans `f` pour lire
-le contennu du fichier dans `s`. La méthode `read_to_string` retourne aussi un
+le contenu du fichier dans `s`. La méthode `read_to_string` retourne aussi un
 `Result` parce qu'elle peut échouer, même si `File::open` réussit. Donc nous
 avons un nouveau `match` pour gérer ce `Result` : si `read_to_string` réussit,
-alors notre fonction a a réussi, et nous retournons le nom d'utilisateur à
-partir du fichier qui est maintenant dans `s`, envelopé dans un `Ok`. Si
+alors notre fonction a réussi, et nous retournons le nom d'utilisateur à partir
+du fichier qui est maintenant dans `s`, enveloppé dans un `Ok`. Si
 `read_to_string` échoue, nous retournons la valeur d'erreur de la même façon
-que nous avons retourné la valeur d'erreur dans le `match` qui gèrait la valeur
+que nous avons retourné la valeur d'erreur dans le `match` qui gérait la valeur
 de retour de `File::open`. Cependant, nous n'avons pas besoin de dire
 explicitement `return`, car c'est la dernière instruction dans la fonction.
 
 Le code qui appelle ce code va devoir ensuite gérer soit une valeur `Ok` qui
 contient le nom d'utilisateur, ou une valeur `Err` qui contient une
-`io::Error`. Nous ne savons pas ce que va faire le code appellant avec ces
-valeurs. Si le code appellant obtient une valeur `Err`, il peut utiliser un
+`io::Error`. Nous ne savons pas ce que va faire le code appelant avec ces
+valeurs. Si le code appelant obtient une valeur `Err`, il peut utiliser un
 `panic!` et faire planter le programme, utiliser un nom d'utilisateur par
 défaut, ou chercher le nom d'utilisateur autre part que dans ce fichier, par
-example. Nous n'avons n'avons pas assez d'informations sur ce que le code
-appellant a l'intention de faire, donc nous remontons toutes les informations
-de succès ou d'erreur vers le haut pour qu'elles soient traitées correctement.
+exemple. Nous n'avons pas assez d'informations sur ce que le code appelant a
+l'intention de faire, donc nous remontons toutes les informations de succès ou
+d'erreur vers le haut pour qu'elles soient traitées correctement.
 
-Cette façon de propager les erreurs est si courrant dans Rust que Rust fournit
+Cette façon de propager les erreurs est si courante dans Rust que Rust fournit
 l'opérateur du point d'interrogation `?` pour faciliter ceci.
 
 #### Un raccourci pour propager les erreurs : `?`
@@ -394,25 +394,25 @@ fn read_username_from_file() -> Result<String, io::Error> {
 ```
 
 <span class="caption">Entrée 9-7: une fonction qui retourne les erreurs au code
-appellant en utilisant `?`</span>
+appelant en utilisant `?`</span>
 
 Le `?` placé après une valeur `Result` est conçu pour fonctionner presque de la
 même manière que la formule `match` que nous avons défini pour gérer les
 valeurs `Result` dans l'entrée 9-6. Si la valeur de `Result` est un `Ok`, la
-valeur dans le `Ok` sera retourné par cette expression et le programme
+valeur dans le `Ok` sera retournée par cette expression et le programme
 continuera. Si la valeur est une `Err`, la valeur à l'intérieur de `Err` sera
 retournée par toute la fonction comme si nous avons utilisé le mot-clé `result`
-de telle manière que la valeur d'erreur soit propagé au code appellant.
+de telle manière que la valeur d'erreur soit propagé au code appelant.
 
 La seule différence entre l'expression `match` de l'entrée 9-6 et ce que
-l'opérateur point d'interrogation fait c'est que olorsque l'on utilise
+l'opérateur point d'interrogation fait c'est que lorsque l'on utilise
 l'opérateur point d'interrogation, les valeurs d'erreur passent par la fonction
 `from` définie dans le trait `From` de la librairie standard. Beaucoup de types
 d'erreur implémentent la fonction `from` pour convertir une erreur d'un type
 vers une autre erreur d'un autre type. Quand on utilise l'opérateur point
 d'interrogation, l'appel de la fonction `from` convertit le type d'erreur que
-que l'opérateur point d'interrogation obtient vers le type d'erreur défini dans
-le type d'erreur de la fonction actuelle où nous utilisons `?`. C'est utile
+l'opérateur point d'interrogation obtient vers le type d'erreur défini dans le
+type d'erreur de la fonction actuelle où nous utilisons `?`. C'est utile
 lorsque des parties de la fonction peuvent échouer pour différentes raisons,
 mais que la fonction revoie un type d'erreur qui représente toutes les
 possibilités d'échec de la fonction. Du moment que chaque type d'erreur
@@ -421,8 +421,8 @@ d'erreur retournée, l'opérateur point d'interrogation s'occupe de faire la
 conversion automatiquement.
 
 Dans le cas de l'entrée 9-7, le `?` à la fin de l'appel à `File::open` va
-retourner la valeur à l'interieur d'un `Ok` à la variable `f`. Si une erreur
-survient, `?` va retourner prématurément une valeur `Err` au code appellant. La
+retourner la valeur à l'intérieur d'un `Ok` à la variable `f`. Si une erreur
+survient, `?` va retourner prématurément une valeur `Err` au code appelant. La
 même chose se produira au `?` à ma fin de l'appel à `read_to_string`.
 
 Le `?` épargne du code et facilite l'implémentation. Nous pouvons même encore
@@ -450,16 +450,15 @@ l'opérateur point d'interrogation</span>
 
 Nous avons déplacé la création du nouveau `String` dans `s` au début de la
 fonction; cette partie n'a pas changée. Au lieu de créer la variable `f`, nous
-enchaînons dir'ectement l'appel à `read_to_string` sur le résultat de
+enchaînons directement l'appel à `read_to_string` sur le résultat de
 `File::open("hello.txt")?`. Nous avons toujours le `?` à la fin de l'appel à
-`read_to_string`, et nous retournons toujours une valeur `Ok` contennant le nom
+`read_to_string`, et nous retournons toujours une valeur `Ok` contenant le nom
 d'utilisateur dans `s` quand `File::open` et `read_to_string` réussissent tous
 les deux plutôt que de retourner des erreurs. Cette fonctionnalité fonctionne
 toujours que dans l'entrée 9-6 et l'entrée 9-7; c'est juste une façon
 différente et plus ergonomique de l'écrire.
 
-#### `?` ne peut être utilisé uniquement dans des fonctions qui retournent
-`Result`
+#### `?` ne peut être utilisé que dans des fonctions qui retournent `Result`
 
 Le `?` peut uniquement être utilisé dans des fonctions qui ont un type de
 retour `Result`, car il est défini pour fonctionner de la même manière que
@@ -469,7 +468,7 @@ le type de retour de cette fonction doit être `Result` pour être compatible
 avec ce `return`.
 
 Regardons ce que ce passe si nous utilisons `?` dans la fonction `main`, dont
-vous devriez vous rappeller qu'elle a un type de retour `()` :
+vous devriez vous rappeler qu'elle a un type de retour `()` :
 
 ```rust,ignore
 use std::fs::File;
@@ -500,9 +499,9 @@ Cette erreur explique que nous sommes uniquement autorisés à utiliser
 l'opérateur point d'interrogation dans une fonction qui retourne `Result`. Dans
 des fonctions qui ne retournent pas `Result`, quand vous utilisez d'autres
 fonctions qui retournent `Result`, vous avez besoin d'utiliser `match` ou une
-des méthodes de `Result`pour gérer cela plutôt qu'utiliser `?` pour
-potentiellement propager l'erreur au code appellant.
+des méthodes de `Result` pour gérer cela plutôt qu'utiliser `?` pour
+potentiellement propager l'erreur au code appelant.
 
 Maintenant que nous avons vu les détails pour utiliser `panic!` ou retourner
-`Result`, revenons sur au sujet de savoir lequel il conviens d'utiliser en
+`Result`, revenons sur au sujet de savoir lequel il convient d'utiliser en
 fonction des cas.
