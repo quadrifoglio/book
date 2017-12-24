@@ -396,39 +396,40 @@ fn read_username_from_file() -> Result<String, io::Error> {
 <span class="caption">Entrée 9-7: une fonction qui retourne les erreurs au code
 appellant en utilisant `?`</span>
 
-The `?` placed after a `Result` value is defined to work in almost the same way
-as the `match` expressions we defined to handle the `Result` values in Listing
-9-6. If the value of the `Result` is an `Ok`, the value inside the `Ok` will
-get returned from this expression and the program will continue. If the value
-is an `Err`, the value inside the `Err` will be returned from the whole
-function as if we had used the `return` keyword so the error value gets
-propagated to the calling code.
+Le `?` placé après une valeur `Result` est conçu pour fonctionner presque de la
+même manière que la formule `match` que nous avons défini pour gérer les
+valeurs `Result` dans l'entrée 9-6. Si la valeur de `Result` est un `Ok`, la
+valeur dans le `Ok` sera retourné par cette expression et le programme
+continuera. Si la valeur est une `Err`, la valeur à l'intérieur de `Err` sera
+retournée par toute la fonction comme si nous avons utilisé le mot-clé `result`
+de telle manière que la valeur d'erreur soit propagé au code appellant.
 
-The one difference between the `match` expression from Listing 9-6 and what the
-question mark operator does is that when using the question mark operator,
-error values go through the `from` function defined in the `From` trait in the
-standard library. Many error types implement the `from` function to convert an
-error of one type into an error of another type. When used by the question mark
-operator, the call to the `from` function converts the error type that the
-question mark operator gets into the error type defined in the return type of
-the current function that we’re using `?` in. This is useful when parts of a
-function might fail for many different reasons, but the function returns one
-error type that represents all the ways the function might fail. As long as
-each error type implements the `from` function to define how to convert itself
-to the returned error type, the question mark operator takes care of the
-conversion automatically.
+La seule différence entre l'expression `match` de l'entrée 9-6 et ce que
+l'opérateur point d'interrogation fait c'est que olorsque l'on utilise
+l'opérateur point d'interrogation, les valeurs d'erreur passent par la fonction
+`from` définie dans le trait `From` de la librairie standard. Beaucoup de types
+d'erreur implémentent la fonction `from` pour convertir une erreur d'un type
+vers une autre erreur d'un autre type. Quand on utilise l'opérateur point
+d'interrogation, l'appel de la fonction `from` convertit le type d'erreur que
+que l'opérateur point d'interrogation obtient vers le type d'erreur défini dans
+le type d'erreur de la fonction actuelle où nous utilisons `?`. C'est utile
+lorsque des parties de la fonction peuvent échouer pour différentes raisons,
+mais que la fonction revoie un type d'erreur qui représente toutes les
+possibilités d'échec de la fonction. Du moment que chaque type d'erreur
+implémente la fonction `from` pour spécifier comment se convertir dans le type
+d'erreur retournée, l'opérateur point d'interrogation s'occupe de faire la
+conversion automatiquement.
 
-In the context of Listing 9-7, the `?` at the end of the `File::open` call will
-return the value inside an `Ok` to the variable `f`. If an error occurs, `?`
-will return early out of the whole function and give any `Err` value to the
-calling code. The same thing applies to the `?` at the end of the
-`read_to_string` call.
+Dans le cas de l'entrée 9-7, le `?` à la fin de l'appel à `File::open` va
+retourner la valeur à l'interieur d'un `Ok` à la variable `f`. Si une erreur
+survient, `?` va retourner prématurément une valeur `Err` au code appellant. La
+même chose se produira au `?` à ma fin de l'appel à `read_to_string`.
 
-The `?` eliminates a lot of boilerplate and makes this function’s
-implementation simpler. We could even shorten this code further by chaining
-method calls immediately after the `?` as shown in Listing 9-8:
+Le `?` épargne du code et facilite l'implémentation. Nous pouvons même encore
+plus raccourcir ce code en enchaînant immédiatement les appels aux méthodes
+après le `?` comme le montre l'entrée 9-8 :
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Nom du fichier : src/main.rs</span>
 
 ```rust
 use std::io;
@@ -444,28 +445,31 @@ fn read_username_from_file() -> Result<String, io::Error> {
 }
 ```
 
-<span class="caption">Listing 9-8: Chaining method calls after the question
-mark operator</span>
+<span class="caption">Entrée 9-8: enchaîner les appels aux méthodes après
+l'opérateur point d'interrogation</span>
 
-We’ve moved the creation of the new `String` in `s` to the beginning of the
-function; that part hasn’t changed. Instead of creating a variable `f`, we’ve
-chained the call to `read_to_string` directly onto the result of
-`File::open("hello.txt")?`. We still have a `?` at the end of the
-`read_to_string` call, and we still return an `Ok` value containing the
-username in `s` when both `File::open` and `read_to_string` succeed rather than
-returning errors. The functionality is again the same as in Listing 9-6 and
-Listing 9-7; this is just a different, more ergonomic way to write it.
+Nous avons déplacé la création du nouveau `String` dans `s` au début de la
+fonction; cette partie n'a pas changée. Au lieu de créer la variable `f`, nous
+enchaînons dir'ectement l'appel à `read_to_string` sur le résultat de
+`File::open("hello.txt")?`. Nous avons toujours le `?` à la fin de l'appel à
+`read_to_string`, et nous retournons toujours une valeur `Ok` contennant le nom
+d'utilisateur dans `s` quand `File::open` et `read_to_string` réussissent tous
+les deux plutôt que de retourner des erreurs. Cette fonctionnalité fonctionne
+toujours que dans l'entrée 9-6 et l'entrée 9-7; c'est juste une façon
+différente et plus ergonomique de l'écrire.
 
-#### `?` Can Only Be Used in Functions That Return Result
+#### `?` ne peut être utilisé uniquement dans des fonctions qui retournent
+`Result`
 
-The `?` can only be used in functions that have a return type of `Result`,
-because it is defined to work in the same way as the `match` expression we
-defined in Listing 9-6. The part of the `match` that requires a return type of
-`Result` is `return Err(e)`, so the return type of the function must be a
-`Result` to be compatible with this `return`.
+Le `?` peut uniquement être utilisé dans des fonctions qui ont un type de
+retour `Result`, car il est défini pour fonctionner de la même manière que
+l'expression `match` que nous avons défini dans l'entrée 9-6. La partie du
+`match` qui nécessite un type de retour de `Result` est `return Err(e)`, donc
+le type de retour de cette fonction doit être `Result` pour être compatible
+avec ce `return`.
 
-Let’s look at what happens if we use `?` in the `main` function, which you’ll
-recall has a return type of `()`:
+Regardons ce que ce passe si nous utilisons `?` dans la fonction `main`, dont
+vous devriez vous rappeller qu'elle a un type de retour `()` :
 
 ```rust,ignore
 use std::fs::File;
@@ -475,7 +479,7 @@ fn main() {
 }
 ```
 
-When we compile this code, we get the following error message:
+Quand nous compilons ce code, nous obtenons le message d'erreur suivant :
 
 ```text
 error[E0277]: the `?` operator can only be used in a function that returns
@@ -492,12 +496,13 @@ error[E0277]: the `?` operator can only be used in a function that returns
   = note: required by `std::ops::Try::from_error`
 ```
 
-This error points out that we’re only allowed to use the question mark operator
-in a function that returns `Result`. In functions that don’t return `Result`,
-when you call other functions that return `Result`, you’ll need to use a
-`match` or one of the `Result` methods to handle it instead of using `?` to
-potentially propagate the error to the calling code.
+Cette erreur explique que nous sommes uniquement autorisés à utiliser
+l'opérateur point d'interrogation dans une fonction qui retourne `Result`. Dans
+des fonctions qui ne retournent pas `Result`, quand vous utilisez d'autres
+fonctions qui retournent `Result`, vous avez besoin d'utiliser `match` ou une
+des méthodes de `Result`pour gérer cela plutôt qu'utiliser `?` pour
+potentiellement propager l'erreur au code appellant.
 
-Now that we’ve discussed the details of calling `panic!` or returning `Result`,
-let’s return to the topic of how to decide which is appropriate to use in which
-cases.
+Maintenant que nous avons vu les détails pour utiliser `panic!` ou retourner
+`Result`, revenons sur au sujet de savoir lequel il conviens d'utiliser en
+fonction des cas.
