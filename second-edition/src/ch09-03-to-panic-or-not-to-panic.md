@@ -1,42 +1,47 @@
 ## To `panic!` or Not to `panic!`
 
-So how do you decide when you should `panic!` and when you should return
-`Result`? When code panics, there’s no way to recover. You could call `panic!`
-for any error situation, whether there’s a possible way to recover or not, but
-then you’re making the decision on behalf of the code calling your code that a
-situation is unrecoverable. When you choose to return a `Result` value, you
-give the calling code options rather than making the decision for it. The
-calling code could choose to attempt to recover in a way that’s appropriate for
-its situation, or it could decide that an `Err` value in this case is
-unrecoverable, so it can call `panic!` and turn your recoverable error into an
-unrecoverable one. Therefore, returning `Result` is a good default choice when
-you’re defining a function that might fail.
+Donc, comment décider quand on doit faire un `panic!` et quand nous devons
+retourner un `Result` ? Quand un code fait un panic, il n'y a pas de moyen de
+continuer l'exécution. Vous pouriez faire appel à `panic!` pour n'importe
+quelle situation d'erreur, peux importe s'il est possible de continuer
+l'exécution ou non, mais alors vous prenez la décision de tout arrêter à la
+place du code appelant. Quand vous choisissez de retourner une valeur `Result`,
+vous donnez plus de choix au code appelant plutôt que si vous preniez des
+décisions à sa place. Le code appelant peut choisir d'essayer de récupérer
+l'erreur de manière appropriée à cette situation, ou il peut décider que dans
+ce cas une valeur `Err` est irrécupérable, donc utiliser `panic!` et changer
+votre erreur récupérable en erreur irrécupérable. Ainsi, retourner `Result` est
+un bon choix par défaut quand vous construisez une fonction qui peux échouer.
 
-In a few situations it’s more appropriate to write code that panics instead of
-returning a `Result`, but they are less common. Let’s explore why it’s
-appropriate to panic in examples, prototype code, and tests; then in situations
-where you as a human can know a method won’t fail that the compiler can’t
-reason about; and conclude with some general guidelines on how to decide
-whether to panic in library code.
+Dans quelques situations, c'est plus approprié d'écrire du code qui fait un
+panic au lieu de retourner un `Result`, mais elles sont moins fréquentes.
+Voyons pourquoi ils est approprié pourquoi il est plus approprié de faire un
+panic dans des examples, des prototypes, et des tests; ensuite des situations
+où vous savez qu'en tant qu'humain qu'une méthode ne peux pas échouer mais que
+le compilateur n'a pas de raison de le faire; et nous alons conclure par
+quelques lignes conductrices générales sur comment décider s'il faut paniquer
+dans le code des librairies.
 
-### Examples, Prototype Code, and Tests Are All Places it’s Perfectly Fine to Panic
+### Les examples, prototypes, et les tests sont les endroit parfaits pour Panic
 
-When you’re writing an example to illustrate some concept, having robust error
-handling code in the example as well can make the example less clear. In
-examples, it’s understood that a call to a method like `unwrap` that could
-`panic!` is meant as a placeholder for the way that you’d want your application
-to handle errors, which can differ based on what the rest of your code is doing.
+Quand vous écrivez un example pour illustrer un concept, avoir un code de
+gestion des erreurs très résiliente peut rendre l'exemple moins claire. Dans
+les examples, il est courrant d'utiliser une méthode comme `unwrap` qui peut
+faire un `panic!` qui remplace le code de gestion de l'erreur que vous
+utiliseriez dans votre application, qui peux changer en fonction de ce que le
+reste de votre code va faire.
 
-Similarly, the `unwrap` and `expect` methods are very handy when prototyping,
-before you’re ready to decide how to handle errors. They leave clear markers in
-your code for when you’re ready to make your program more robust.
+De la même manière, les méthodes `unwrap` et `expect` sont très pratiques pour
+coder des prototypes, avant de décider comment gérer les erreurs. Ce sont des
+indicateurs claires dans votre code pour plus tard quand vous serez prêt à
+rendre votre code plus résilient aux échecs.
 
-If a method call fails in a test, we’d want the whole test to fail, even if
-that method isn’t the functionality under test. Because `panic!` is how a test
-is marked as a failure, calling `unwrap` or `expect` is exactly what should
-happen.
+Si l'appel à une méthode échoue dans un test, nous voulons que tout le test
+échoue, même si cette méthode n'est pas la fonctionnalité que nous testons.
+Parceque `panic!` est la manière de le marquer un échec, utiliser `unwrap` ou
+`expect` est exactement ce qui est nécessaire.
 
-### Cases When You Have More Information Than the Compiler
+### Les cas où vous avez plus d'informations que le compilateur
 
 It would also be appropriate to call `unwrap` when you have some other logic
 that ensures the `Result` will have an `Ok` value, but the logic isn’t
@@ -243,4 +248,3 @@ situations will make your code more reliable in the face of inevitable problems.
 Now that you’ve seen useful ways that the standard library uses generics with
 the `Option` and `Result` enums, we’ll talk about how generics work and how you
 can use them in your code in the next chapter.
-
