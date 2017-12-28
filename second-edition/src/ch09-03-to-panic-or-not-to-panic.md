@@ -43,14 +43,15 @@ Parceque `panic!` est la manière de le marquer un échec, utiliser `unwrap` ou
 
 ### Les cas où vous avez plus d'informations que le compilateur
 
-It would also be appropriate to call `unwrap` when you have some other logic
-that ensures the `Result` will have an `Ok` value, but the logic isn’t
-something the compiler understands. You’ll still have a `Result` value that you
-need to handle: whatever operation you’re calling still has the possibility of
-failing in general, even though it’s logically impossible in your particular
-situation. If you can ensure by manually inspecting the code that you’ll never
-have an `Err` variant, it’s perfectly acceptable to call `unwrap`. Here’s an
-example:
+Il peut parfois être approprié d'utiliser `unwrap` quand vous avez un code
+logique qui garanti que `Result` aura toujours une valeur de type `Ok`, mais
+que c'est une logique que le compilateur ne comprends pas. Vous travaillez
+toujours une valeur de type `Result` que vous devez gérer : quelque soit
+l'instruction que vous appelez, elle a toujours la possibilité d'échouer,
+même si dans ce cas particulier, c'est logiquement impossible. Si vous êtes
+sûr en inspectant le code manuellement que vous n'allez jamais obtenir une
+variante de `Err`, il est tout à fait acceptable d'utiliser `unwrap`. Voici un
+example :
 
 ```rust
 use std::net::IpAddr;
@@ -58,43 +59,48 @@ use std::net::IpAddr;
 let home: IpAddr = "127.0.0.1".parse().unwrap();
 ```
 
-We’re creating an `IpAddr` instance by parsing a hardcoded string. We can see
-that `127.0.0.1` is a valid IP address, so it’s acceptable to use `unwrap`
-here. However, having a hardcoded, valid string doesn’t change the return type
-of the `parse` method: we still get a `Result` value, and the compiler will
-still make us handle the `Result` as if the `Err` variant is still a
-possibility because the compiler isn’t smart enough to see that this string is
-always a valid IP address. If the IP address string came from a user rather
-than being hardcoded into the program, and therefore *did* have a possibility
-of failure, we’d definitely want to handle the `Result` in a more robust way
-instead.
+Nous créons une instance de `IpAddr` en parsant une chaine de caractères pure.
+Nous savons que `127.0.0.1` est une adresse IP valide, donc il est convenable
+d'utiliser `unwrap` ici. Toutefois, avoir une chaine de caractères valide,
+codée en dur ne change jamais le type de retour de la méthode `parse` : nous
+obtenons toujours une valeur de type `Result`, et le compilateur va nous faire
+gérer le `Result` comme si la variante `Err` est toujours probable car le
+compilateur n'est pas encore suffisamment intelligent pour analyser que cette
+chaine de caractères est toujours une adresse IP valide. Si le texte de
+l'adresse IP provient de l'utilisateur plutôt que d'être codé en dur dans le
+programme, et fait en sorte qu'il y a désormais une possibilité d'erreur, nous
+devrions gérer le `Result` de manière plus résiliente désormais.
 
-### Guidelines for Error Handling
+### Recommandations pour gérer les erreurs
 
-It’s advisable to have your code `panic!` when it’s possible that your code
-could end up in a bad state. In this context, bad state is when some
-assumption, guarantee, contract, or invariant has been broken, such as when
-invalid values, contradictory values, or missing values are passed to your
-code—plus one or more of the following:
+Il est recommandé de faire un `panic!` dans votre code lorsqu'il s'exécute dans
+de mauvaises conditions. Dans ce sens, les mauvaises conditions sont lorsque un
+postulat, une garantie, un contrat ou une invariance a été rompue, comme des
+valeurs invalides, contradictoires ou manquantes fournies à votre code, par un
+ou plusieurs des éléments suivants :
 
-* The bad state is not something that’s *expected* to happen occasionally.
-* Your code after this point needs to rely on not being in this bad state.
-* There’s not a good way to encode this information in the types you use.
+* Ces mauvaises conditions ne sont pas *prévues* pour surgir de temps en temps.
+* Après cette instruction, votre code a besoin de ne pas être dans ces
+mauvaises conditions.
+* Il n'y pas de bonne façon de coder ces informations dans les types que vous
+utilisez.
 
-If someone calls your code and passes in values that don’t make sense, the best
-choice might be to `panic!` and alert the person using your library to the bug
-in their code so they can fix it during development. Similarly, `panic!` is
-often appropriate if you’re calling external code that is out of your control,
-and it returns an invalid state that you have no way of fixing.
+Si quelqu'un utilise votre code et lui fournit des valeurs qui n'ont pas de
+sens, la meilleure des choses à faire et de faire un `panic!` et avertir
+le développeur de votre librairie du bogue dans leur code afin qu'il le règle
+pendant la phase de développement. De la même manière, `panic!` est parfois
+approprié si vous appellez un code externe dont vous n'avez pas la main dessus,
+et qu'il retourne de mauvaises conditions que vous ne pouvez pas corriger.
 
-When a bad state is reached, but it’s expected to happen no matter how well you
-write your code, it’s still more appropriate to return a `Result` rather than
-making a `panic!` call. Examples of this include a parser being given malformed
-data or an HTTP request returning a status that indicates you have hit a rate
-limit. In these cases, you should indicate that failure is an expected
-possibility by returning a `Result` to propagate these bad states upwards so
-the calling code can decide how to handle the problem. To `panic!` wouldn’t be
-the best way to handle these cases.
+Lorsque les condtions sont mauvaises, mais qui est prévu que cela arrive peu
+importe la façon que vous écrivez votre code, il est plus aproprié de retourner
+un `Result` plutôt que faire appel à `panic!`. Il peut s'agir par exemple d'un
+un parseur qui reçoit des données éronnées, ou une requête HTTP qui renvoit un
+statut qui indique que vous avez atteint une limite de débit. Dans ce cas, vous
+devriez que cet échec est un possibilité en retournant un `Result` pour
+propager ces mauvaises conditions vers le haut pour que le code appelant puisse
+décider quoi faire pour gérer le problème. Faire un `panic!` ne serait pas la
+manière la approprié ici pour gérer ces problèmes.
 
 When your code performs operations on values, your code should verify the
 values are valid first, and `panic!` if the values aren’t valid. This is mostly
