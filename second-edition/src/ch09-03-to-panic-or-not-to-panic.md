@@ -102,35 +102,39 @@ propager ces mauvaises conditions vers le haut pour que le code appelant puisse
 décider quoi faire pour gérer le problème. Faire un `panic!` ne serait pas la
 manière la approprié ici pour gérer ces problèmes.
 
-When your code performs operations on values, your code should verify the
-values are valid first, and `panic!` if the values aren’t valid. This is mostly
-for safety reasons: attempting to operate on invalid data can expose your code
-to vulnerabilities. This is the main reason the standard library will `panic!`
-if you attempt an out-of-bounds memory access: trying to access memory that
-doesn’t belong to the current data structure is a common security problem.
-Functions often have *contracts*: their behavior is only guaranteed if the
-inputs meet particular requirements. Panicking when the contract is violated
-makes sense because a contract violation always indicates a caller-side bug,
-and it’s not a kind of error you want the calling code to have to explicitly
-handle. In fact, there’s no reasonable way for calling code to recover: the
-calling *programmers* need to fix the code. Contracts for a function,
-especially when a violation will cause a panic, should be explained in the API
-documentation for the function.
+Lorsque votre code effecture des opérations sur des valeurs, votre code devrait
+d'abord vérifier que ces valeurs sont valides, et faire un `panic!` si les
+valeurs ne sont sont pas correctes. C'est pour essentiellements des raisons de
+sécurité : tenter de travailler avec des données invalides peut exposer votre
+code à des vulnérabilités. C'est la raison principale pour laquelle la
+librairie standard va faire un `panic!` si vous essayez d'accéder d'accéder à
+la mémoire en dehors des limites : essayer d'accéder à de la mémoire qui n'a
+pas de rapport avec la structure des données actuelle est un problème de
+sécurité courant. Les fonctions ont parfois des *contrats* : leur comportement
+est garanti uniquement si les données d'entrée remplissent des conditions
+particulières. Faire un panic quand le contrat est violé est sensé car une
+violation de contrat indique toujours un bogue du coté de l'appelant, et ce
+n'est le genre d'erreur que vous voulez que le code appelant gère
+explicitement. En fait, il n'y a aucun moyen raisonable de récupérer le code
+d'appel : le *développeur* du code appelant doit corriger le code. Les contrats
+de foncion, en particulier quand une violation va faire un panic, doivent être
+expliqués dans la documentation de l'API pour la fonction.
 
-However, having lots of error checks in all of your functions would be verbose
-and annoying. Fortunately, you can use Rust’s type system (and thus the type
-checking the compiler does) to do many of the checks for you. If your function
-has a particular type as a parameter, you can proceed with your code’s logic
-knowing that the compiler has already ensured you have a valid value. For
-example, if you have a type rather than an `Option`, your program expects to
-have *something* rather than *nothing*. Your code then doesn’t have to handle
-two cases for the `Some` and `None` variants: it will only have one case for
-definitely having a value. Code trying to pass nothing to your function won’t
-even compile, so your function doesn’t have to check for that case at runtime.
-Another example is using an unsigned integer type like `u32`, which ensures the
-parameter is never negative.
+Cependant, avoir beaucoup de vérifications d'erreurs dans toutes vos fonctions
+risque d'être verbeux et ennuyeux. Heureusement, vous pouvez utiliser le
+système de type de Rust (et donc la vérification de type du compilateur) pour
+faire une partie des vérifcations à votre place. Si votre fonction un paramètre
+d'un type particulier, vous pouvez continuer à écrire votre code en sachant que
+le compilateur s'est déjà assuré que vous avez une valeur valide. Par exemple,
+si vous avez un type de valeur plutôt que un `Option`, votre programme
+s'attends d'avoir *autre chose* plutôt que *rien*. Votre code n'a donc pas à
+gérer les deux cas de variantes `Some` et `None` : il n'aura qu'un seul cas
+pour avoir une valeur. Du code qui essaye de ne rien fournir à votre fonction
+ne compilera même pas, donc votre fonction n'a pas besoin de vérifier ce cas-ci
+lors de l'exécution. Un autre exemple est d'utiliser un type unsigned integer
+comme `u32`, qui garantit que le paramètre n'est jamais négatif.
 
-### Creating Custom Types for Validation
+### Créer des types personnalisés pour la Validation
 
 Let’s take the idea of using Rust’s type system to ensure we have a valid value
 one step further and look at creating a custom type for validation. Recall the
