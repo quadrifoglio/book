@@ -42,46 +42,47 @@ strings.
 >
 > The stack is fast because of the way it accesses the data: it never has to
 > search for a place to put new data or a place to get data from because that
-> place is always the top. Another property that makes the stack fast is that all
-> data on the stack must take up a known, fixed size.
+> place is always the top. Another property that makes the stack fast is that
+> all data on the stack must take up a known, fixed size.
 >
-> For data with a size unknown to us at compile time or a size that might change,
-> we can store data on the heap instead. The heap is less organized: when we put
-> data on the heap, we ask for some amount of space. The operating system finds
-> an empty spot somewhere in the heap that is big enough, marks it as being in
-> use, and returns to us a pointer to that location. This process is called
-> *allocating on the heap*, and sometimes we abbreviate the phrase as just
-> “allocating.” Pushing values onto the stack is not considered allocating.
-> Because the pointer is a known, fixed size, we can store the pointer on the
-> stack, but when we want the actual data, we have to follow the pointer.
+> For data with a size unknown to us at compile time or a size that might
+> change, we can store data on the heap instead. The heap is less organized:
+> when we put data on the heap, we ask for some amount of space. The operating
+> system finds an empty spot somewhere in the heap that is big enough, marks it
+> as being in use, and returns to us a *pointer*, which is the address of that
+> location. This process is called *allocating on the heap*, and sometimes we
+> abbreviate the phrase as just “allocating.” Pushing values onto the stack is
+> not considered allocating. Because the pointer is a known, fixed size, we can
+> store the pointer on the stack, but when we want the actual data, we have to
+> follow the pointer.
 >
 > Think of being seated at a restaurant. When you enter, you state the number of
-> people in your group, and the staff finds an empty table that fits everyone and
-> leads you there. If someone in your group comes late, they can ask where you’ve
-> been seated to find you.
+> people in your group, and the staff finds an empty table that fits everyone
+> and leads you there. If someone in your group comes late, they can ask where
+> you’ve been seated to find you.
 >
 > Accessing data in the heap is slower than accessing data on the stack because
-> we have to follow a pointer to get there. Contemporary processors are faster if
-> they jump around less in memory. Continuing the analogy, consider a server at a
-> restaurant taking orders from many tables. It’s most efficient to get all the
-> orders at one table before moving on to the next table. Taking an order from
-> table A, then an order from table B, then one from A again, and then one from B
-> again would be a much slower process. By the same token, a processor can do its
-> job better if it works on data that’s close to other data (as it is on the
-> stack) rather than farther away (as it can be on the heap). Allocating a large
-> amount of space on the heap can also take time.
+> we have to follow a pointer to get there. Contemporary processors are faster
+> if they jump around less in memory. Continuing the analogy, consider a server
+> at a restaurant taking orders from many tables. It’s most efficient to get
+> all the orders at one table before moving on to the next table. Taking an
+> order from table A, then an order from table B, then one from A again, and
+> then one from B again would be a much slower process. By the same token, a
+> processor can do its job better if it works on data that’s close to other
+> data (as it is on the stack) rather than farther away (as it can be on the
+> heap). Allocating a large amount of space on the heap can also take time.
 >
-> When our code calls a function, the values passed into the function (including,
-> potentially, pointers to data on the heap) and the function’s local variables
-> get pushed onto the stack. When the function is over, those values get popped
-> off the stack.
+> When our code calls a function, the values passed into the function
+> (including, potentially, pointers to data on the heap) and the function’s
+> local variables get pushed onto the stack. When the function is over, those
+> values get popped off the stack.
 >
-> Keeping track of what parts of code are using what data on the heap, minimizing
-> the amount of duplicate data on the heap, and cleaning up unused data on the
-> heap so we don’t run out of space are all problems that ownership addresses.
-> Once you understand ownership, you won’t need to think about the stack and the
-> heap very often, but knowing that managing heap data is why ownership exists
-> can help explain why it works the way it does.
+> Keeping track of what parts of code are using what data on the heap,
+> minimizing the amount of duplicate data on the heap, and cleaning up unused
+> data on the heap so we don’t run out of space are all problems that ownership
+> addresses. Once you understand ownership, you won’t need to think about the
+> stack and the heap very often, but knowing that managing heap data is why
+> ownership exists can help explain why it works the way it does.
 >
 <!-- PROD: END BOX -->
 
@@ -139,9 +140,9 @@ understanding by introducing the `String` type.
 ### The `String` Type
 
 To illustrate the rules of ownership, we need a data type that is more complex
-than the ones we covered in Chapter 3. All the data types we’ve looked at
-previously are stored on the stack and popped off the stack when their scope is
-over, but we want to look at data that is stored on the heap and explore how
+than the ones we covered in Chapter 3. The types covered in the “Data Types”
+section are all stored on the stack and popped off the stack when their scope
+is over, but we want to look at data that is stored on the heap and explore how
 Rust knows when to clean up that data.
 
 We’ll use `String` as the example here and concentrate on the parts of `String`
@@ -232,7 +233,7 @@ of scope, Rust calls a special function for us. This function is called `drop`,
 and it’s where the author of `String` can put the code to return the memory.
 Rust calls `drop` automatically at the closing `}`.
 
-> Note: In C++, this pattern of deallocating resources at the end of an item's
+> Note: In C++, this pattern of deallocating resources at the end of an item’s
 > lifetime is sometimes called *Resource Acquisition Is Initialization (RAII)*.
 > The `drop` function in Rust will be familiar to you if you’ve used RAII
 > patterns.
@@ -273,14 +274,14 @@ it works would be the same: that is, the second line would make a copy of the
 value in `s1` and bind it to `s2`. But this isn’t quite what happens.
 
 To explain this more thoroughly, let’s look at what `String` looks like under
-the covers in Figure 4-3. A `String` is made up of three parts, shown on the
+the covers in Figure 4-1. A `String` is made up of three parts, shown on the
 left: a pointer to the memory that holds the contents of the string, a length,
 and a capacity. This group of data is stored on the stack. On the right is the
 memory on the heap that holds the contents.
 
 <img alt="String in memory" src="img/trpl04-01.svg" class="center" style="width: 50%;" />
 
-<span class="caption">Figure 4-3: Representation in memory of a `String`
+<span class="caption">Figure 4-1: Representation in memory of a `String`
 holding the value `"hello"` bound to `s1`</span>
 
 The length is how much memory, in bytes, the contents of the `String` is
@@ -292,26 +293,26 @@ the capacity.
 When we assign `s1` to `s2`, the `String` data is copied, meaning we copy the
 pointer, the length, and the capacity that are on the stack. We do not copy the
 data on the heap that the pointer refers to. In other words, the data
-representation in memory looks like Figure 4-4.
+representation in memory looks like Figure 4-2.
 
 <img alt="s1 and s2 pointing to the same value" src="img/trpl04-02.svg" class="center" style="width: 50%;" />
 
-<span class="caption">Figure 4-4: Representation in memory of the variable `s2`
+<span class="caption">Figure 4-2: Representation in memory of the variable `s2`
 that has a copy of the pointer, length, and capacity of `s1`</span>
 
-The representation does *not* look like Figure 4-5, which is what memory would
+The representation does *not* look like Figure 4-3, which is what memory would
 look like if Rust instead copied the heap data as well. If Rust did this, the
 operation `s2 = s1` could potentially be very expensive in terms of runtime
 performance if the data on the heap was large.
 
 <img alt="s1 and s2 to two places" src="img/trpl04-03.svg" class="center" style="width: 50%;" />
 
-<span class="caption">Figure 4-5: Another possibility of what `s2 = s1` might
+<span class="caption">Figure 4-3: Another possibility of what `s2 = s1` might
 do if Rust copied the heap data as well</span>
 
 Earlier, we said that when a variable goes out of scope, Rust automatically
 calls the `drop` function and cleans up the heap memory for that variable. But
-Figure 4-4 shows both data pointers pointing to the same location. This is a
+Figure 4-2 shows both data pointers pointing to the same location. This is a
 problem: when `s2` and `s1` go out of scope, they will both try to free the
 same memory. This is known as a *double free* error and is one of the memory
 safety bugs we mentioned previously. Freeing memory twice can lead to memory
@@ -321,7 +322,7 @@ To ensure memory safety, there’s one more detail to what happens in this
 situation in Rust. Instead of trying to copy the allocated memory, Rust
 considers `s1` to no longer be valid and therefore, Rust doesn’t need to free
 anything when `s1` goes out of scope. Check out what happens when you try to
-use `s1` after `s2` is created:
+use `s1` after `s2` is created, it won’t work:
 
 ```rust,ignore
 let s1 = String::from("hello");
@@ -335,15 +336,16 @@ invalidated reference:
 
 ```text
 error[E0382]: use of moved value: `s1`
- --> src/main.rs:4:27
+ --> src/main.rs:5:28
   |
 3 |     let s2 = s1;
   |         -- value moved here
-4 |     println!("{}, world!", s1);
+4 |
+5 |     println!("{}, world!", s1);
   |                            ^^ value used here after move
   |
-  = note: move occurs because `s1` has type `std::string::String`,
-which does not implement the `Copy` trait
+  = note: move occurs because `s1` has type `std::string::String`, which does
+  not implement the `Copy` trait
 ```
 
 If you’ve heard the terms “shallow copy” and “deep copy” while working with
@@ -351,11 +353,11 @@ other languages, the concept of copying the pointer, length, and capacity
 without copying the data probably sounds like a shallow copy. But because Rust
 also invalidates the first variable, instead of calling this a shallow copy,
 it’s known as a *move*. Here we would read this by saying that `s1` was *moved*
-into `s2`. So what actually happens is shown in Figure 4-6.
+into `s2`. So what actually happens is shown in Figure 4-4.
 
 <img alt="s1 moved to s2" src="img/trpl04-04.svg" class="center" style="width: 50%;" />
 
-<span class="caption">Figure 4-6: Representation in memory after `s1` has been
+<span class="caption">Figure 4-4: Representation in memory after `s1` has been
 invalidated</span>
 
 That solves our problem! With only `s2` valid, when it goes out of scope, it
@@ -382,7 +384,7 @@ println!("s1 = {}, s2 = {}", s1, s2);
 ```
 
 This works just fine and is how you can explicitly produce the behavior shown
-in Figure 4-5, where the heap data *does* get copied.
+in Figure 4-3, where the heap data *does* get copied.
 
 When you see a call to `clone`, you know that some arbitrary code is being
 executed and that code may be expensive. It’s a visual indicator that something
@@ -426,7 +428,8 @@ be sure, but as a general rule, any group of simple scalar values can be
 `Copy`. Here are some of the types that are `Copy`:
 
 * All the integer types, like `u32`.
-* The boolean type, `bool`, with values `true` and `false`.
+* The Boolean type, `bool`, with values `true` and `false`.
+* The character type, `char`.
 * All the floating point types, like `f64`.
 * Tuples, but only if they contain types that are also `Copy`. `(i32, i32)` is
 `Copy`, but `(i32, String)` is not.
@@ -435,7 +438,7 @@ be sure, but as a general rule, any group of simple scalar values can be
 
 The semantics for passing a value to a function are similar to assigning a
 value to a variable. Passing a variable to a function will move or copy, just
-like assignment. Listing 4-7 has an example with some annotations showing where
+like assignment. Listing 4-3 has an example with some annotations showing where
 variables go into and out of scope:
 
 <span class="filename">Filename: src/main.rs</span>
@@ -446,6 +449,7 @@ fn main() {
 
     takes_ownership(s);             // s's value moves into the function...
                                     // ... and so is no longer valid here.
+
     let x = 5;                      // x comes into scope.
 
     makes_copy(x);                  // x would move into the function,
@@ -465,7 +469,7 @@ fn makes_copy(some_integer: i32) { // some_integer comes into scope.
 } // Here, some_integer goes out of scope. Nothing special happens.
 ```
 
-<span class="caption">Listing 4-7: Functions with ownership and scope
+<span class="caption">Listing 4-3: Functions with ownership and scope
 annotated</span>
 
 If we tried to use `s` after the call to `takes_ownership`, Rust would throw a
@@ -476,7 +480,7 @@ the ownership rules prevent you from doing so.
 ### Return Values and Scope
 
 Returning values can also transfer ownership. Here’s an example with similar
-annotations to those in Listing 4-7:
+annotations to those in Listing 4-3:
 
 <span class="filename">Filename: src/main.rs</span>
 

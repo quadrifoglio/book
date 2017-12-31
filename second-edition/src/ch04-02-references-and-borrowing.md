@@ -31,11 +31,16 @@ function return value is gone. Second, note that we pass `&s1` into
 `String`.
 
 These ampersands are *references*, and they allow you to refer to some value
-without taking ownership of it. Figure 4-8 shows a diagram.
+without taking ownership of it. Figure 4-5 shows a diagram.
 
 <img alt="&String s pointing at String s1" src="img/trpl04-05.svg" class="center" />
 
-<span class="caption">Figure 4-8: `&String s` pointing at `String s1`</span>
+<span class="caption">Figure 4-5: `&String s` pointing at `String s1`</span>
+
+> Note: The opposite of referencing by using `&` is *dereferencing*, which is
+> accomplished with the dereference operator, `*`. We’ll see some uses of the
+> dereference operator in Chapter 8 and discuss details of dereferencing in
+> Chapter 15.
 
 Let’s take a closer look at the function call here:
 
@@ -63,7 +68,7 @@ fn calculate_length(s: &String) -> usize { // s is a reference to a String
 ```
 
 The scope in which the variable `s` is valid is the same as any function
-parameter's scope, but we don’t drop what the reference points to when it goes
+parameter’s scope, but we don’t drop what the reference points to when it goes
 out of scope because we don’t have ownership. Functions that have references as
 parameters instead of the actual values mean we won’t need to return the values
 in order to give back ownership, since we never had ownership.
@@ -73,7 +78,7 @@ if a person owns something, you can borrow it from them. When you’re done, you
 have to give it back.
 
 So what happens if we try to modify something we’re borrowing? Try the code in
-Listing 4-9. Spoiler alert: it doesn’t work!
+Listing 4-4. Spoiler alert: it doesn’t work!
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -89,16 +94,18 @@ fn change(some_string: &String) {
 }
 ```
 
-<span class="caption">Listing 4-9: Attempting to modify a borrowed value</span>
+<span class="caption">Listing 4-4: Attempting to modify a borrowed value</span>
 
 Here’s the error:
 
 ```text
-error: cannot borrow immutable borrowed content `*some_string` as mutable
+error[E0596]: cannot borrow immutable borrowed content `*some_string` as mutable
  --> error.rs:8:5
   |
+7 | fn change(some_string: &String) {
+  |                        ------- use `&mut String` here to make mutable
 8 |     some_string.push_str(", world");
-  |     ^^^^^^^^^^^
+  |     ^^^^^^^^^^^ cannot borrow as mutable
 ```
 
 Just as variables are immutable by default, so are references. We’re not
@@ -106,7 +113,7 @@ allowed to modify something we have a reference to.
 
 ### Mutable References
 
-We can fix the error in the code from Listing 4-9 with just a small tweak:
+We can fix the error in the code from Listing 4-4 with just a small tweak:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -158,7 +165,7 @@ something that new Rustaceans struggle with, because most languages let you
 mutate whenever you’d like. The benefit of having this restriction is that Rust
 can prevent data races at compile time.
 
-A *data race* is a particular type of race condition in which these three
+A *data race* is similar to a race condition and happens when these three
 behaviors occur:
 
 1. Two or more pointers access the same data at the same time.
@@ -231,7 +238,8 @@ never be dangling references: if we have a reference to some data, the compiler
 will ensure that the data will not go out of scope before the reference to the
 data does.
 
-Let’s try to create a dangling reference:
+Let’s try to create a dangling reference, which Rust will prevent with a
+compile-time error:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -254,13 +262,11 @@ error[E0106]: missing lifetime specifier
  --> dangle.rs:5:16
   |
 5 | fn dangle() -> &String {
-  |                ^^^^^^^
+  |                ^ expected lifetime parameter
   |
-  = help: this function's return type contains a borrowed value, but there is no
-    value for it to be borrowed from
+  = help: this function's return type contains a borrowed value, but there is
+  no value for it to be borrowed from
   = help: consider giving it a 'static lifetime
-
-error: aborting due to previous error
 ```
 
 This error message refers to a feature we haven’t covered yet: *lifetimes*.
