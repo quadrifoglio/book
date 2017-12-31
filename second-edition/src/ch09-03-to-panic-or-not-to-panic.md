@@ -136,20 +136,22 @@ comme `u32`, qui garantit que le paramètre n'est jamais négatif.
 
 ### Créer des types personnalisés pour la Validation
 
-Let’s take the idea of using Rust’s type system to ensure we have a valid value
-one step further and look at creating a custom type for validation. Recall the
-guessing game in Chapter 2 where our code asked the user to guess a number
-between 1 and 100. We never validated that the user’s guess was between those
-numbers before checking it against our secret number; we only validated that
-the guess was positive. In this case, the consequences were not very dire: our
-output of “Too high” or “Too low” would still be correct. It would be a useful
-enhancement to guide the user toward valid guesses and have different behavior
-when a user guesses a number that’s out of range versus when a user types, for
-example, letters instead.
+Allons plus loin dans l'idée d'utiliser le système de types de Rust pour
+assurer d'avoir une valeur valide en créant un type personnalisé pour
+validation. Souvenez-vous du jeu du plus ou du moins du Chapitre 2 où notre
+code demandait à l'utilisateur de deviner un nombre entre 1 et 100. Nous
+n'avons jamais validé que le nombre fourni par l'utilisateur était entre ces
+nombres avant de le comparer à notre nombre secret; nous avons seulement validé
+que le nombre était positif. Dans ce cas, les conséquences ne sont pas très
+graves : notre resultat "Too high" ou "Too low" sera toujours correct. Ce
+serait une amélioration utile pour guider les suppositions de l'utilisateur
+vers des valeurs valides et d'avoir différents comportements quand un
+utilisateur propose un nombre en dehors des limites versus quand un utilisateur
+renseigne, par exemple, des lettres à la place.
 
-One way to do this would be to parse the guess as an `i32` instead of only a
-`u32` to allow potentially negative numbers, and then add a check for the
-number being in range, like so:
+Une façon de faire cela serait de faire un parse du nombre rensigné en un `i32`
+plutôt que seulement un `u32` pour permettre des potentiels nombres négatifs,
+et ensuite vérifier que le nombre est dans la plage autorisée, comme ceci :
 
 ```rust,ignore
 loop {
@@ -170,23 +172,25 @@ loop {
 }
 ```
 
-The `if` expression checks whether our value is out of range, tells the user
-about the problem, and calls `continue` to start the next iteration of the loop
-and ask for another guess. After the `if` expression, we can proceed with the
-comparisons between `guess` and the secret number knowing that `guess` is
-between 1 and 100.
+L'expression du `if` vérifie si nous valeur est en dehors des limites, et
+informe l'utilisateur du problème, et utilise `continue` pour passer à la
+prochaine itération de la boucle et demander un nouveau nombre à deviner. Après
+l'expression `if`, nous pouvons continuer avec la comparaison entre `guess` et
+le nombre secret en sachant que `guess` est entre 1 et 100.
 
-However, this is not an ideal solution: if it was absolutely critical that the
-program only operated on values between 1 and 100, and it had many functions
-with this requirement, it would be tedious (and potentially impact performance)
-to have a check like this in every function.
+Cependant, ce n'est pas une solution idéale : si c'était absolument critique
+que le programme travaille avec des valeurs entre 1 et 100, et qu'il aurait de
+nombreuses fonctions qui exige cela, cela pourait être fastidieux (et cela
+impacterait potentiellement la performance) de faire une validation comme
+celle-ci dans chaque fonction.
 
-Instead, we can make a new type and put the validations in a function to create
-an instance of the type rather than repeating the validations everywhere. That
-way, it’s safe for functions to use the new type in their signatures and
-confidently use the values they receive. Listing 9-9 shows one way to define a
-`Guess` type that will only create an instance of `Guess` if the `new` function
-receives a value between 1 and 100:
+A la place, nous pourrions construire un nouveau type et y intégrer les
+validations dans une fonction pour créer une instance de ce type plutôt que de
+répliquer les validations partout. De cette manière, c'est plus sûr pour les
+fonctions d'utiliser le nouveau type dans leurs signatures et d'utiliser avec
+confiance les valeurs qu'ils reçoivent. L'entrée 9-9 montre une façon de
+définir un type `Guess` qui ne créera une instance de `Guess` uniquement si la
+fonction `new` reçoit une valeur entre 1 et 100 :
 
 ```rust
 pub struct Guess {
@@ -210,51 +214,57 @@ impl Guess {
 }
 ```
 
-<span class="caption">Listing 9-9: A `Guess` type that will only continue with
-values between 1 and 100</span>
+<span class="caption">Entrée 9-9: un type `Guess` qui ne va continuer
+uniquement su la valeur est entre 1 et 100</span>
 
-First, we define a struct named `Guess` that has a field named `value` that
-holds a `u32`. This is where the number will be stored.
+Premièrement, nous définissons un struct qui s'appelle `Guess` qui a un champ
+`value` qui stocke un `u32`. C'est la que le nombre sera stocké.
 
-Then we implement an associated function named `new` on `Guess` that creates
-instances of `Guess` values. The `new` function is defined to have one
-parameter named `value` of type `u32` and to return a `Guess`. The code in the
-body of the `new` function tests `value` to make sure it’s between 1 and 100.
-If `value` doesn’t pass this test, we make a `panic!` call, which will alert
-the programmer who is writing the calling code that they have a bug they need
-to fix, because creating a `Guess` with a `value` outside this range would
-violate the contract that `Guess::new` is relying on. The conditions in which
-`Guess::new` might panic should be discussed in its public-facing API
-documentation; we’ll cover documentation conventions indicating the possibility
-of a `panic!` in the API documentation that you create in Chapter 14. If
-`value` does pass the test, we create a new `Guess` with its `value` field set
-to the `value` parameter and return the `Guess`.
+Ensuite, nous ajoutons un fonction associée `new` sur `Guess` qui crée des
+instances de `Guess`. La fonction `new` est conçue pour avoir un paramètre
+`value` de type `u32` et de retourner un `Guess`. Le code dans le corps de la
+fonction `new` vérifie `value` pour s'assurer que c'est bien entre 1 et 100.
+Si `value` ne échoue à ce test, nous faisons un `panic!`, qui alertera le
+développeur qui écrit le code appellant qu'ils ont un bogue qu'ils ont besoin
+de régler, car créer un `Guess` avec un `value` en dehors de cette plage va
+violer le contrat sur lequel `Guess::new` s'appuie. Les conditions dans
+lesquels `Guess::new` va faire un panic devrait être explicité dans sa
+documentationsur l'API ouverte au public; nous verrons les conventions de
+documentation pour indiquer un `panic!` lorsque vous créerez votre
+documentation d'API au Chapitre 14. Si `value` réussit le test, nous allons
+créer un nouveau `Guess` avec son champ `value` assigné au paramètre `value`
+et retourner le `Guess`.
 
-Next, we implement a method named `value` that borrows `self`, doesn’t have any
-other parameters, and returns a `u32`. This is a kind of method sometimes
-called a *getter*, because its purpose is to get some data from its fields and
-return it. This public method is necessary because the `value` field of the
-`Guess` struct is private. It’s important that the `value` field is private so
-code using the `Guess` struct is not allowed to set `value` directly: code
-outside the module *must* use the `Guess::new` function to create an instance
-of `Guess`, which ensures there’s no way for a `Guess` to have a `value` that
-hasn’t been checked by the conditions in the `Guess::new` function.
+Ensuite, nous implémentons une méthode `value` qui emprunte `self`, qui n'a
+aucun autre paramètre, et retourne un `u32`. C'est un type de méthode qui est
+parfois appellé un *getter*, car sa fonction est de récupérer (NdT: get) des
+données des champs et de les retourner. Cette méthode publique est nécessaire
+car le champ `value` du stuct `Guess` est privé. C'est important que le champ
+`value` soit privé pour que le code qui utilise la struct `Guess` ne puisse pas
+assigner `value` directement : le code en dehors du module *doit* utiliser la
+fonction `Guess::new` pour créer une instance de `Guess`, qui s'assure qu'il
+n'y a pas de façon pour un `Guess` d'avoir un `value` qui n'a pas été vérifié
+par les fonctions dans la fonction `Guess:new`.
 
-A function that has a parameter or returns only numbers between 1 and 100 could
-then declare in its signature that it takes or returns a `Guess` rather than a
-`u32` and wouldn’t need to do any additional checks in its body.
+Une fonction qui a un paramètre ou qui retourne des nombres uniquement entre 1
+et 100 peut ensuite utiliser dans sa signature qu'elle prend en paramètre ou
+retourne un `Guess` plutôt qu'un `u32` et n'aura pas besoin de faire des
+vérifications supplémentaires dans son code.
 
-## Summary
+## Résumé
 
-Rust’s error handling features are designed to help you write more robust code.
-The `panic!` macro signals that your program is in a state it can’t handle and
-lets you tell the process to stop instead of trying to proceed with invalid or
-incorrect values. The `Result` enum uses Rust’s type system to indicate that
-operations might fail in a way that your code could recover from. You can use
-`Result` to tell code that calls your code that it needs to handle potential
-success or failure as well. Using `panic!` and `Result` in the appropriate
-situations will make your code more reliable in the face of inevitable problems.
+Les fonctionnalités de gestion d'erreurs de Rust sont conçues pour vous aider à
+écrire du code plus résilient. La macro `panic!` signale que votre programme
+fonctionne dans ce mauvaises conditions qu'il ne peut pas gérer et vous permet
+de dire au processus de s'arrêter au lieu d'essayer de continuer avec des
+valeurs invalides ou incorrectes. Le enum `Result` utilise le système de type
+de Rust pour avertir que l'opération peut échouer d'une manière que votre code
+pourrait corriger. Vous pouvez utiliser `Result` pour dire au code qui appelle
+votre code qu'il a besoin de gérer le résultat et aussi les potentielles
+erreurs. Utiliser `panic!` et `Result` de manière appropriée va faire de votre
+code plus fiable face à des problèmes inévitables.
 
-Now that you’ve seen useful ways that the standard library uses generics with
-the `Option` and `Result` enums, we’ll talk about how generics work and how you
-can use them in your code in the next chapter.
+Maintenant que vous avez vu les pratiques utiles que la librairie standard
+utilise avec les enum `Option` et `Result`, nous allons voir au chapitre
+suivant comment les génériques fonctionnent et comment vous pouvez les utiliser
+dans votre code.
