@@ -200,15 +200,16 @@ essayons d'ouvrir n'existe pas encore.
 
 La condition `if error.kind() == ErrorKind::NotFound` est ce qu'on appelle un
 *match guard* : c'est une condition supplémentaire sur une branche d'un bloc
-`match` qui raffine le pattern d'une branche. Cette condition doit être valide
-pour que le code de cette branche soit exécutée; autrement, le pattern matching
-s'orientera sur la branche suivante dans le `match`. ** (TODO) The `ref` in the
-pattern is needed so `error` is not moved into the guard condition but is
-merely referenced by it.** La raison pour laquelle `ref` est utilisé pour
-stocker une référence dans le pattern plutôt que un `&` va être expliquée en
-détails dans le Chapitre 18. Pour faire court, dans le cas d'un pattern, `&`
-est associé à une référence et nous retourne sa valeur, mais `ref` associe une
-valeur et nous donne une référence vers elle.
+`match` qui raffine le pattern d'une branche. Cette condition doit être vraie
+pour que le code de cette branche soit exécuté; autrement, le pattern matching
+s'orientera sur la branche suivante dans le `match`. Le `ref` dans le pattern
+est requis pour que `error` ne soit pas déplacée dans dans le conditon du match
+guard mais qu'elle soit simplement référencée par elle (NdT: vérifier la trad).
+La raison pour laquelle `ref` est utilisé pour stocker une référence dans le
+pattern plutôt que un `&` va être expliquée en détails dans le Chapitre 18.
+Pour faire court, dans le cas d'un pattern, `&` est associé à une référence et
+nous retourne sa valeur, mais `ref` associe une valeur et nous donne une
+référence vers elle.
 
 Le cas que nous voulons vérifier dans le match guard est lorsque la valeur
 retournée par `error.kind()` est la variante de `NotFound` de l'enum
