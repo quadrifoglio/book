@@ -1,35 +1,41 @@
-## What Is Ownership?
+## Qu'est-ce que l'appropriation ?
 
-Rust’s central feature is *ownership*. Although the feature is straightforward
-to explain, it has deep implications for the rest of the language.
+La fonctionnalité centrale de Rust est *l'appropriation*. Bien que cette
+fonctionnalité soit simple à expliquer, elle a de profondes conséquences sur le
+reste du langage.
 
-All programs have to manage the way they use a computer’s memory while running.
-Some languages have garbage collection that constantly looks for no longer used
-memory as the program runs; in other languages, the programmer must explicitly
-allocate and free the memory. Rust uses a third approach: memory is managed
-through a system of ownership with a set of rules that the compiler checks at
-compile time. No run-time costs are incurred for any of the ownership features.
+Tous les programmes doivent gérer la façon dont ils utilisent la mémoire
+(vive, RAM) de l'ordinateur lorsqu'ils s'exécutent. Certains langages ont un
+ramasse-miettes qui scrute constamment la mémoire qui n'est plus utilisée par
+le programme pendant qu'il tourne; dans d'autres langages, le développeur doit
+explicitement alouer et libérer la mémoire. Rust aborde une troisième
+approche : la mémoire est gérée avec un système d'appropriation avec un jeu de
+règles que le compilateur vérifie au moment de la compilation. Il n'y a pas
+d'impact sur les performances au moment de l'exécution pour toutes les
+fonctionnalités d'appropriation.
 
-Because ownership is a new concept for many programmers, it does take some time
-to get used to. The good news is that the more experienced you become with Rust
-and the rules of the ownership system, the more you’ll be able to naturally
-develop code that is safe and efficient. Keep at it!
+Parce que l'appropriation est un nouveau principe pour de nombreux
+développeurs, cela prends un certain temps à se familliariser. La bonne
+nouvelle c'est que plus vous devenez expérimenté avec Rust et ses règles
+d'appropriation, plus vous pourrez développer naturellement du code sûr et
+efficace. Gardez bien cela à l'esprit !
 
-When you understand ownership, you’ll have a solid foundation for understanding
-the features that make Rust unique. In this chapter, you’ll learn ownership by
-working through some examples that focus on a very common data structure:
-strings.
+Quand vous comprennez l'appropriation, vous aurrez une base solide pour
+comprendre les fonctionnalités qui font la singularité de Rust. Dans ce
+chapitre, vous allez apprendre l'appropriation en travaillant sur plusieurs
+exemples qui se concentrent sur un structure de données très courrante : les
+chaines de caractères.
 
 <!-- PROD: START BOX -->
 
-> ### The Stack and the Heap
+> ### La Stack et la Heap
 >
-> In many programming languages, we don’t have to think about the stack and the
-> heap very often. But in a systems programming language like Rust, whether a
-> value is on the stack or the heap has more of an effect on how the language
-> behaves and why we have to make certain decisions. We’ll describe parts of
-> ownership in relation to the stack and the heap later in this chapter, so here
-> is a brief explanation in preparation.
+> Dans de nombreux langages, nous n'avons pas besoin souvent de penser à la
+> Stack et la Heap. Mais dans un système de langage de programmation comme
+> Rust, si une donnée est sur la Stack ou sur la Heap a plus d'effet sur 
+> comment la langage se comporte et pourquoi nous devons faire certains choix.
+> Nous décrirons plus loins dans ce chapitre les différences entre la Stack et
+> la Heap, voici donc une brève explication en attendant.
 >
 > Both the stack and the heap are parts of memory that is available to your code
 > to use at runtime, but they are structured in different ways. The stack stores
