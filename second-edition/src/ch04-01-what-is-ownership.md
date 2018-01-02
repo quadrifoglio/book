@@ -37,62 +37,73 @@ chaines de caractères.
 > Nous décrirons plus loins dans ce chapitre les différences entre la Stack et
 > la Heap, voici donc une brève explication en attendant.
 >
-> Both the stack and the heap are parts of memory that is available to your code
-> to use at runtime, but they are structured in different ways. The stack stores
-> values in the order it gets them and removes the values in the opposite order.
-> This is referred to as *last in, first out*. Think of a stack of plates: when
-> you add more plates, you put them on top of the pile, and when you need a
-> plate, you take one off the top. Adding or removing plates from the middle or
-> bottom wouldn’t work as well! Adding data is called *pushing onto the stack*,
-> and removing data is called *popping off the stack*.
+> La Stack et la Head sont toutes les deux des emplacements de la mémoire qui
+> sont à disposition de votre code lors de son exécution, mais elles sont
+> construites de manière différentes. La Stack enregistre les valeurs dans
+> l'ordre qu'elle les reçoit et enlève les valeurs dans l'autre sens. C'est
+> ce que l'on appelle *dernier entré, premier sorti*. C'est comme une pile
+> d'assiettes : quand vous ajoutez des nouvelles assiettes, vous les deposez
+> sur le dessus de la pile, et quand vous avez besoin d'une assiette, vous en
+> prenez une sur le dessus. Ajouter ou enlever des assiettes au millieu ou en
+> dessous ne serait pas aussi efficace ! Ajouter une donnée est appellé
+> *pousser sur la Stack* et en enlever une se dit *sortir de la Stack*.
 >
-> The stack is fast because of the way it accesses the data: it never has to
-> search for a place to put new data or a place to get data from because that
-> place is always the top. Another property that makes the stack fast is that
-> all data on the stack must take up a known, fixed size.
->
-> For data with a size unknown to us at compile time or a size that might
-> change, we can store data on the heap instead. The heap is less organized:
-> when we put data on the heap, we ask for some amount of space. The operating
-> system finds an empty spot somewhere in the heap that is big enough, marks it
-> as being in use, and returns to us a *pointer*, which is the address of that
-> location. This process is called *allocating on the heap*, and sometimes we
-> abbreviate the phrase as just “allocating.” Pushing values onto the stack is
-> not considered allocating. Because the pointer is a known, fixed size, we can
-> store the pointer on the stack, but when we want the actual data, we have to
-> follow the pointer.
->
-> Think of being seated at a restaurant. When you enter, you state the number of
-> people in your group, and the staff finds an empty table that fits everyone
-> and leads you there. If someone in your group comes late, they can ask where
-> you’ve been seated to find you.
->
-> Accessing data in the heap is slower than accessing data on the stack because
-> we have to follow a pointer to get there. Contemporary processors are faster
-> if they jump around less in memory. Continuing the analogy, consider a server
-> at a restaurant taking orders from many tables. It’s most efficient to get
-> all the orders at one table before moving on to the next table. Taking an
-> order from table A, then an order from table B, then one from A again, and
-> then one from B again would be a much slower process. By the same token, a
-> processor can do its job better if it works on data that’s close to other
-> data (as it is on the stack) rather than farther away (as it can be on the
-> heap). Allocating a large amount of space on the heap can also take time.
->
-> When our code calls a function, the values passed into the function
-> (including, potentially, pointers to data on the heap) and the function’s
-> local variables get pushed onto the stack. When the function is over, those
-> values get popped off the stack.
->
-> Keeping track of what parts of code are using what data on the heap,
-> minimizing the amount of duplicate data on the heap, and cleaning up unused
-> data on the heap so we don’t run out of space are all problems that ownership
-> addresses. Once you understand ownership, you won’t need to think about the
-> stack and the heap very often, but knowing that managing heap data is why
-> ownership exists can help explain why it works the way it does.
+> La Stack est rapide grâce à la façon dont elle accède aux données : elle ne
+> vas jamais avoir besoin de chercher un emplacement pour y mettre des données
+> car c'est toujours au dessus. Une autre caractéristique qui fait que la Stack
+> est rapide c'est que toutes les données de la Stack doivent avoir une taille
+> connue et fixe.
+> 
+> Si les données ont une taille qui nous est inconnue au moment de la
+> compilation ou une taille qui peut changer, nous pouvons plutôt les stocker
+> dans la Heap. La Heap est moins organisée : quand nous poussons de la donnée
+> sur la Heap, nous demandons une certaine quantité de place. Le système
+> d'exploitation trouve un emplacement vide suffisamment grand quelque part
+> dans la Heap, le marque comme en cours d'utilisation, et nous retourne un
+> *pointeur*, qui est l'adresse de cet emplacement. Ce processus est appellé
+> *allouer de la place sur la Heap*, et parfois nous raccourcissons cette
+> phrase à simplement *allouer*. Mais pousser des valeurs sur Stack n'est pas
+> considéré comme allouer. Parce que le pointeur a une taille connue et fixée,
+> nous pouvons stocker ce pointeur sur la Stack, mais quand nous voulons la
+> donnée concernée, nous avons besoin de suivre le pointeur.
+> 
+> C'est comme si vous vouliez manger à un restaurant. Quand vous entrez, vous
+> indiquez le nombre de personnes dans votre groupe, et le personnel trouve une
+> table vide qui peut reçevoir tout le monde, et vous y conduit. Si quelqu'un
+> dans votre groupe arrive en retard, il peut leur demander où vous êtes assis
+> pour vous rejoindre.
+> 
+> Accéder à des données dans la Heap est plus lent que d'accéder aux données
+> sur la Stack car nous devons suivre un pointeur pour l'obtenir. Les
+> processeurs modernes sont plus rapide s'ils sautent moins dans la mémoire.
+> Pour continuer avec notre analogie, immaginez une serveur dans un restaurant
+> qui prends les commandes de nombreuses tables. C'est plus efficace de
+> récupérer toutes les commandes à une seule table avant de passer à la table
+> suivante. Prendre une commande à la table A, puis prendre une commande à la
+> table B, puis ensuite une à la table A à nouveau, puis suite une à la table B
+> à nouveau sera un processus bien plus lent. De la même manière, un processeur
+> sera plus efficace dans sa tâche s'il travaille sur des données qui sont
+> proches l'une de l'autre (comme c'est sur la Stack) plutôt que si elles sont
+> plus éloignées (comme cela peut être le cas sur la Heap). Allouer une grande
+> quantité d'espace sur la Heap peut aussi prendre plus de temps.
+> 
+> Quand notre code utilise une fonction, les valeurs envoyées à la fonction
+> (incluant, potentiellement, des pointeurs vers des données sur la Heap) et
+> les variables locales de la fonction sont poussées sur la Stack. Quand la
+> fonction est terminée, ces données sont sorties de la Stack.
+> 
+> Faire attention à telles parties du code utilise telles parties de données
+> sur la Heap, minimiser la quantité de données en double sur la Heap, et
+> libérer les données inutilisées sur la Heap pour que nous ne soyons pas à
+> court d'espace, sont touts les problèmes que règle l'appropriation. Quand
+> vous aurez compris l'appropriation, vous n'aurez plus souvent besoin de
+> penser à la Stack et la Heap, mais savoir que l'appropriation existe pour
+> gérer les données de la Heap peut vous aider à comprendre pourquoi elle
+> fonctionne de cette façon.
 >
 <!-- PROD: END BOX -->
 
-### Ownership Rules
+### Les règles de l'appropriation
 
 First, let’s take a look at the ownership rules. Keep these rules in mind as we
 work through the examples that illustrate the rules:
