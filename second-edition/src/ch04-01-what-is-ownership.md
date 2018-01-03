@@ -105,102 +105,109 @@ chaines de caractères.
 
 ### Les règles de l'appropriation
 
-First, let’s take a look at the ownership rules. Keep these rules in mind as we
-work through the examples that illustrate the rules:
+Tout d'abord, définissons les règles de l'appropriation. Gardez à l'esprit ces
+règles pendant que nous travaillons sur des exemples qui les illustrent :
 
-> 1. Each value in Rust has a variable that’s called its *owner*.
-> 2. There can only be one owner at a time.
-> 3. When the owner goes out of scope, the value will be dropped.
+> 1. Chaque valeur dans Rust a une variable qui s'appelle son *propriétaire*.
+> 2. Il ne peut y avoir qu'un seul propriétaire au même moment.
+> 3. Quand le propriétaire sort du bloc d'instructions, la valeur est supprimée.
 
-### Variable Scope
+### Portée de la variable
 
-We’ve walked through an example of a Rust program already in Chapter 2. Now
-that we’re past basic syntax, we won’t include all the `fn main() {` code in
-examples, so if you’re following along, you’ll have to put the following
-examples inside a `main` function manually. As a result, our examples will be a
-bit more concise, letting us focus on the actual details rather than
-boilerplate code.
+Nous avons déjà vu un exemple dans le programme Rust du Chapitre 2. Maintenant
+que nous avons terminé la syntaxe de base, nous n'allons pas mettre tout le
+code de `fn main() {` dans des exemples, donc si vous suivez, vous devez mettre
+les exemples suivants manuellement dans un fonction `main`. De fait, nos
+exemples seront plus concis, nous permettant de nous concentrer sur les détails
+actuels plutôt que sur du code conventionnel.
 
-As a first example of ownership, we’ll look at the *scope* of some variables. A
-scope is the range within a program for which an item is valid. Let’s say we
-have a variable that looks like this:
+Pour le premier exemple d'appropriation, nous allons analyser la *portée* de
+certaines variables. Une portée est une zone dans un programme dans lequel un
+objet est en vigueur. Imaginons que nous avons une variable qui ressemble à
+ceci :
 
 ```rust
 let s = "hello";
 ```
 
-The variable `s` refers to a string literal, where the value of the string is
-hardcoded into the text of our program. The variable is valid from the point at
-which it’s declared until the end of the current *scope*. Listing 4-1 has
-comments annotating where the variable `s` is valid:
+La variable `s` fait référence à une chaine de caractères pure, où la valeur de
+la chaine est codé en dur dans notre programme. La variable est en vigueur à
+partir du point où elle est déclarée jusqu'à la fin de la *portée* actuelle.
+L'entrée 4-1 a des commentaires pour indiquer quand la variable `s` est en
+vigueur :
 
 ```rust
-{                      // s is not valid here, it’s not yet declared
-    let s = "hello";   // s is valid from this point forward
+{                      // s n'est pas en vigueur ici, elle n'est pas encore déclarée
+    let s = "hello";   // s est en vigueur à partir de ce point
 
-    // do stuff with s
-}                      // this scope is now over, and s is no longer valid
+    // on fait des choses avec s ici
+}                      // cette portée est maintenant terminée, et s n'est plus en vigueur
 ```
 
-<span class="caption">Listing 4-1: A variable and the scope in which it is
-valid</span>
+<span class="caption">Entrée 4-1 : une variable et la portée dans laquelle elle
+est en vigueur.</span>
 
-In other words, there are two important points in time here:
+Autrement dis, il y a ici deux étapes importantes :
 
-1. When `s` comes *into scope*, it is valid.
-1. It remains so until it goes *out of scope*.
+1. Quand `s` rentre *dans la portée*, elle est en vigueur.
+2. Cela reste ainsi jusqu'à ce qu'elle *sort de la portée*.
 
-At this point, the relationship between scopes and when variables are valid is
-similar to other programming languages. Now we’ll build on top of this
-understanding by introducing the `String` type.
+Pour le moment, la relation entre les portées et quand les variables sont en
+vigueur sont similaires à d'autres langages de programmation. Maintenant nous
+allons aller plus loins dans la compréhension en y ajoutant le type `String`.
 
-### The `String` Type
+### Le type `String`
 
-To illustrate the rules of ownership, we need a data type that is more complex
-than the ones we covered in Chapter 3. The types covered in the “Data Types”
-section are all stored on the stack and popped off the stack when their scope
-is over, but we want to look at data that is stored on the heap and explore how
-Rust knows when to clean up that data.
+Pour illustrer les règles de l'appartenance, nous avons besoin d'un type de
+données qui est plus complexe que ceux que nous avons rencontré au chapitre 3.
+Les types que nous avons vu dans la section “Types de données” sont toutes
+stockées sur la Stack et sont sorties de la Stack quand elles sont sortent de
+la portée, mais nous voulons examiner les données stockées sur la Heap et
+regarder comment Rust sait quand il doit nettoyer ces données.
 
-We’ll use `String` as the example here and concentrate on the parts of `String`
-that relate to ownership. These aspects also apply to other complex data types
-provided by the standard library and that you create. We’ll discuss `String` in
-more depth in Chapter 8.
+Nous allons utiliser ici `String` pour l'exemple et nous concentrer sur les
+élements de `String` qui sont liés à l'appropriation. Ces caractéristiques
+s'appliquent aussi pour d'autres types de données complexes fournis par la
+librairie standard et ceux que vous créez. Nous verons `String` plus en détail
+dans le Chapitre 8.
 
-We’ve already seen string literals, where a string value is hardcoded into our
-program. String literals are convenient, but they aren’t always suitable for
-every situation in which you want to use text. One reason is that they’re
-immutable. Another is that not every string value can be known when we write
-our code: for example, what if we want to take user input and store it? For
-these situations, Rust has a second string type, `String`. This type is
-allocated on the heap and as such is able to store an amount of text that is
-unknown to us at compile time. You can create a `String` from a string literal
-using the `from` function, like so:
+Nous avons déjà vu les chaines de caractères pures, quand une valeur de chaine
+est codée en dur dans notre programme. Les chaines de caractères pures sont
+pratiques, mais elles ne conviennent pas toujours à tous les cas où vous voulez
+utiliser du texte. Une des raisons est qu'elle est immuable. Une autre est
+qu'on ne connait pas forcément toutes les chaines de caractères quand nous
+écrivons notre code : par exemple, comment faire si nous voulons récupérer du
+texte saisi par l'utilisateur et l'enregistrer ? Pour ces cas-ci, Rust a un
+second type de chaine de caractères, `String`. Ce type est alloué sur la Heap
+et est ainsi capable de stocker une quantité de texte qui nous est inconnue au
+moment de la compilation. Vous pouvez créer un `String` à partir d'une chaine
+de caractères pure en utilisant la fonction `from`, comme ceci :
 
 ```rust
 let s = String::from("hello");
 ```
 
-The double colon (`::`) is an operator that allows us to namespace this
-particular `from` function under the `String` type rather than using some sort
-of name like `string_from`. We’ll discuss this syntax more in the “Method
-Syntax” section of Chapter 5 and when we talk about namespacing with modules in
-Chapter 7.
+Le deux-points double est une opérateur qui nous permet d'appeler cette
+fonction spécifique dans l'espace de nom du type `String` plutôt que d'utiliser
+un nom comme `string_from`. Nous allons voir cette syntaxe plus en détail dans
+la section “Syntaxe de méthode” du Chapitre 5 et lorsque nous allons aborder
+l'espace de nom avec les modules au Chapitre 7.
 
-This kind of string *can* be mutated:
+Ce type de chaine de caractères *peut* être mutable :
 
 ```rust
 let mut s = String::from("hello");
 
-s.push_str(", world!"); // push_str() appends a literal to a String
+s.push_str(", world!"); // push_str() ajoute du texte dans un String
 
-println!("{}", s); // This will print `hello, world!`
+println!("{}", s); // Cela va afficher `hello, world!`
 ```
 
-So, what’s the difference here? Why can `String` be mutated but literals
-cannot? The difference is how these two types deal with memory.
+Donc, quelle est la différence ici ? Pourquoi `String` peut être mutable mais
+que les chaines pures ne peuvent pas l'être ? La différence est comment ces
+deux type travaillent avec la mémoire.
 
-### Memory and Allocation
+### Mémoire et attribution
 
 In the case of a string literal, we know the contents at compile time so the
 text is hardcoded directly into the final executable, making string literals
