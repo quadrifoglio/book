@@ -209,63 +209,71 @@ deux type travaillent avec la mémoire.
 
 ### Mémoire et attribution
 
-In the case of a string literal, we know the contents at compile time so the
-text is hardcoded directly into the final executable, making string literals
-fast and efficient. But these properties only come from its immutability.
-Unfortunately, we can’t put a blob of memory into the binary for each piece of
-text whose size is unknown at compile time and whose size might change while
-running the program.
+Dans le cas d'une chaine de caractères pure, nous connaissons le contennu au
+moment de la compilation donc le texte est codé en dur directement dans
+l'exécutable final, ce qui fait que ces chaines de caractères pures sont
+performantes et rapides. Mais ces caractéristiques viennent de leur
+immuabilité. Malheureusement, nous ne pouvons pas sotcker un blob de mémoire
+dans le binaire pour chaque morceau de texte qui n'a pas de taille connue au
+moment de la compilation et dont la taille pourrait changer pendant l'exécution
+de ce programme.
 
-With the `String` type, in order to support a mutable, growable piece of text,
-we need to allocate an amount of memory on the heap, unknown at compile time,
-to hold the contents. This means:
+Avec le type `String`, afin de permettre un texte mutable et qui peut
+s'aggrandir, nous devons allouer une quantité de mémoire sur la Heap, inconnue
+au moment de la compilation, pour stocker le contennu. Cela signifie que :
 
-1. The memory must be requested from the operating system at runtime.
-2. We need a way of returning this memory to the operating system when we’re
-done with our `String`.
+1. La mémoie doit être sollicitée auprès du système d'exploitation lors de
+l'exécution.
+2. Nous avons besoin d'un moyen de rendre cette mémoire au système
+d'exploitation quand nous avons fini avec notre `String`.
 
-That first part is done by us: when we call `String::from`, its implementation
-requests the memory it needs. This is pretty much universal in programming
-languages.
+Le premier point est fait par nous : quand nous appelons `String::from`, sa
+définition demande la mémoire qu'elle a besoin. C'est pratiquement toujours le
+cas dans les langages de programmation.
 
-However, the second part is different. In languages with a *garbage collector
-(GC)*, the GC keeps track and cleans up memory that isn’t being used anymore,
-and we, as the programmer, don’t need to think about it. Without a GC, it’s the
-programmer’s responsibility to identify when memory is no longer being used and
-call code to explicitly return it, just as we did to request it. Doing this
-correctly has historically been a difficult programming problem. If we forget,
-we’ll waste memory. If we do it too early, we’ll have an invalid variable. If
-we do it twice, that’s a bug too. We need to pair exactly one `allocate` with
-exactly one `free`.
+Cependant, le deuxième point est différent. Dans des langages avec un
+*ramasse-miettes*, le ramasse-miettes surveille et néttoie la mémoire qui n'est
+plus utilisée, sans que nous, les développeurs, nous ayons à nous en
+préhocuper. Sans un ramasse-miettes, c'est de la responsabilité du développeur
+d'identifier quand la mémoire n'est plus utilisée et d'appeler du code pour
+explicitement la libérer, comme nous l'avons fait pour la demander auparavent.
+Historiquement, faire ceci correctement a toujours été une difficulté pour
+développer. Si nous oublions de le faire, nous alons gaspiller de la mémoire.
+Si nous le faisons trop tôt, nous allons avoir une variable incorrecte. Si nous
+le faisons deux fois, c'est aussi un bogue. Nous avons besoin d'associer
+exactement un `allocate` avec exactement un `free`.
 
-Rust takes a different path: the memory is automatically returned once the
-variable that owns it goes out of scope. Here’s a version of our scope example
-from Listing 4-1 using a `String` instead of a string literal:
+Rust prends un chemin différent : la mémoire est automatiquement libérée dès
+que la variable qui la possède sort de la portée. Voici une version de notre
+exemple de portée de l'entrée 4-1 qui utilise un `String` plutôt qu'une chaine
+de caractères pure :
 
 ```rust
 {
-    let s = String::from("hello"); // s is valid from this point forward
+    let s = String::from("hello"); // s est en vigueur à partir de ce point
 
-    // do stuff with s
-}                                  // this scope is now over, and s is no
-                                   // longer valid
+    // on fait des choses avec s ici
+}                                  // cette portée est désormais finie, et s
+                                   // n'est plus en vigueur maintenant
 ```
 
-There is a natural point at which we can return the memory our `String` needs
-to the operating system: when `s` goes out of scope. When a variable goes out
-of scope, Rust calls a special function for us. This function is called `drop`,
-and it’s where the author of `String` can put the code to return the memory.
-Rust calls `drop` automatically at the closing `}`.
+Il y a un cas naturel auquel nous devons rendre la mémoire de notre `String` au
+système d'exploitation : quand `s` sort de la portée. Quand une variable sort
+de la portée, Rust utilise une fonction spéciale pour nous. Cette fonction
+s'appelle `drop`, et ceci que l'auteur du `String` peut le mettre dans le code
+pour libérer la mémoire. Rust utilise automatiquement `drop` à l'accolade
+fermante `}`.
 
-> Note: In C++, this pattern of deallocating resources at the end of an item’s
-> lifetime is sometimes called *Resource Acquisition Is Initialization (RAII)*.
-> The `drop` function in Rust will be familiar to you if you’ve used RAII
-> patterns.
+> Note : dans du C++, cette façon de désalouer des ressources à la fin de la
+> durée de vie d'un objet est parfois appelé *Resource Acquisition Is
+> Initialization (RAII)*. La fonction `drop` de Rust vous sera famillière si
+> vous avez déjà utilisé des fonctions de RAII. 
 
-This pattern has a profound impact on the way Rust code is written. It may seem
-simple right now, but the behavior of code can be unexpected in more
-complicated situations when we want to have multiple variables use the data
-we’ve allocated on the heap. Let’s explore some of those situations now.
+Cette façon de faire a un impact profond sur la façon dont le code de Rust est
+écrit. Cela peut sembler simple ici, mais le comportement du code peut être
+inattendu dans des situations plus compliquées quand nous voulons avoir
+plusieures variables avec des données que nous avons allouées sur la Heap.
+Examinons une de ces situations dès à présent.
 
 #### Ways Variables and Data Interact: Move
 
