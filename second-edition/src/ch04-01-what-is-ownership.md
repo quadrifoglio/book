@@ -275,72 +275,75 @@ inattendu dans des situations plus compliquées quand nous voulons avoir
 plusieures variables avec des données que nous avons allouées sur la Heap.
 Examinons une de ces situations dès à présent.
 
-#### Ways Variables and Data Interact: Move
+#### Les interactions entre les variables et les données : les déplacements
 
-Multiple variables can interact with the same data in different ways in Rust.
-Let’s look at an example using an integer in Listing 4-2:
+Plusieurs variables peuvent interragir avec les mêmes données de différentes
+manières avec Rust. Regardons un exemple avec un entier dans l'entrée 4-2 :
 
 ```rust
 let x = 5;
 let y = x;
 ```
 
-<span class="caption">Listing 4-2: Assigning the integer value of variable `x`
-to `y`</span>
+<span class="caption">Entrée 4-2 : assigner la valeur entière de la variable
+`x` à la `y`</span>
 
-We can probably guess what this is doing based on our experience with other
-languages: “Bind the value `5` to `x`; then make a copy of the value in `x` and
-bind it to `y`.” We now have two variables, `x` and `y`, and both equal `5`.
-This is indeed what is happening because integers are simple values with a
-known, fixed size, and these two `5` values are pushed onto the stack.
+Nous pouvons deviner ce qui va probablement se passer grâce à notre expérience
+avec d'autres langages : “Assigner la valeur `5` à `x`; ensuite faire une copie
+de la valeur de `x` et l'assigner à `y`.” Nous avons maintenant deux variables,
+`x` et `y`, et toutes les deux sont égales à `5`. C'est effectivement ce qui se
+passe car les entiers sont des valeurs simples avec une taille connue et fixée,
+et ces deux valeurs `5` sont stockées sur la Stack.
 
-Now let’s look at the `String` version:
+Maintenant, regardons une nouvelle version avec `String` :
 
 ```rust
 let s1 = String::from("hello");
 let s2 = s1;
 ```
 
-This looks very similar to the previous code, so we might assume that the way
-it works would be the same: that is, the second line would make a copy of the
-value in `s1` and bind it to `s2`. But this isn’t quite what happens.
+Cela ressemble beaucoup au code précédent, donc nous allons supposer que cela
+fonctionne pareil que précédemment : ainsi, la seconde ligne va faire une copie
+de la valeur dans `s1` et l'assigner à `s2`. Mais ce n'est pas tout à fait ce
+qu'il se passe.
 
-To explain this more thoroughly, let’s look at what `String` looks like under
-the covers in Figure 4-1. A `String` is made up of three parts, shown on the
-left: a pointer to the memory that holds the contents of the string, a length,
-and a capacity. This group of data is stored on the stack. On the right is the
-memory on the heap that holds the contents.
+Pour expliquer cela plus précisémment, regardons à quoi ressemble `String` avec
+l'illustration 4-1. Un `String` est constitué de trois éléments, présentes sur
+la gauche : un pointeur vers la mémoire qui contient le contennu de la chaine
+de caractères, une taille, et une capacité. Ces données sont stockées sur la
+Stack. Sur la droite est la mémoire sur la Heap qui contient les données.
 
-<img alt="String in memory" src="img/trpl04-01.svg" class="center" style="width: 50%;" />
+<img alt="String dans la mémoire" src="img/trpl04-01.svg" class="center" style="width: 50%;" />
 
-<span class="caption">Figure 4-1: Representation in memory of a `String`
-holding the value `"hello"` bound to `s1`</span>
+<span class="caption">Illustration 4-1 : représentation d'un `String` dans la
+mémoire qui contient la valeur `"hello"` assignée à `s1`.</span>
 
-The length is how much memory, in bytes, the contents of the `String` is
-currently using. The capacity is the total amount of memory, in bytes, that the
-`String` has received from the operating system. The difference between length
-and capacity matters, but not in this context, so for now, it’s fine to ignore
-the capacity.
+La taille est combien de mémoire, en octets, le contennu du `String` utilise
+actuellement. La capacité est la quantité totale de mémoire, en octets, que
+`String` a reçu du système d'exploitation. La différence entre la taille et la
+capacité est importante, mais pas dans ce contexte, donc pour l'instant, ce
+n'est pas grave de mettre de coté la capacité.
 
-When we assign `s1` to `s2`, the `String` data is copied, meaning we copy the
-pointer, the length, and the capacity that are on the stack. We do not copy the
-data on the heap that the pointer refers to. In other words, the data
-representation in memory looks like Figure 4-2.
+Quand nous assignons `s1` à `s2`, les données de `String` sont copiées, ce qui
+veut dire que nous copions le pointeur, la taille, et la capacité qu'il y a sur
+la Stack. Mais nous ne copions pas les données sur la Heap que dont le pointeur
+fait référence. Autrement dit, la représentation des données dans la mémoire
+ressemble à l'illustration 4-2.
 
-<img alt="s1 and s2 pointing to the same value" src="img/trpl04-02.svg" class="center" style="width: 50%;" />
+<img alt="s1 et s2 pointent sur la même valeur" src="img/trpl04-02.svg" class="center" style="width: 50%;" />
 
-<span class="caption">Figure 4-2: Representation in memory of the variable `s2`
-that has a copy of the pointer, length, and capacity of `s1`</span>
+<span class="caption">Illustration 4-2 : représentation dans la mémoire de la
+variable `s2` qui est une copie du pointeur, taille et capacité de `s1`</span>
 
-The representation does *not* look like Figure 4-3, which is what memory would
-look like if Rust instead copied the heap data as well. If Rust did this, the
-operation `s2 = s1` could potentially be very expensive in terms of runtime
-performance if the data on the heap was large.
+La représentation *n'est pas* comme l'illustration 4-3, qui serait la mémoire
+si Rust avait aussi copié les données sur la Heap. Si Rust fait cela,
+l'opération `s2 = s1` pourrait potentiellement être coûteuse en terme de
+performances d'exécution si les données sur la Heap étaient grosses.
 
-<img alt="s1 and s2 to two places" src="img/trpl04-03.svg" class="center" style="width: 50%;" />
+<img alt="s1 et s2 dans deux emplacements" src="img/trpl04-03.svg" class="center" style="width: 50%;" />
 
-<span class="caption">Figure 4-3: Another possibility of what `s2 = s1` might
-do if Rust copied the heap data as well</span>
+<span class="caption">Illustration 4-3 : une autre possiblité de ce que
+pourrait faire `s2 = s1` si Rust copiait aussi les données sur la Heap</span>
 
 Earlier, we said that when a variable goes out of scope, Rust automatically
 calls the `drop` function and cleans up the heap memory for that variable. But
