@@ -345,19 +345,23 @@ performances d'exécution si les données sur la Heap étaient grosses.
 <span class="caption">Illustration 4-3 : une autre possiblité de ce que
 pourrait faire `s2 = s1` si Rust copiait aussi les données sur la Heap</span>
 
-Earlier, we said that when a variable goes out of scope, Rust automatically
-calls the `drop` function and cleans up the heap memory for that variable. But
-Figure 4-2 shows both data pointers pointing to the same location. This is a
-problem: when `s2` and `s1` go out of scope, they will both try to free the
-same memory. This is known as a *double free* error and is one of the memory
-safety bugs we mentioned previously. Freeing memory twice can lead to memory
-corruption, which can potentially lead to security vulnerabilities.
+Auparavent, nous avons que quand une variable sort de la portée, Rust appelait
+automatiquement la fonction `drop` et nettoyait la mémoire sur la Heap
+concernant cette variable. Mais l'illustration 4-2 montre que les deux
+pointeurs de données pointaient au même endroit. C'est un problème : quand
+`s2` et `s1` sortent de la portée, elles vont essayer toutes les deux de
+libérer la même mémoire. C'est ce qu'on appelle une erreur de *double
+libération* et c'est un des bogues de sécurité de la mémoire que nous avons
+mentionné précédemment. Libérer la mémoire deux fois peut mener à des
+corruptions de mémoire, qui peut potentiellement mener à des vulnérabilités
+de sécurité.
 
-To ensure memory safety, there’s one more detail to what happens in this
-situation in Rust. Instead of trying to copy the allocated memory, Rust
-considers `s1` to no longer be valid and therefore, Rust doesn’t need to free
-anything when `s1` goes out of scope. Check out what happens when you try to
-use `s1` after `s2` is created, it won’t work:
+Pour garantir la sécurité de la mémoire, il y a un autre détail en plus qui se
+passe dans cette situation avec Rust. Plutôt qu'essayer de copier la mémoire
+allouée, Rust considère que `s1` n'est plus en vigueur et du fait, Rust n'a pas
+besoin de libérer quoi que ce soit lorsque `s1` sort de la portée. Regardes ce
+qu'il se passe quand vous essayez d'utiliser `s1` après que `s2` soit créé,
+cela ne vas pas fonctionner :
 
 ```rust,ignore
 let s1 = String::from("hello");
@@ -366,8 +370,8 @@ let s2 = s1;
 println!("{}, world!", s1);
 ```
 
-You’ll get an error like this because Rust prevents you from using the
-invalidated reference:
+Vous allez avoir une erreur comme celle-ci car Rust vous défends d'utiliser la
+référence qui n'est plus en vigueur :
 
 ```text
 error[E0382]: use of moved value: `s1`
@@ -383,33 +387,36 @@ error[E0382]: use of moved value: `s1`
   not implement the `Copy` trait
 ```
 
-If you’ve heard the terms “shallow copy” and “deep copy” while working with
-other languages, the concept of copying the pointer, length, and capacity
-without copying the data probably sounds like a shallow copy. But because Rust
-also invalidates the first variable, instead of calling this a shallow copy,
-it’s known as a *move*. Here we would read this by saying that `s1` was *moved*
-into `s2`. So what actually happens is shown in Figure 4-4.
+Si vous avez déjà entendu parler de “copie de surface” et de “copie en
+profondeur” en utilisant d'aitres langages, l'idée de copier le pointeur, la
+taille et la capacité sans copier les données peut vous faire penser à de la
+copie de surface. Mais parce que Rust invalide aussi la premère variable, au
+lieu d'appeller cela une copie de surface, on appelle cela un *déplacement*.
+Ici nous pourions lire ainsi en disant que `s1` a été *déplacé* dans `s2`. Donc
+ce qui se passe réellement est montré dans l'illustration 4-4.
 
-<img alt="s1 moved to s2" src="img/trpl04-04.svg" class="center" style="width: 50%;" />
+<img alt="s1 est déplacé dans s2" src="img/trpl04-04.svg" class="center" style="width: 50%;" />
 
-<span class="caption">Figure 4-4: Representation in memory after `s1` has been
-invalidated</span>
+<span class="caption">Illustration 4-4 : Représentation de la mémoire après que
+`s1` a été invalidé</span>
 
-That solves our problem! With only `s2` valid, when it goes out of scope, it
-alone will free the memory, and we’re done.
+Cela résout notre problème ! Avec seuelement `s2` en vigueur, quand elle
+sortira de la portée, elle veule va libérer la mémoire, et c'est tout.
 
-In addition, there’s a design choice that’s implied by this: Rust will never
-automatically create “deep” copies of your data. Therefore, any *automatic*
-copying can be assumed to be inexpensive in terms of runtime performance.
+De plus, cela signifie qu'il y a eu un choix de conception : Rust ne va jamais
+créer des copies “profondes” de vos données. Par conséquent, toute copie
+*automatique* peut être considérée comme peu coûteuse en termes de performances
+d'exécution.
 
-#### Ways Variables and Data Interact: Clone
+#### Les interactions entre les variables et les données : le clonage
 
-If we *do* want to deeply copy the heap data of the `String`, not just the
-stack data, we can use a common method called `clone`. We’ll discuss method
-syntax in Chapter 5, but because methods are a common feature in many
-programming languages, you’ve probably seen them before.
+Si nous *voulons* faire une copie profonde des données sur la Heap d'un
+`String`, et pas seulement des données sur la Stack, nous povons utiliser une
+méthode courante qio s'appelle `clone`. Nous allons aborderons la syntaxe des
+méthodes dans le chapitre 5, mais parce que les méthodes sont un outil courant
+dans de nombreux langages, vous les avez probablement utilisé auparavent.
 
-Here’s an example of the `clone` method in action:
+Voici un exemple d'utilisation de la méthode `clone` :
 
 ```rust
 let s1 = String::from("hello");
@@ -418,17 +425,19 @@ let s2 = s1.clone();
 println!("s1 = {}, s2 = {}", s1, s2);
 ```
 
-This works just fine and is how you can explicitly produce the behavior shown
-in Figure 4-3, where the heap data *does* get copied.
+Cela fonctionne très bien et c'est ainsi que vous pouvez reproduire le
+comportement décrit dans l'illustration 4-3, dans les données de la Heap sont
+copiées.
 
-When you see a call to `clone`, you know that some arbitrary code is being
-executed and that code may be expensive. It’s a visual indicator that something
-different is going on.
+Quand vous voyez un appel à `clone`, vous savez que du code arbitraire est
+exécuté et que ce code peut coûteux. C'est un indicateur visuel qu'il se passe
+quelque chose de différent.
 
-#### Stack-Only Data: Copy
+#### Données seulement sur la Stack : les copier
 
-There’s another wrinkle we haven’t talked about yet. This code using integers,
-part of which was shown earlier in Listing 4-2, works and is valid:
+Il y a une autre faille qu'on a pas encore parlé. Le code suivant utilise des
+entiers, dont une partie a déjà été montré dans l'entrée 4-2, ils fonctionne et
+est correct :
 
 ```rust
 let x = 5;
@@ -437,15 +446,17 @@ let y = x;
 println!("x = {}, y = {}", x, y);
 ```
 
-But this code seems to contradict what we just learned: we don’t have a call to
-`clone`, but `x` is still valid and wasn’t moved into `y`.
+Mais ce code semble contredire ce que nous venons d'apprendre : nous n'avons
+pas appellé un `clone`, mais `x` est toujours en vigueur et n'a pas été déplacé
+dans `y`.
 
-The reason is that types like integers that have a known size at compile time
-are stored entirely on the stack, so copies of the actual values are quick to
-make. That means there’s no reason we would want to prevent `x` from being
-valid after we create the variable `y`. In other words, there’s no difference
-between deep and shallow copying here, so calling `clone` wouldn’t do anything
-differently from the usual shallow copying and we can leave it out.
+La raison est que ces types tels que les entriers ont une taille connue au
+moment de la compilation et sont entierement stockées sur la Stack, donc copie
+les valeurs actuelles, ce qui est rapide à faire. Cela signifie qu'il n'y a pas
+de raison que nous voudrions empêcher `x` d'être toujours en vigueur après
+avoir créé la variable `y`. En d'autres termes, ici il n'y a pas de différence
+entre la copie en surface et profonde, donc appeller `clone` ne ferait rien de
+différent que la copie en surface habituelle et nous pouvons l'exclure.
 
 Rust has a special annotation called the `Copy` trait that we can place on
 types like integers that are stored on the stack (we’ll talk more about traits
