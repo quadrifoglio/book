@@ -458,124 +458,133 @@ avoir créé la variable `y`. En d'autres termes, ici il n'y a pas de différenc
 entre la copie en surface et profonde, donc appeller `clone` ne ferait rien de
 différent que la copie en surface habituelle et nous pouvons l'exclure.
 
-Rust has a special annotation called the `Copy` trait that we can place on
-types like integers that are stored on the stack (we’ll talk more about traits
-in Chapter 10). If a type has the `Copy` trait, an older variable is still
-usable after assignment. Rust won’t let us annotate a type with the `Copy`
-trait if the type, or any of its parts, has implemented the `Drop` trait. If
-the type needs something special to happen when the value goes out of scope and
-we add the `Copy` annotation to that type, we’ll get a compile time error. To
-learn about how to add the `Copy` annotation to your type, see Appendix C on
-Derivable Traits.
+Rust a une annotation spécial appelée le trait `Copy` que nous pouvons utiliser
+sur des types comme les entiers qui sont stockés sur la Stack (nous verrons les
+traits dans le chapitre 10). Si un type a le trait `Copy`, l'ancienne variable
+est toujours utilisable après son affectation. Rust ne pas nous autoriser à
+annoter type avec le trait `Copy` si ce type, ou un de ses éléments, a
+implémenté le trait `Drop`. Si ce type a besoin que quelque chose de spécial se
+passe quand la valeur sort de la portée et que nous ajoutons l'annotation
+`Copy` sur ce type, nous allons avoir une erreur au moment de la compilation.
+Pour en savoir plus sur comment ajouter l'annotation `Copy` sur votre type,
+reférez-vous à l'annexe C sur les trraits dérivés.
 
-So what types are `Copy`? You can check the documentation for the given type to
-be sure, but as a general rule, any group of simple scalar values can be
-`Copy`, and nothing that requires allocation or is some form of resource is
-`Copy`. Here are some of the types that are `Copy`:
+Donc, quel sont les types qui ont `Copy` ? Vous pouvez regarder dans la
+documentation pour un type donné pour vous en assurer, mais de manière
+générale, tout groupe de simple scalaire peut être `Copy`, (TODO) and nothing that requires allocation or is some form of resource is `Copy`.
+Voici quelques types qui sont `Copy` :
 
-* All the integer types, like `u32`.
-* The Boolean type, `bool`, with values `true` and `false`.
-* The character type, `char`.
-* All the floating point types, like `f64`.
-* Tuples, but only if they contain types that are also `Copy`. `(i32, i32)` is
-`Copy`, but `(i32, String)` is not.
+* Tous les types d'entiers, comme `u32`.
+* Le type booléen, `bool`, avec les valeurs `true` et `false`.
+* Le type de caractères, `char`.
+* Tous les types de nombres à virgule, comme `f64`.
+* Les Tuples, mais uniquement s'ils contiennent des types qui sont aussi
+`Copy`. Le `(i32, i32)` est `Copy`, mais `(i32, String)` ne l'est pas.
 
-### Ownership and Functions
+### L'appropriation et les fonctions
 
-The semantics for passing a value to a function are similar to assigning a
-value to a variable. Passing a variable to a function will move or copy, just
-like assignment. Listing 4-3 has an example with some annotations showing where
-variables go into and out of scope:
+La syntaxe pour passer une valeur à une fonction est similaire à celle pour
+assigner une valeur à une variable. Passer une variable à une fonction va la
+déplacer ou la copier, comme l'assignation. L'entrée 4-3 est un exemple avec
+quelques commentaires qui montrent où les variables rentrent et sortent de la
+portée :
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Nom du fichier : src/main.rs</span>
 
 ```rust
-fn main() {
-    let s = String::from("hello");  // s comes into scope.
+fn main() { 
+    let s = String::from("hello");  // s rentre dans la portée.
 
-    takes_ownership(s);             // s's value moves into the function...
-                                    // ... and so is no longer valid here.
+    takes_ownership(s);             // La valeur de s est déplacée dans la fonction ...
+                                    // ... et n'est plus en vigueur à partir d'ici
 
-    let x = 5;                      // x comes into scope.
+    let x = 5;                      // x rentre dans la portée.
 
-    makes_copy(x);                  // x would move into the function,
-                                    // but i32 is Copy, so it’s okay to still
-                                    // use x afterward.
+    makes_copy(x);                  // x va être déplacée dans la fonction,
+                                    // mais i32 implémente Copy, donc on peux
+                                    // utiliser x ensuite.
 
-} // Here, x goes out of scope, then s. But since s's value was moved, nothing
-  // special happens.
+} // Ici, x sort de la portée, puis ensuite s. Mais puisque la valeur de s a
+  // été déplacée, il ne se passe rien de spécial.
+ 
 
-fn takes_ownership(some_string: String) { // some_string comes into scope.
+fn takes_ownership(some_string: String) { // some_string rentre dans la portée.
     println!("{}", some_string);
-} // Here, some_string goes out of scope and `drop` is called. The backing
-  // memory is freed.
+} // Ici, some_string sort de la portée et `drop` est appellé. La mémoire est
+  // libérée.
 
-fn makes_copy(some_integer: i32) { // some_integer comes into scope.
+fn makes_copy(some_integer: i32) { // some_integer rentre dans la portée.
     println!("{}", some_integer);
-} // Here, some_integer goes out of scope. Nothing special happens.
+} // Ici, some_integer sort de la portée. Il ne se passe rien de spécial.
 ```
 
-<span class="caption">Listing 4-3: Functions with ownership and scope
-annotated</span>
+<span class="caption">Entrée 4-3 : les fonction avec les appartenances et les
+portées qui sont commentées</span>
 
-If we tried to use `s` after the call to `takes_ownership`, Rust would throw a
-compile time error. These static checks protect us from mistakes. Try adding
-code to `main` that uses `s` and `x` to see where you can use them and where
-the ownership rules prevent you from doing so.
+Si nous essayons d'utiliser `s` après l'appel à `takes_ownership`, Rust va
+lever et retourner un erreur au moment de la compilation. Ces vérifications
+statiques nous protègent des erreurs. Essayez d'ajouter du code au `main` qui
+utilise `s` et `x` pour voir quand vous pouvez les utiliser et quand les règles
+de l'appartenance vous empêchent de le faire.
 
-### Return Values and Scope
+### Les valeurs de retour et la portée
 
-Returning values can also transfer ownership. Here’s an example with similar
-annotations to those in Listing 4-3:
+Renvoyer des valeurs peut aussi transférer leur appartenance. Voici un exemple
+avec des annotations similaires à celles de l'entrée 4-3 :
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Nom du fichier : src/main.rs</span>
 
 ```rust
 fn main() {
-    let s1 = gives_ownership();         // gives_ownership moves its return
-                                        // value into s1.
+    let s1 = gives_ownership();         // gives_ownership déplace sa valeur de
+                                        // retour dans s1
 
-    let s2 = String::from("hello");     // s2 comes into scope.
+    let s2 = String::from("hello");     // s2 rentre dans la portée
 
-    let s3 = takes_and_gives_back(s2);  // s2 is moved into
-                                        // takes_and_gives_back, which also
-                                        // moves its return value into s3.
-} // Here, s3 goes out of scope and is dropped. s2 goes out of scope but was
-  // moved, so nothing happens. s1 goes out of scope and is dropped.
+    let s3 = takes_and_gives_back(s2);  // s2 est déplacée dans
+                                        // takes_and_gives_back, qui elle aussi
+                                        // déplace sa valeur de retour dans s3.
+} // Ici, s3 sort de la portée et est éliminée. s2 sort de la portée mais a été
+  // déplacée donc il ne se passe rien. s1 sort aussi de la portée et est
+  // éliminée.
 
-fn gives_ownership() -> String {             // gives_ownership will move its
-                                             // return value into the function
-                                             // that calls it.
+fn gives_ownership() -> String {             // gives_ownership va déplacer sa
+                                             // valeur de retour dans la 
+                                             // fonction qui l'appelle.
 
-    let some_string = String::from("hello"); // some_string comes into scope.
+    let some_string = String::from("hello"); // some_string rentre dans la
+                                             //portée.
 
-    some_string                              // some_string is returned and
-                                             // moves out to the calling
-                                             // function.
+    some_string                              // some_string est retrournée et
+                                             // est déplacée au code qui
+                                             // l'appelle.
 }
 
-// takes_and_gives_back will take a String and return one.
-fn takes_and_gives_back(a_string: String) -> String { // a_string comes into
-                                                      // scope.
+// takes_and_gives_back va prendre un String et retourne aussi un String.
+fn takes_and_gives_back(a_string: String) -> String { // a_string rentre dans
+                                                      // la portée.
 
-    a_string  // a_string is returned and moves out to the calling function.
+    a_string  // a_string est retournée et déplacée au code qui l'appelle.
 }
 ```
 
-The ownership of a variable follows the same pattern every time: assigning a
-value to another variable moves it. When a variable that includes data on the
-heap goes out of scope, the value will be cleaned up by `drop` unless the data
-has been moved to be owned by another variable.
+L'appartenance d'une variable suit toujours le même processus à chaque fois :
+assigner une valeur à une variable la déplace. Quand une variable qui contient
+des données sur la Heap sort de la portée, la valeur va être nettoyée de la
+mémoire avec `drop` à moins que la donnée ait été déplacée pour appartenir à
+une autre variable.
 
-Taking ownership and then returning ownership with every function is a bit
-tedious. What if we want to let a function use a value but not take ownership?
-It’s quite annoying that anything we pass in also needs to be passed back if we
-want to use it again, in addition to any data resulting from the body of the
-function that we might want to return as well.
+Il est un peu fastidieux de prendre l'appartenance puis ensuite de retourner
+l'appartenance avec chaque fonction. Et qu'est ce qu'il se passe si nous
+voulons qu'une fonction utilise une valeur mais ne se l'approprie pas ? C'est
+assez pénible que tout ce que nous envoyons doit être retourné si nous voulons
+l'utiliser à nouveau, en plus de toutes les données qui découlent de
+l'exécution de la fonction que nous voulons aussi récupérer.
 
-It’s possible to return multiple values using a tuple, like this:
+Il est possible de retourner plusieurs valeurs en utilisant un tuple, comme
+ceci :
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Nom du fichier : src/main.rs</span>
 
 ```rust
 fn main() {
@@ -587,12 +596,12 @@ fn main() {
 }
 
 fn calculate_length(s: String) -> (String, usize) {
-    let length = s.len(); // len() returns the length of a String.
+    let length = s.len(); // len() renvoie le nombre de caractères d'un String.
 
     (s, length)
 }
 ```
 
-But this is too much ceremony and a lot of work for a concept that should be
-common. Luckily for us, Rust has a feature for this concept, and it’s called
-*references*.
+Mais c'est trop de cérémonies et beaucoup de travail pour un principe qui
+devrait être courrant. Heureusement pour nous, Rust a une fonctionnalité pour
+ce principe, et c'est ce qu'on appelle les *références*.
