@@ -1,28 +1,17 @@
-# Functional Language features in Rust: Iterators and Closures
-
+# Les éléments de langage fonctionnel en Rust: les Itérateurs et les *Closures*
 <!-- Are closures unique to Rust? -->
 <!-- No, they're from functional languages, which is why they're discussed in
 this chapter. Do you have a suggestion on how to make that clearer than the
 text in the intro paragraph here? /Carol -->
 
-Rust's design has taken inspiration from a lot of existing languages and
-techniques, and one significant influence is *functional programming*.
-Programming in a functional style often includes using functions as values in
-arguments or return values of other functions, assigning functions to variables
-for later execution, and so forth. We won't debate here the issue of what,
-exactly, functional programming is or is not, but will instead show off some
-features of Rust that are similar to features in many languages often referred
-to as functional.
+Le design de Rust s'est inspiré de nombreux langages et techniques existants,
+et a été influencé de manière significative par la *programmation fonctionnelle*. Programmer dans un style fonctionnelle implique souvent de passer des fonctions en tant que valeurs en argument ou de retourner en fin de fonction une autre fonction, ainsi que d'assigner des fonctions à   des variables pour un usage plus lointain...etc Le but ici n'étant pas de débattre exactement de ce qu'est ou n'est pas la programmation fonctionnelle, le but est de montrer plusieurs caractéristiques de Rust qui sont similaires à plein de langages considérés comme fonctionnels.
 
-More specifically, we're going to cover:
+Plus exactement, nous allons couvrir:
 
-* *Closures*: a function-like construct you can store in a variable.
-* *Iterators*: a way of processing a series of elements.
-* How to use these features to improve on the I/O project from Chapter 12.
-* The performance of these features. Spoiler alert: they're faster than you
-  might think!
+* Les *Closures*: une fonction pouvant être assignée et conservée dans une variable.
+* Les *Itérateurs*: une manière de traiter une série d'éléments.
+* Comment utiliser ces éléments afin d'améliorer le projet sur les I/O du Chapitre 12.
+* Les performances associés à ces caractéristiques. Attention: elles pourraient être plus rapides que vous ne le pensez.
 
-There are other Rust features influenced by the functional style, like pattern
-matching and enums, that we've covered in other chapters as well. Mastering
-closures and iterators is an important part of writing idiomatic, fast Rust
-code, so we're devoting an entire chapter to them here.
+D'autres éléments de Rust ont été influencés par le style fonctionnel comme la reconnaissance de pattern (ou pattern matching) et les énumérations, que nous avons déjà couvert dans d'autres chapitres. Maîtriser les *closures* et les itérateurs est une partie importante permettant d'écrire du code Rust idiomatique et rapide, et c'est pourquoi nous dévouons un chapitre entier à ce sujet.
