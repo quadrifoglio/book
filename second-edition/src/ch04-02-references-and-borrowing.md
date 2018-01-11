@@ -1,15 +1,14 @@
-## References and Borrowing
+## Les références et l'emprunt
 
-The issue with the tuple code at the end of the preceding section is that we
-have to return the `String` to the calling function so we can still use the
-`String` after the call to `calculate_length`, because the `String` was moved
-into `calculate_length`.
+Le problème avec le code du tuple à la fin de la section précédente c'est que
+nous avons besoin de retourner le `String` au code appellant pour qu'il puisse
+encore utiliser le `String` après l'appel à `calculate_length`, car
+l'appartenance du `String` a été déplacée dans `calculate_length`.
 
-Here is how you would define and use a `calculate_length` function that has a
-*reference* to an object as a parameter instead of taking ownership of the
-value:
+Ici vous allez définir et utiliser une fonction `calculate_length` qui prends
+une *référénce* à un objet en paramètre plutôt que de s'approprier la valeur :
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Nom du fichier : src/main.rs</span>
 
 ```rust
 fn main() {
@@ -25,24 +24,25 @@ fn calculate_length(s: &String) -> usize {
 }
 ```
 
-First, notice that all the tuple code in the variable declaration and the
-function return value is gone. Second, note that we pass `&s1` into
-`calculate_length`, and in its definition, we take `&String` rather than
-`String`.
+Premièrement, remarquez que tout le code avec le tuple dans la déclaration des
+variables et dans le retour de la fonction a été enlevé. Ensuite, on peux
+constater que nous envoyons `&s1` dans `calculate_length`, et que dans sa
+définition, nous utilisons `&String` plutôt que `String`.
 
-These ampersands are *references*, and they allow you to refer to some value
-without taking ownership of it. Figure 4-5 shows a diagram.
+Ces esperluettes sont des *références*, et elles permettent de vous référer à
+une valeur sans se l'approprier. L'illustration 4-5 nous montre cela dans un
+diagramme.
 
-<img alt="&String s pointing at String s1" src="img/trpl04-05.svg" class="center" />
+<img alt="&String s pointe sur String s1" src="img/trpl04-05.svg" class="center" />
 
-<span class="caption">Figure 4-5: `&String s` pointing at `String s1`</span>
+<span class="caption">Illustration 4-5 : `&String s` pointe sur `String s1`</span>
 
-> Note: The opposite of referencing by using `&` is *dereferencing*, which is
-> accomplished with the dereference operator, `*`. We’ll see some uses of the
-> dereference operator in Chapter 8 and discuss details of dereferencing in
-> Chapter 15.
+> Note : l'opposé du référencement en utilisant `&` est le *déréférencement*,
+> qui est effectué par l'opérateur de déréférencement, `*`. Nous allons voir
+> quelques utilisations de l'opérateur de déréférencement dans le Chapitre 8 et
+> nous discuterons des détails du déréférencement dans le Chapitre 15.
 
-Let’s take a closer look at the function call here:
+Regardons de plus près les appels de fonction utilisés :
 
 ```rust
 # fn calculate_length(s: &String) -> usize {
@@ -53,34 +53,40 @@ let s1 = String::from("hello");
 let len = calculate_length(&s1);
 ```
 
-The `&s1` syntax lets us create a reference that *refers* to the value of `s1`
-but does not own it. Because it does not own it, the value it points to will
-not be dropped when the reference goes out of scope.
+La syntaxe `&s1` nous permet de créer une référence qui se *réfère* à la valeur
+de `s1` mais ne s'approprie pas. Par ce qu'elle ne se l'approprie pas, la
+valeur qu'elle désigne ne sera pas libérée quand la référence sortira de la
+portée.
 
-Likewise, the signature of the function uses `&` to indicate that the type of
-the parameter `s` is a reference. Let’s add some explanatory annotations:
+De la même manière, la signature de la fonction utilise `&` pour indiquer que
+le type de paramètre `s` est une référence. Ajoutons quelques commentaires
+explicatifs :
 
 ```rust
-fn calculate_length(s: &String) -> usize { // s is a reference to a String
+fn calculate_length(s: &String) -> usize { // s est une référence à un String
     s.len()
-} // Here, s goes out of scope. But because it does not have ownership of what
-  // it refers to, nothing happens.
+} // Ici, s sort de la porté. Mais comme elle ne s'approprie pas ce dont elle
+  // fait référence, il ne se passe rien.
 ```
 
-The scope in which the variable `s` is valid is the same as any function
-parameter’s scope, but we don’t drop what the reference points to when it goes
-out of scope because we don’t have ownership. Functions that have references as
-parameters instead of the actual values mean we won’t need to return the values
-in order to give back ownership, since we never had ownership.
+La portée dans laquelle la variable `s` est en vigueur est la même que toute
+portée de paramètre de fonction, mais nous ne libérons pas ce que que cette
+référence pointe quand elle sort de la portée car nous ne nous la sommes pas
+approprié. Les fonctions qui ont des références en paramètres au lieu des
+valeurs effectives veulent dire que nous n'avons pas besoin de retourner les
+valeurs pour rendre leur appartenance, puis nous n'avons jamais eu
+l'appartenance.
 
-We call having references as function parameters *borrowing*. As in real life,
-if a person owns something, you can borrow it from them. When you’re done, you
-have to give it back.
+Quand nous avons des références dans les paramètres d'une fonction, nous
+appellons cela *l'emprunt*. Comme dans la vie réelle, quand un objet appartient
+à quelqu'un, vous pouvez lui emprunter. Quand vous avez fini, vous devez lui
+rendre.
 
-So what happens if we try to modify something we’re borrowing? Try the code in
-Listing 4-4. Spoiler alert: it doesn’t work!
+Donc qu'est-ce qu'il se passe si nous essayons de modifier quelque chose que
+nous empruntons ? Essayez le code dans l'entrée 4-4. Spoiler : cela ne
+fonctionne pas !
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Nom du fichier : src/main.rs</span>
 
 ```rust,ignore
 fn main() {
@@ -94,9 +100,10 @@ fn change(some_string: &String) {
 }
 ```
 
-<span class="caption">Listing 4-4: Attempting to modify a borrowed value</span>
+<span class="caption">Entrée 4-4: tentative de modification d'une valeur
+empruntée.</span>
 
-Here’s the error:
+Voici l'erreur :
 
 ```text
 error[E0596]: cannot borrow immutable borrowed content `*some_string` as mutable
@@ -108,14 +115,16 @@ error[E0596]: cannot borrow immutable borrowed content `*some_string` as mutable
   |     ^^^^^^^^^^^ cannot borrow as mutable
 ```
 
-Just as variables are immutable by default, so are references. We’re not
-allowed to modify something we have a reference to.
+Comme les variables sont immuables par défaut, les références le sont aussi.
+Nous ne sommes pas autorisé à modifier une chose quand nous avons une référence
+vers elle.
 
-### Mutable References
+### Les références modifiables
 
-We can fix the error in the code from Listing 4-4 with just a small tweak:
+Nous pouvons résoudre l'erreur dans le code de l'entrée 4-4 avec une petite
+modification :
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Nom de fichier : src/main.rs</span>
 
 ```rust
 fn main() {
@@ -129,15 +138,15 @@ fn change(some_string: &mut String) {
 }
 ```
 
-First, we had to change `s` to be `mut`. Then we had to create a mutable
-reference with `&mut s` and accept a mutable reference with `some_string: &mut
-String`.
+Premièrement, nous devons modifier `s` pour être `mut`. Ensuite, nous devons
+créer une référence modifiable avec `&mut s` et prendre une référence
+modifiable avec `some_string: &mut String`.
 
-But mutable references have one big restriction: you can only have one mutable
-reference to a particular piece of data in a particular scope. This code will
-fail:
+Mais les références modifiables ont une grosse restriction : vous ne pouvez
+avoir qu'une seule référence modifiable pour un article de donnée précis dans
+une portée précise. Le code suivant va échouer :
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Nom de fichier : src/main.rs</span>
 
 ```rust,ignore
 let mut s = String::from("hello");
@@ -146,7 +155,7 @@ let r1 = &mut s;
 let r2 = &mut s;
 ```
 
-Here’s the error:
+Voici l'erreur :
 
 ```text
 error[E0499]: cannot borrow `s` as mutable more than once at a time
@@ -160,24 +169,28 @@ error[E0499]: cannot borrow `s` as mutable more than once at a time
   | - first borrow ends here
 ```
 
-This restriction allows for mutation but in a very controlled fashion. It’s
-something that new Rustaceans struggle with, because most languages let you
-mutate whenever you’d like. The benefit of having this restriction is that Rust
-can prevent data races at compile time.
+Cette restriction autorise les mutations mais de façon très contrôlée. C'est
+ce avec quoi les nouveaux Rustacéens ont du mal, car la plupart des langages
+vous permettent de modifier les données quand vous voulez. L'avantage de cette
+restriction c'est que Rust peut empêcher la concurence des données au moment de
+la compilation.
 
-A *data race* is similar to a race condition and happens when these three
-behaviors occur:
+La *concurence des données* ressemble à une concurence critique et se produit
+quand ces trois facteurs se combinent :
 
-1. Two or more pointers access the same data at the same time.
-1. At least one of the pointers is being used to write to the data.
-1. There’s no mechanism being used to synchronize access to the data.
+1. Un ou plusieurs pointeurs accèdent à la même donnée au même moment.
+2. Au moins un des pointeurs est utilisé pour écrire dans les données.
+3. Il n'y a pas dispositif d'utilisé pour synchroniser l'accès aux données.
 
-Data races cause undefined behavior and can be difficult to diagnose and fix
-when you’re trying to track them down at runtime; Rust prevents this problem
-from happening because it won’t even compile code with data races!
+La concurence des données provoque des comportements inexpliqués et il peut
+alors être difficile de diagnostiquer et résoudre le problème lorsque vous
+essayez de les traquer au moment de l'exécution; Rust évite que ce problème
+arrive parcequ'il ne va même pas compiler le code avec de la concurence de
+données !
 
-As always, we can use curly brackets to create a new scope, allowing for
-multiple mutable references, just not *simultaneous* ones:
+Comme toujours, nous pouvons utiliser des accolades pour créer une nouvelle
+portée, nous permettant d'avoir plusieures références modifiables, mais pas
+*simultanées* :
 
 ```rust
 let mut s = String::from("hello");
@@ -185,23 +198,24 @@ let mut s = String::from("hello");
 {
     let r1 = &mut s;
 
-} // r1 goes out of scope here, so we can make a new reference with no problems.
+} // r1 sort de la portée ici, donc nous pouvons faire une nouvelle référence
+  // sans problèmes.
 
 let r2 = &mut s;
 ```
 
-A similar rule exists for combining mutable and immutable references. This code
-results in an error:
+Une règle simulaire existe pour mélanger les références immuables et
+modifiables. Ce code va meter à une erreur :
 
 ```rust,ignore
 let mut s = String::from("hello");
 
-let r1 = &s; // no problem
-let r2 = &s; // no problem
-let r3 = &mut s; // BIG PROBLEM
+let r1 = &s; // sans problème
+let r2 = &s; // sans problème
+let r3 = &mut s; // GROS PROBLEME
 ```
 
-Here’s the error:
+Voici l'erreur :
 
 ```text
 error[E0502]: cannot borrow `s` as mutable because it is also borrowed as
@@ -217,18 +231,20 @@ immutable
   | - immutable borrow ends here
 ```
 
-Whew! We *also* cannot have a mutable reference while we have an immutable one.
-Users of an immutable reference don’t expect the values to suddenly change out
-from under them! However, multiple immutable references are okay because no one
-who is just reading the data has the ability to affect anyone else’s reading of
-the data.
+Ouah ! Nous ne pouvons pas *non plus* avoir une référence modifiable si nous en
+avons une d'immuable. Les utilisateurs d'une référence immuable ne s'attendent
+pas à ce que se valeur change soudainement ! Cependant, l'utilisation de
+plusieures références immuables ne pose pas de problème car personne de ceux
+qui lisent seulement la donnée n'a la possiblité de modifier la lecture de la
+données par les autres.
 
-Even though these errors may be frustrating at times, remember that it’s the
-Rust compiler pointing out a potential bug early (at compile time rather than
-at runtime) and showing you exactly where the problem is instead of you having
-to track down why sometimes your data isn’t what you thought it should be.
+Même si ces erreurs peuvent parfois être frustrantes, souvenez-vous que le
+compilateur de Rust nous fait remarquer un futur bogue avant l'heure (au moment
+de la compilation plutôt que lors de l'exécution) et vous montre où est
+exactement le problème plutôt que vous ayez à traquer pourquoi *des fois* vos
+données ne correspondent pas à ce que vous pensiez qu'elles étaient.
 
-### Dangling References
+### Références en suspension
 
 In languages with pointers, it’s easy to erroneously create a *dangling
 pointer*, a pointer that references a location in memory that may have been
