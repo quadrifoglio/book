@@ -1,60 +1,52 @@
-# Plus ou Moins
+# Guessing Game
 
-Entrons dans le vif du sujet en travaillant ensemble sur un projet concret.
-Ce chapitre présente quelques concepts couramment utilisés en Rust en les
-mettant en place dans un véritable programme. Nous verrons par exemple les
-mots clés `let` et `match`, les méthodes et fonctions associées, ainsi que
-l'utilisation de librairies externes (les `crates`) et bien plus encore.
-Au cours de ce chapitre, nous verrons les bases de ces concepts à l'aide
-d'exemples concrets, et les chapitres qui suivent les présenteront en détails.
+Let’s jump into Rust by working through a hands-on project together! This
+chapter introduces you to a few common Rust concepts by showing you how to use
+them in a real program. You’ll learn about `let`, `match`, methods, associated
+functions, using external crates, and more! The following chapters will explore
+these ideas in more detail. In this chapter, you’ll practice the fundamentals.
 
-Nous allons créer un programme fréquemment réalisé par les débutants en
-programmation, le jeu du "Plus ou Moins". Le principe de ce jeu est le suivant:
-le programme va générer un nombre aléatoire entre 1 et 100. Ce sera ensuite au
-joueur d'entrer un nombre qu'il aura deviné, et le programme indiquera si le
-nombre fourni par le joueur est trop grand ou trop petit. Si le nombre deviné
-par le joueur est le bon, le programme affiche un message de félicitations
-et se termine.
+We’ll implement a classic beginner programming problem: a guessing game. Here’s
+how it works: the program will generate a random integer between 1 and 100. It
+will then prompt the player to enter a guess. After entering a guess, it will
+indicate whether the guess is too low or too high. If the guess is correct, the
+game will print congratulations and exit.
 
+## Setting Up a New Project
 
-## Mise en place du projet
-
-Pour créer un nouveau projet, rendez-vous dans le dossier *projets* que
-vous avez créé au chapitre 1, et utilisez Cargo pour initialiser votre projet.
+To set up a new project, go to the *projects* directory that you created in
+Chapter 1, and make a new project using Cargo, like so:
 
 ```text
-$ cargo new deviner_nombre --bin
-$ cd deviner_nombre
+$ cargo new guessing_game --bin
+$ cd guessing_game
 ```
 
-La première commande, `cargo new`, requiert le nom de notre projet (`deviner_nombre`)
-en tant que premier argument. L'option `--bin` informe Cargo que notre projet
-formera un programme exécutable, comme celui du chapitre 1, et non une librairie.
-La seconde commande nous place dans le dossier de notre projet nouvellement
-crée par Cargo.
+The first command, `cargo new`, takes the name of the project (`guessing_game`)
+as the first argument. The `--bin` flag tells Cargo to make a binary project,
+similar to the one in Chapter 1. The second command changes to the new
+project’s directory.
 
-Regardons le fichier *Cargo.toml* automatiquement crée:
+Look at the generated *Cargo.toml* file:
 
-<span class="filename">Fichier: Cargo.toml</span>
+<span class="filename">Filename: Cargo.toml</span>
 
 ```toml
 [package]
-name = "deviner_nombre"
+name = "guessing_game"
 version = "0.1.0"
-authors = ["Votre Nom <vous@exemple.com>"]
+authors = ["Your Name <you@example.com>"]
 
 [dependencies]
 ```
 
-Si le nom d'auteur que Cargo a obtenu depuis votre environnement n'est pas
-correct, vous pouvez le changer dans ce fichier et le sauvegarder.
+If the author information that Cargo obtained from your environment is not
+correct, fix that in the file and save it again.
 
-Tel qu'expérimenté dans le chapitre 1, `cargo new` génère un programme de base,
-un “Hello, world!” (que l'on pourrait traduire par “Bonjour tout le monde”).
+As you saw in Chapter 1, `cargo new` generates a “Hello, world!” program for
+you. Check out the *src/main.rs* file:
 
-Jetez un oeil au fichier *src/mais.rs*:
-
-<span class="filename">Fichier: src/main.rs</span>
+<span class="filename">Filename: src/main.rs</span>
 
 ```rust
 fn main() {
@@ -62,309 +54,294 @@ fn main() {
 }
 ```
 
-Maintenant, lançons la compilation de ce programme “Hello, world!”, et
-démarrons-le. Il est possible de faire ces deux actions en une seule commande,
-`cargo run`:
+Now let’s compile this “Hello, world!” program and run it in the same step
+using the `cargo run` command:
 
 ```text
 $ cargo run
-   Compiling deviner_nombre v0.1.0 (file:///projects/deviner_nombre)
-     Running `target/debug/deviner_nombre`
+   Compiling guessing_game v0.1.0 (file:///projects/guessing_game)
+    Finished dev [unoptimized + debuginfo] target(s) in 1.50 secs
+     Running `target/debug/guessing_game`
 Hello, world!
 ```
 
-Cette commande `run` est très pratique lorsque vous souhaitez itérer rapidement
-sur un projet, et c'est le cas ici: on veut lancer notre jeu, le tester,
-faire une modification, et passer à l'essai suivant.
+The `run` command comes in handy when you need to rapidly iterate on a project,
+and this game is such a project: we want to quickly test each iteration
+before moving on to the next one.
 
-Ouvrez à nouveau le fichier *src/main.rs*. C'est ici que nous écrirons la totalité
-de notre code Rust.
+Reopen the *src/main.rs* file. You’ll be writing all the code in this file.
 
+## Processing a Guess
 
-## Traitement des entrées utilisateur
+The first part of the program will ask for user input, process that input, and
+check that the input is in the expected form. To start, we’ll allow the player
+to input a guess. Enter the code in Listing 2-1 into *src/main.rs*.
 
-La première partie du programme consiste à demander au joueur de fournir un nombre,
-et à vérifier que ce que l'utilisateur entre correspond au format attendu.
-Commençons par permettre au joueur d'entrer le nombre qu'il a deviné.
-Ajoutez le code de la Figure 2-1 dans le fichier *src/main.rs*.
-
-<span class="filename">Fichier: src/main.rs</span>
+<span class="filename">Filename: src/main.rs</span>
 
 ```rust,ignore
 use std::io;
 
 fn main() {
-    println!("Jeu de Plus ou Moins");
+    println!("Guess the number!");
 
-    println!("Entrez votre déduction.");
+    println!("Please input your guess.");
 
-    let mut deduction = String::new();
+    let mut guess = String::new();
 
-    io::stdin().read_line(&mut deduction)
-        .expect("Echec de la lecture de l'entrée utilisateur");
+    io::stdin().read_line(&mut guess)
+        .expect("Failed to read line");
 
-    println!("Votre déduction: {}", deducation);
+    println!("You guessed: {}", guess);
 }
 ```
 
-<span class="caption">Figure 2-1: Code permettant de lire une entrée utilisateur et de l'afficher</span>
+<span class="caption">Listing 2-1: Code to get a guess from the user and print
+it out</span>
 
-Ce code contient beaucoup d'information, nous allons donc le détailler petit
-à petit. Pour obtenir l'entrée utilisateur et l'afficher, nous avons besoin d'importer
-la librairie `io` (pour input/output, entrée/sortie) afin de pouvoir l'utiliser.
-La librairie `io` provient de `std`, la librairie standard du langage Rust.
+This code contains a lot of information, so let’s go over it bit by bit. To
+obtain user input and then print the result as output, we need to bring the
+`io` (input/output) library into scope. The `io` library comes from the
+standard library (which is known as `std`):
 
 ```rust,ignore
 use std::io;
 ```
 
-Par défaut, Rust n'importe que quelques types utilisables dans les programmes,
-ceux qui sont listés dans le [le *prelude*][prelude]<!-- ignore -->. Si vous
-voulez utiliser un type qui ne s'y trouve pas, vous devrez l'importer au moyen
-du mot clé `use`. Lorsque l'on importe `std::io`, on rend disponible de nombreuses
-fonctionnalités du domaine des entrées/sorties, comme par exemple la possibilité
-de traiter les entrées de l'utilisateur.
+By default, Rust brings only a few types into the scope of every program in
+[the *prelude*][prelude]<!-- ignore -->. If a type you want to use isn’t in the
+prelude, you have to bring that type into scope explicitly with a `use`
+statement. Using the `std::io` library provides you with a number of useful
+`io`-related features, including the functionality to accept user input.
 
 [prelude]: ../../std/prelude/index.html
 
-Tel qu'expliqué au Chapitre 1, la fonction `main` est le point d'entrée
-dans le programme, c'est ici que l'exécution démarre.
+As you saw in Chapter 1, the `main` function is the entry point into the
+program:
 
 ```rust,ignore
 fn main() {
 ```
 
-Le mot clé `fn` déclare une nouvelle fonction, les `()` indiquent que cette
-fonction n'accepte aucun paramètre, et `{` marque le début du corps de la fonction.
+The `fn` syntax declares a new function, the `()` indicate there are no
+parameters, and `{` starts the body of the function.
 
-Vous avez également vu lors de votre lecture du Chapitre 1 que `println!` est une
-macro qui affiche une chaine de caractères à l'écran.
-
-```rust,ignore
-println!("Jeu de Plus ou Moins");
-
-println!("Entrez votre déduction.");
-```
-
-Ce code permet simplement d'afficher le titre de notre jeu, et de demander
-au joueur d'entrer un nombre.
-
-### Enregistrer des données grace aux variables
-
-Créons maintenant un emplacement pour enregistrer l'entrée utilisateur:
+As you also learned in Chapter 1, `println!` is a macro that prints a string to
+the screen:
 
 ```rust,ignore
-let mut deduction = String::new();
+println!("Guess the number!");
+
+println!("Please input your guess.");
 ```
 
-Le programme commence à devenir intéressant ! Il se passe beaucoup de choses
-lorsque cette simple ligne est exécutée. Vous remarquerez qu'elle commence par
-le mot clé `let`, qui sert à créer des *variables*. En voici un autre exemple:
+This code is printing a prompt stating what the game is and requesting input
+from the user.
+
+### Storing Values with Variables
+
+Next, we’ll create a place to store the user input, like this:
+
+```rust,ignore
+let mut guess = String::new();
+```
+
+Now the program is getting interesting! There’s a lot going on in this little
+line. Notice that this is a `let` statement, which is used to create
+*variables*. Here’s another example:
 
 ```rust,ignore
 let foo = bar;
 ```
 
-Cette ligne permet de créer une nouvelle variable nommée `foo` et à lui
-assigner la valeur de `bar`. Par défaut en Rust, les variables sont immuables,
-c'est-à-dire qu'il est impossible de modifier leur valeur. Le prochain exemple
-montre comment utiliser le mot clé `mut` pour autoriser la modification de la
-valeur d'une variable.
+This line will create a new variable named `foo` and bind it to the value
+`bar`. In Rust, variables are immutable by default. The following example shows
+how to use `mut` before the variable name to make a variable mutable:
 
 ```rust
-let foo = 5; // immuable
-let mut bar = 5; // modifiable
+let foo = 5; // immutable
+let mut bar = 5; // mutable
 ```
 
-> Note: Les `//` permettent de commencer un commentaire s'étendant jusqu'à la fin
-> de la ligne. Rust ignore le texte se trouvant dans un commentaire.
+> Note: The `//` syntax starts a comment that continues until the end of the
+> line. Rust ignores everything in comments.
 
-Vous comprenez donc maintenant que la ligne `let mut deduction` permet de créer une
-variable modifiable nommée `deduction`. De l'autre côté du signe égal (`=`) se trouve
-la valeur de cette variable. Ici il s'agit du retour de l'appel de la fonction
-`String::new`, qui renvoie une nouvelle instance d'un `String`.
-[`String`][string]<!-- ignore --> est un type qui représente une chaine de caractères,
-et qui nous est fournit par la librairie standard. Les `String` représentent du texte
-encodé en UTF-8, et il est possible de les étendre.
+Now you know that `let mut guess` will introduce a mutable variable named
+`guess`. On the other side of the equal sign (`=`) is the value that `guess` is
+bound to, which is the result of calling `String::new`, a function that returns
+a new instance of a `String`. [`String`][string]<!-- ignore --> is a string
+type provided by the standard library that is a growable, UTF-8 encoded bit of
+text.
 
 [string]: ../../std/string/struct.String.html
 
-Les `::` de qui précèdent `::new` indiquent que la fonction `new` est une *fonction
-associée* du type `String`. Une fonction associée est implémentée sur un type, dans
-ce cas `String` plutot que sur une instance particulière de `String`. Ce concept
-est parfois appelé une *méthode statique*.
+The `::` syntax in the `::new` line indicates that `new` is an *associated
+function* of the `String` type. An associated function is implemented on a type,
+in this case `String`, rather than on a particular instance of a `String`. Some
+languages call this a *static method*.
 
-Cette fonction `new` crée une nouvelle chaine de caractères vide, un nouveau `String`.
-Vous trouverez fréquemment une fonction `new` sur les types, c'est un nom souvent
-donné à une fonction qui crée une nouvelle valeur ou instance.
+This `new` function creates a new, empty `String`. You’ll find a `new` function
+on many types, because it’s a common name for a function that makes a new value
+of some kind.
 
-Pour résumer, la ligne `let mut deduction = String::new();` crée une nouvelle
-variable modifiable nommée `deduction` qui contient une nouvelle chaine de caractères,
-un `String`. Ouf !
+To summarize, the `let mut guess = String::new();` line has created a mutable
+variable that is currently bound to a new, empty instance of a `String`. Whew!
 
-Rappellez-vous que qu'on a importé les fonctionnalités d'entrée/sortie de la
-librairie standard, au moyen de la ligne `use std::io;`, dès la première ligne
-de notre programme. Nous allons maintenant appeler la fonction `stdin`, associée
-au module `io`:
+Recall that we included the input/output functionality from the standard
+library with `use std::io;` on the first line of the program. Now we’ll call an
+associated function, `stdin`, on `io`:
 
 ```rust,ignore
-io::stdin().read_line(&mut deduction)
-    .expect("Echec de la lecture de l'entrée utilisateur");
+io::stdin().read_line(&mut guess)
+    .expect("Failed to read line");
 ```
 
-Si la ligne `use std::io` n'était pas présente au début du programme, on aurait
-dû écrire l'appel à la fonction de cette manière: `std::io::stdin`. La fonction
-`stdin` retourne une instance de [`std::io::Stdin`][iostdin]<!-- ignore -->, qui
-est un type qui représente une référence vers l'entrée standard de notre programme,
-liée au terminal dans lequel il est lancé.
-
-<!-- TODO: Vérifier traduction de 'handle' en 'référence' -->
+If we didn’t have the `use std::io` line at the beginning of the program, we
+could have written this function call as `std::io::stdin`. The `stdin` function
+returns an instance of [`std::io::Stdin`][iostdin]<!-- ignore -->, which is a
+type that represents a handle to the standard input for your terminal.
 
 [iostdin]: ../../std/io/struct.Stdin.html
 
-La ligne suivante, `.read_line(&mut deduction)` appelle la méthode
-[`read_line`][read_line]<!-- ignore --> de notre référence vers l'entrée standard,
-ce qui permet d'obtenir ce que l'utilisateur a entré au clavier. On passe à la
-méthode `read_line` un argument, `&mut deduction`.
+The next part of the code, `.read_line(&mut guess)`, calls the
+[`read_line`][read_line]<!-- ignore --> method on the standard input handle to
+get input from the user. We’re also passing one argument to `read_line`: `&mut
+guess`.
 
 [read_line]: ../../std/io/struct.Stdin.html#method.read_line
 
-L'objectif de `read_line` est de prendre ce que l'utilisateur écrit dans
-l'entrée standard, et de le placer dans une chaine de caractères, c'est pourquoi
-on passe à la méthode cet argument. Ce dernier se doit d'être modifiable, puisque
-`read_line` va le modifier afin d'y placer l'entrée de l'utilisateur.
+The job of `read_line` is to take whatever the user types into standard input
+and place that into a string, so it takes that string as an argument. The
+string argument needs to be mutable so the method can change the string’s
+content by adding the user input.
 
-Le signe `&` indique que cet argument est une *référence*, ce qui permet de laisser
-plusieurs morceaux de code accéder à un même bloc de données, sans avoir besoin
-de copier ces données plusieurs fois. Les références sont une fonctionnalité
-complexe, et un des avantages majeurs de Rust est qu'il rend simple et sécurisé
-l'utilisation des références. Il est inutile de détailler plus que nécessaire
-les références pour finir ce programme. Le chapitre 4 les présentera en détails.
-Pour l'instant, tout ce que vous devez savoir est que comme les variables,
-les références sont immuables par défaut, il est donc nécessaire d'écrire
-`&mut deduction` plutot que `&deduction` pour rendre la référence modifiable.
+The `&` indicates that this argument is a *reference*, which gives you a way to
+let multiple parts of your code access one piece of data without needing to
+copy that data into memory multiple times. References are a complex feature,
+and one of Rust’s major advantages is how safe and easy it is to use
+references. You don’t need to know a lot of those details to finish this
+program: Chapter 4 will explain references more thoroughly. For now, all you
+need to know is that like variables, references are immutable by default.
+Hence, we need to write `&mut guess` rather than `&guess` to make it mutable.
 
-Nous n'avons pas tout à fait finit de détailler ce bout de code. C'est une ligne
-de texte, mais ce n'est que la première partie de la ligne de code complète.
-Voici la suite:
-
-```rust,ignore
-.expect("Echec de la lecture de l'entrée utilisateur");
-```
-
-Lorsque l'on appelle une méthode avec la syntaxe `.foo()`, il est généralement
-préférable de passer une ligne puis d'indenter à l'aide de caractères espace
-avant d'écrire la suite du code. Ceci permet d'aider à séparer les longues lignes
-de code. On aurait pu écrire le même code de cette manière:
+We’re not quite done with this line of code. Although it’s a single line of
+text, it’s only the first part of the single logical line of code. The second
+part is this method:
 
 ```rust,ignore
-io::stdin().read_line(&mut deduction).expect("Echec de la lecture de l'entrée utilisateur");
+.expect("Failed to read line");
 ```
 
-Cependant, une longue ligne de code n'est pas toujours facile à lire, il est donc
-considéré comme une bonne pratique de la diviser, deux lignes de texte pour deux
-appels de méthodes. Voyons maintenant l'effet de l'appel à `expect`.
+When you call a method with the `.foo()` syntax, it’s often wise to introduce a
+newline and other whitespace to help break up long lines. We could have
+written this code as:
 
-### Gérer les potentielles erreurs avec `Result`
+```rust,ignore
+io::stdin().read_line(&mut guess).expect("Failed to read line");
+```
 
-Tel qu'expliqué plus haut, `read_line` permet de stocker ce que l'utilisateur a
-écrit au clavier dans la variable que l'on spécifie, mais cette fonction retourne
-également une valeur, de type [`io::Result`][ioresult]<!-- ignore -->. Il existe
-plusieurs types nommés `Result` dans la librairie standard de Rust: un type
-générique [`Result`][result]<!-- ignore -->, ainsi que des versions spécifiques
-à un sous-module, comme `io::Result`.
+However, one long line is difficult to read, so it’s best to divide it, two
+lines for two method calls. Now let’s discuss what this line does.
+
+### Handling Potential Failure with the `Result` Type
+
+As mentioned earlier, `read_line` puts what the user types into the string we’re
+passing it, but it also returns a value—in this case, an
+[`io::Result`][ioresult]<!-- ignore -->. Rust has a number of types named
+`Result` in its standard library: a generic [`Result`][result]<!-- ignore --> as
+well as specific versions for submodules, such as `io::Result`.
 
 [ioresult]: ../../std/io/type.Result.html
 [result]: ../../std/result/enum.Result.html
 
-Les types `Result` sont des [*énumerations*][enums]<!-- ignore -->, aussi
-appelées *enums*. Une énumération est un type qui peut avoir un certain nombre
-de valeurs définies par le programmeur. Les différentes valeurs possibles d'un
-*enum* sont appelées *variantes*. Le chapitre 6 explorera les énumération plus
-en détails.
+The `Result` types are [*enumerations*][enums]<!-- ignore -->, often referred
+to as *enums*. An enumeration is a type that can have a fixed set of values,
+and those values are called the enum’s *variants*. Chapter 6 will cover enums
+in more detail.
 
 [enums]: ch06-00-enums.html
 
-Pour `Result`, il existe deux variantes: `Ok` et `Err`. `Ok` indique qu'une
-opération est un succès, et à l'intérieur de la variante `Ok` se trouve le
-résultat attendu. A l'inverse, la variante `Err` de `Result` signifie que
-l'opération a échouée, et à l'intérieur se trouve les informations décrivant
-les raisons de l'échec.
+For `Result`, the variants are `Ok` or `Err`. `Ok` indicates the operation was
+successful, and inside the `Ok` variant is the successfully generated value.
+`Err` means the operation failed, and `Err` contains information about how or
+why the operation failed.
 
-L'objectif du type `Result` est d'encoder les informations nécessaires à une
-bonne gestion des erreurs. Les types `Result`, comme tous les types, ont des
-méthodes associées. Par exemple, `io::Result` propose
-[la méthode `expect`][expect]<!-- ignore -->. Si une instance de `io::Result` est
-la variante `Err`, un appel à `expect` sur l'instance de `io::Result` causera
-un crash du programme, et affichera le message que vous aurez passé en argument.
-Si l'appel à `read_line` retourne une variante `Err`, ce sera probablement
-dû à une erreur du système d'exploitation. Si par contre `read_line` retourne
-une variante `Ok`, `expect` prendra le contenu du `Ok`, le résultat de l'operation,
-et vous le retournera afin que vous puissiez l'utiliser. Dans notre exemple,
-ce résultat est le nombre d'octets que l'utilisateur a fournit dans l'entrée
-standard.
+The purpose of these `Result` types is to encode error handling information.
+Values of the `Result` type, like any type, have methods defined on them. An
+instance of `io::Result` has an [`expect` method][expect]<!-- ignore --> that
+you can call. If this instance of `io::Result` is an `Err` value, `expect` will
+cause the program to crash and display the message that you passed as an
+argument to `expect`. If the `read_line` method returns an `Err`, it would
+likely be the result of an error coming from the underlying operating system.
+If this instance of `io::Result` is an `Ok` value, `expect` will take the
+return value that `Ok` is holding and return just that value to you so you
+could use it. In this case, that value is the number of bytes in what the user
+entered into standard input.
 
 [expect]: ../../std/result/enum.Result.html#method.expect
 
-Si l'on appelle pas `expect`, le programme compilera, mais avec une mise en garde:
+If we don’t call `expect`, the program will compile, but we’ll get a warning:
 
 ```text
 $ cargo build
    Compiling guessing_game v0.1.0 (file:///projects/guessing_game)
-src/main.rs:10:5: 10:39 warning: unused result which must be used,
-#[warn(unused_must_use)] on by default
-src/main.rs:10     io::stdin().read_line(&mut guess);
-                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+warning: unused `std::result::Result` which must be used
+  --> src/main.rs:10:5
+   |
+10 |     io::stdin().read_line(&mut guess);
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: #[warn(unused_must_use)] on by default
 ```
 
-Rust nous informe que l'on ne fait rien du `Result` qui nous fournir `read_line`,
-et que par conséquent nous n'avons pas géré une erreur potentielle. La meilleure
-façon de régler ce programme est d'écrire le code permettant de bien gérer
-l'erreur, mais dans notre cas on souhaite seulement crasher le programme si un
-problème survient, on peut donc se contenter d'appeler `expect`. Nous verrons
-dans le chapitre 9 comment gérer les erreurs proprement.
+Rust warns that we haven’t used the `Result` value returned from `read_line`,
+indicating that the program hasn’t handled a possible error. The right way to
+suppress the warning is to actually write error handling, but since we want to
+crash this program when a problem occurs, we can use `expect`. You’ll learn
+about recovering from errors in Chapter 9.
 
-### Afficher des valeurs grâce à `println!`
+### Printing Values with `println!` Placeholders
 
-Mis à part l'accolade de fermeture, il ne nous reste qu'une seule ligne à étudier
-dans le code que nous avons pour l'instant:
+Aside from the closing curly brackets, there’s only one more line to discuss in
+the code added so far, which is the following:
 
 ```rust,ignore
-println!("Votre déduction: {}", guess);
+println!("You guessed: {}", guess);
 ```
 
-Cette ligne permet d'afficher la variable dans laquelle nous avons stocké ce que
-notre utilisateur à tapé au clavier. Les `{}` sont un 'placeholder' qui sera
-remplacé par une valeur. Il est possible d'en utiliser plusieurs. Les premières `{}`
-seront remplacées par le premier argument qui suit la chaîne de formatage, les
-secondes `{}` par le deuxième argument, et ainsi de suite. Afficher plusieurs
-valeurs avec un seul appel à `println` ressemble donc à ceci:
+This line prints out the string we saved the user’s input in. The set of `{}`
+is a placeholder that holds a value in place. You can print more than one value
+using `{}`: the first set of `{}` holds the first value listed after the format
+string, the second set holds the second value, and so on. Printing out multiple
+values in one call to `println!` would look like this:
 
 ```rust
 let x = 5;
 let y = 10;
 
-println!("x = {} et y = {}", x, y);
+println!("x = {} and y = {}", x, y);
 ```
 
-Ce code afficherait `x = 5 et y = 10`.
+This code would print out `x = 5 and y = 10`.
 
-### Test de la première partie
+### Testing the First Part
 
-Pour tester notre début de programme, lançons-le à l'aide de la commande `cargo run`.
+Let’s test the first part of the guessing game. You can run it using
+`cargo run`:
 
 ```text
 $ cargo run
    Compiling guessing_game v0.1.0 (file:///projects/guessing_game)
+    Finished dev [unoptimized + debuginfo] target(s) in 2.53 secs
      Running `target/debug/guessing_game`
-Jeu de Plus ou Moins
-Entrez votre déduction.
+Guess the number!
+Please input your guess.
 6
-Votre déduction: 6
+You guessed: 6
 ```
 
-À ce stade, la première partie de notre programme est terminée. Nous sommes
-capables de recevoir une entrée de l'utilisateur et de l'afficher à l'écran.
+At this point, the first part of the game is done: we’re getting input from the
+keyboard and then printing it.
 
 ## Generating a Secret Number
 
@@ -419,6 +396,7 @@ $ cargo build
    Compiling libc v0.2.14
    Compiling rand v0.3.14
    Compiling guessing_game v0.1.0 (file:///projects/guessing_game)
+    Finished dev [unoptimized + debuginfo] target(s) in 2.53 secs
 ```
 
 <span class="caption">Listing 2-2: The output from running `cargo build` after
@@ -442,19 +420,20 @@ the project with the dependencies available.
 
 If you immediately run `cargo build` again without making any changes, you won’t
 get any output. Cargo knows it has already downloaded and compiled the
-dependencies, and you haven't changed anything about them in your *Cargo.toml*
-file. Cargo also knows that you haven't changed anything about your code, so it
-doesn't recompile that either. With nothing to do, it simply exits. If you open
+dependencies, and you haven’t changed anything about them in your *Cargo.toml*
+file. Cargo also knows that you haven’t changed anything about your code, so it
+doesn’t recompile that either. With nothing to do, it simply exits. If you open
 up the *src/main.rs* file, make a trivial change, then save it and build again,
-you’ll only see one line of output:
+you’ll only see two lines of output:
 
 ```text
 $ cargo build
    Compiling guessing_game v0.1.0 (file:///projects/guessing_game)
+    Finished dev [unoptimized + debuginfo] target(s) in 2.53 secs
 ```
 
-This line shows Cargo only updates the build with your tiny change to the
-*src/main.rs* file. Your dependencies haven't changed, so Cargo knows it can
+These lines show Cargo only updates the build with your tiny change to the
+*src/main.rs* file. Your dependencies haven’t changed, so Cargo knows it can
 reuse what it has already downloaded and compiled for those. It just rebuilds
 your part of the code.
 
@@ -593,6 +572,7 @@ Try running the program a few times:
 ```text
 $ cargo run
    Compiling guessing_game v0.1.0 (file:///projects/guessing_game)
+    Finished dev [unoptimized + debuginfo] target(s) in 2.53 secs
      Running `target/debug/guessing_game`
 Guess the number!
 The secret number is: 7
@@ -642,9 +622,9 @@ fn main() {
     println!("You guessed: {}", guess);
 
     match guess.cmp(&secret_number) {
-        Ordering::Less    => println!("Too small!"),
+        Ordering::Less => println!("Too small!"),
         Ordering::Greater => println!("Too big!"),
-        Ordering::Equal   => println!("You win!"),
+        Ordering::Equal => println!("You win!"),
     }
 }
 ```
@@ -662,9 +642,9 @@ Then we add five new lines at the bottom that use the `Ordering` type:
 
 ```rust,ignore
 match guess.cmp(&secret_number) {
-    Ordering::Less    => println!("Too small!"),
+    Ordering::Less => println!("Too small!"),
     Ordering::Greater => println!("Too big!"),
-    Ordering::Equal   => println!("You win!"),
+    Ordering::Equal => println!("You win!"),
 }
 ```
 
@@ -760,9 +740,9 @@ fn main() {
     println!("You guessed: {}", guess);
 
     match guess.cmp(&secret_number) {
-        Ordering::Less    => println!("Too small!"),
+        Ordering::Less => println!("Too small!"),
         Ordering::Greater => println!("Too big!"),
-        Ordering::Equal   => println!("You win!"),
+        Ordering::Equal => println!("You win!"),
     }
 }
 ```
@@ -786,11 +766,12 @@ We bind `guess` to the expression `guess.trim().parse()`. The `guess` in the
 expression refers to the original `guess` that was a `String` with the input in
 it. The `trim` method on a `String` instance will eliminate any whitespace at
 the beginning and end. `u32` can only contain numerical characters, but the
-user must press the Return key to satisfy `read_line`. When the user presses
-Return, a newline character is added to the string. For example, if the user
-types 5 and presses return, `guess` looks like this: `5\n`. The `\n` represents
-“newline,” the return key. The `trim` method eliminates `\n`, resulting in just
-`5`.
+user must press the <span class="keystroke">enter</span> key to satisfy
+`read_line`. When the user presses <span class="keystroke">enter</span>, a
+newline character is added to the string. For example, if the user types <span
+class="keystroke">5</span> and presses <span class="keystroke"> enter</span>,
+`guess` looks like this: `5\n`. The `\n` represents “newline,” the enter key.
+The `trim` method eliminates `\n`, resulting in just `5`.
 
 The [`parse` method on strings][parse]<!-- ignore --> parses a string into some
 kind of number. Because this method can parse a variety of number types, we
@@ -821,6 +802,7 @@ Let’s run the program now!
 ```text
 $ cargo run
    Compiling guessing_game v0.1.0 (file:///projects/guessing_game)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.43 secs
      Running `target/guessing_game`
 Guess the number!
 The secret number is: 58
@@ -873,9 +855,9 @@ fn main() {
         println!("You guessed: {}", guess);
 
         match guess.cmp(&secret_number) {
-            Ordering::Less    => println!("Too small!"),
+            Ordering::Less => println!("Too small!"),
             Ordering::Greater => println!("Too big!"),
-            Ordering::Equal   => println!("You win!"),
+            Ordering::Equal => println!("You win!"),
         }
     }
 }
@@ -887,11 +869,11 @@ program again. Notice that there is a new problem because the program is doing
 exactly what we told it to do: ask for another guess forever! It doesn’t seem
 like the user can quit!
 
-The user could always halt the program by using the keyboard shortcut `Ctrl-C`.
-But there’s another way to escape this insatiable monster that we mentioned in
-the `parse` discussion in “Comparing the Guess to the Secret Number”: if the user
-enters a non-number answer, the program will crash. The user can take advantage
-of that in order to quit, as shown here:
+The user could always halt the program by using the keyboard shortcut
+<span class="keystroke">ctrl-C</span>. But there’s another way to escape this
+insatiable monster that we mentioned in the `parse` discussion in “Comparing the
+Guess to the Secret Number”: if the user enters a non-number answer, the program
+will crash. The user can take advantage of that in order to quit, as shown here:
 
 ```text
 $ cargo run
@@ -956,9 +938,9 @@ fn main() {
         println!("You guessed: {}", guess);
 
         match guess.cmp(&secret_number) {
-            Ordering::Less    => println!("Too small!"),
+            Ordering::Less => println!("Too small!"),
             Ordering::Greater => println!("Too big!"),
-            Ordering::Equal   => {
+            Ordering::Equal => {
                 println!("You win!");
                 break;
             }
@@ -1067,9 +1049,9 @@ fn main() {
         println!("You guessed: {}", guess);
 
         match guess.cmp(&secret_number) {
-            Ordering::Less    => println!("Too small!"),
+            Ordering::Less => println!("Too small!"),
             Ordering::Greater => println!("Too big!"),
-            Ordering::Equal   => {
+            Ordering::Equal => {
                 println!("You win!");
                 break;
             }
