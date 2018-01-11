@@ -327,48 +327,53 @@ l'erreur, mais dans notre cas on souhaite seulement crasher le programme si un
 problème survient, on peut donc se contenter d'appeler `expect`. Nous verrons
 dans le chapitre 9 comment gérer les erreurs proprement.
 
-### Printing Values with `println!` Placeholders
+### Afficher des valeurs grâce à `println!`
 
-Aside from the closing curly brackets, there’s only one more line to discuss in
-the code added so far, which is the following:
+Mis à part l'accolade de fermeture, il ne nous reste qu'une seule ligne à étudier
+dans le code que nous avons pour l'instant:
 
 ```rust,ignore
-println!("You guessed: {}", guess);
+println!("Votre déduction: {}", guess);
 ```
 
-This line prints out the string we saved the user’s input in. The set of `{}`
-is a placeholder that holds a value in place. You can print more than one value
-using `{}`: the first set of `{}` holds the first value listed after the format
-string, the second set holds the second value, and so on. Printing out multiple
-values in one call to `println!` would look like this:
+Cette ligne permet d'afficher la variable dans laquelle nous avons stocké ce que
+notre utilisateur à tapé au clavier. Les `{}` sont un 'placeholder' qui sera
+remplacé par une valeur. Il est possible d'en utiliser plusieurs. Les premières `{}`
+seront remplacées par le premier argument qui suit la chaîne de formatage, les
+secondes `{}` par le deuxième argument, et ainsi de suite. Afficher plusieurs
+valeurs avec un seul appel à `println` ressemble donc à ceci:
 
 ```rust
 let x = 5;
 let y = 10;
 
-println!("x = {} and y = {}", x, y);
+println!("x = {} et y = {}", x, y);
 ```
 
-This code would print out `x = 5 and y = 10`.
+Ce code afficherait `x = 5 et y = 10`.
 
-### Testing the First Part
+### Test de la première partie
 
+<<<<<<< HEAD
 Let’s test the first part of the guessing game. You can run it using
 `cargo run`:
+=======
+Pour tester notre début de programme, lançons-le à l'aide de la commande `cargo run`.
+>>>>>>> 50911483... fr translation: ch02-00: Printing Values & Testing the First Part
 
 ```text
 $ cargo run
    Compiling guessing_game v0.1.0 (file:///projects/guessing_game)
     Finished dev [unoptimized + debuginfo] target(s) in 2.53 secs
      Running `target/debug/guessing_game`
-Guess the number!
-Please input your guess.
+Jeu de Plus ou Moins
+Entrez votre déduction.
 6
-You guessed: 6
+Votre déduction: 6
 ```
 
-At this point, the first part of the game is done: we’re getting input from the
-keyboard and then printing it.
+À ce stade, la première partie de notre programme est terminée. Nous sommes
+capables de recevoir une entrée de l'utilisateur et de l'afficher à l'écran.
 
 ## Generating a Secret Number
 
