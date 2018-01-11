@@ -18,7 +18,7 @@ fn first_word(s: &String) -> ?
 This function, `first_word`, has a `&String` as a parameter. We don’t want
 ownership, so this is fine. But what should we return? We don’t really have a
 way to talk about *part* of a string. However, we could return the index of the
-end of the word. Let’s try that as shown in Listing 4-10:
+end of the word. Let’s try that as shown in Listing 4-5:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -36,7 +36,7 @@ fn first_word(s: &String) -> usize {
 }
 ```
 
-<span class="caption">Listing 4-10: The `first_word` function that returns a
+<span class="caption">Listing 4-5: The `first_word` function that returns a
 byte index value into the `String` parameter</span>
 
 Let’s break down this code a bit. Because we need to go through the `String`
@@ -47,7 +47,7 @@ element by element and check whether a value is a space, we’ll convert our
 let bytes = s.as_bytes();
 ```
 
-Next, we create an iterator over the array of bytes using the `iter` method :
+Next, we create an iterator over the array of bytes using the `iter` method:
 
 ```rust,ignore
 for (i, &item) in bytes.iter().enumerate() {
@@ -82,8 +82,8 @@ We now have a way to find out the index of the end of the first word in the
 string, but there’s a problem. We’re returning a `usize` on its own, but it’s
 only a meaningful number in the context of the `&String`. In other words,
 because it’s a separate value from the `String`, there’s no guarantee that it
-will still be valid in the future. Consider the program in Listing 4-11 that
-uses the `first_word` function from Listing 4-10:
+will still be valid in the future. Consider the program in Listing 4-6 that
+uses the `first_word` function from Listing 4-5:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -112,7 +112,7 @@ fn main() {
 }
 ```
 
-<span class="caption">Listing 4-11: Storing the result from calling the
+<span class="caption">Listing 4-6: Storing the result from calling the
 `first_word` function then changing the `String` contents</span>
 
 This program compiles without any errors and also would if we used `word` after
@@ -160,11 +160,11 @@ position and the length of the slice, which corresponds to `ending_index` minus
 `starting_index`. So in the case of `let world = &s[6..11];`, `world` would be
 a slice that contains a pointer to the 6th byte of `s` and a length value of 5.
 
-Figure 4-12 shows this in a diagram.
+Figure 4-6 shows this in a diagram.
 
 <img alt="world containing a pointer to the 6th byte of String s and a length 5" src="img/trpl04-06.svg" class="center" style="width: 50%;" />
 
-<span class="caption">Figure 4-12: String slice referring to part of a
+<span class="caption">Figure 4-6: String slice referring to part of a
 `String`</span>
 
 With Rust’s `..` range syntax, if you want to start at the first index (zero),
@@ -201,6 +201,13 @@ let slice = &s[0..len];
 let slice = &s[..];
 ```
 
+> Note: String slice range indices must occur at valid UTF-8 character
+> boundaries. If you attempt to create a string slice in the middle of a
+> multibyte character, your program will exit with an error. For the purposes
+> of introducing string slices, we are assuming ASCII only in this section; a
+> more thorough discussion of UTF-8 handling is in the “Strings” section of
+> Chapter 8.
+
 With all this information in mind, let’s rewrite `first_word` to return a
 slice. The type that signifies “string slice” is written as `&str`:
 
@@ -221,7 +228,7 @@ fn first_word(s: &String) -> &str {
 ```
 
 We get the index for the end of the word in the same way as we did in Listing
-4-10, by looking for the first occurrence of a space. When we find a space, we
+4-5, by looking for the first occurrence of a space. When we find a space, we
 return a string slice using the start of the string and the index of the space
 as the starting and ending indices.
 
@@ -237,7 +244,7 @@ fn second_word(s: &String) -> &str {
 
 We now have a straightforward API that’s much harder to mess up, since the
 compiler will ensure the references into the `String` remain valid. Remember
-the bug in the program in Listing 4-11, when we got the index to the end of the
+the bug in the program in Listing 4-6, when we got the index to the end of the
 first word but then cleared the string so our index was invalid? That code was
 logically incorrect but didn’t show any immediate errors. The problems would
 show up later if we kept trying to use the first word index with an emptied
@@ -260,19 +267,16 @@ fn main() {
 Here’s the compiler error:
 
 ```text
-17:6 error: cannot borrow `s` as mutable because it is also borrowed as
-            immutable [E0502]
-    s.clear(); // Error!
-    ^
-15:29 note: previous borrow of `s` occurs here; the immutable borrow prevents
-            subsequent moves or mutable borrows of `s` until the borrow ends
-    let word = first_word(&s);
-                           ^
-18:2 note: previous borrow ends here
-fn main() {
-
-}
-^
+error[E0502]: cannot borrow `s` as mutable because it is also borrowed as immutable
+ --> src/main.rs:6:5
+  |
+4 |     let word = first_word(&s);
+  |                            - immutable borrow occurs here
+5 |
+6 |     s.clear(); // Error!
+  |     ^ mutable borrow occurs here
+7 | }
+  | - immutable borrow ends here
 ```
 
 Recall from the borrowing rules that if we have an immutable reference to

@@ -24,8 +24,8 @@ fn another_function() {
 ```
 
 Function definitions in Rust start with `fn` and have a set of parentheses
-after the function name. The curly braces tell the compiler where the function
-body begins and ends.
+after the function name. The curly brackets tell the compiler where the
+function body begins and ends.
 
 We can call any function we’ve defined by entering its name followed by a set
 of parentheses. Because `another_function` is defined in the program, it can be
@@ -41,6 +41,7 @@ should see the following output:
 ```text
 $ cargo run
    Compiling functions v0.1.0 (file:///projects/functions)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.28 secs
      Running `target/debug/functions`
 Hello, world!
 Another function.
@@ -53,11 +54,11 @@ called and its message is printed.
 ### Function Parameters
 
 Functions can also be defined to have *parameters*, which are special variables
-that are part of a function's signature. When a function has parameters, we can
+that are part of a function’s signature. When a function has parameters, we can
 provide it with concrete values for those parameters. Technically, the concrete
 values are called *arguments*, but in casual conversation people tend to use
 the words “parameter” and “argument” interchangeably for either the variables
-in a function's definition or the concrete values passed in when you call a
+in a function’s definition or the concrete values passed in when you call a
 function.
 
 The following rewritten version of `another_function` shows what parameters
@@ -80,13 +81,14 @@ Try running this program; you should get the following output:
 ```text
 $ cargo run
    Compiling functions v0.1.0 (file:///projects/functions)
+    Finished dev [unoptimized + debuginfo] target(s) in 1.21 secs
      Running `target/debug/functions`
 The value of x is: 5
 ```
 
 The declaration of `another_function` has one parameter named `x`. The type of
 `x` is specified as `i32`. When `5` is passed to `another_function`, the
-`println!` macro puts `5` where the pair of curly braces were in the format
+`println!` macro puts `5` where the pair of curly brackets were in the format
 string.
 
 In function signatures, you *must* declare the type of each parameter. This is
@@ -112,16 +114,17 @@ fn another_function(x: i32, y: i32) {
 
 This example creates a function with two parameters, both of which are `i32`
 types. The function then prints out the values in both of its parameters. Note
-that function parameters don't all need to be the same type, they just happen
+that function parameters don’t all need to be the same type, they just happen
 to be in this example.
 
-Let’s try running this code. Replace the program currently in your *function*
+Let’s try running this code. Replace the program currently in your *functions*
 project’s *src/main.rs* file with the preceding example, and run it using
 `cargo run`:
 
 ```text
 $ cargo run
    Compiling functions v0.1.0 (file:///projects/functions)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.31 secs
      Running `target/debug/functions`
 The value of x is: 5
 The value of y is: 6
@@ -147,7 +150,7 @@ instructions that perform some action and do not return a value. *Expressions*
 evaluate to a resulting value. Let’s look at some examples.
 
 Creating a variable and assigning a value to it with the `let` keyword is a
-statement. In Listing 3-3, `let y = 6;` is a statement:
+statement. In Listing 3-1, `let y = 6;` is a statement:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -157,13 +160,13 @@ fn main() {
 }
 ```
 
-<span class="caption">Listing 3-3: A `main` function declaration containing one statement.</span>
+<span class="caption">Listing 3-1: A `main` function declaration containing one statement.</span>
 
 Function definitions are also statements; the entire preceding example is a
 statement in itself.
 
 Statements do not return values. Therefore, you can’t assign a `let` statement
-to another variable, as the following code tries to do:
+to another variable, as the following code tries to do; you’ll get an error:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -173,7 +176,7 @@ fn main() {
 }
 ```
 
-When you run this program, you’ll get an error like this:
+When you run this program, the error you’ll get looks like this:
 
 ```text
 $ cargo run
@@ -196,7 +199,7 @@ not the case in Rust.
 Expressions evaluate to something and make up most of the rest of the code that
 you’ll write in Rust. Consider a simple math operation, such as `5 + 6`, which
 is an expression that evaluates to the value `11`. Expressions can be part of
-statements: in Listing 3-3 that had the statement `let y = 6;`, `6` is an
+statements: in Listing 3-1 that had the statement `let y = 6;`, `6` is an
 expression that evaluates to the value `6`. Calling a function is an
 expression. Calling a macro is an expression. The block that we use to create
 new scopes, `{}`, is an expression, for example:
@@ -226,19 +229,21 @@ This expression:
 ```
 
 is a block that, in this case, evaluates to `4`. That value gets bound to `y`
-as part of the `let` statement. Note the line without a semicolon at the end,
-unlike most of the lines you’ve seen so far. Expressions do not include ending
-semicolons. If you add a semicolon to the end of an expression, you turn it
-into a statement, which will then not return a value. Keep this in mind as you
-explore function return values and expressions next.
+as part of the `let` statement. Note the `x + 1` line without a semicolon at
+the end, unlike most of the lines you’ve seen so far. Expressions do not
+include ending semicolons. If you add a semicolon to the end of an expression,
+you turn it into a statement, which will then not return a value. Keep this in
+mind as you explore function return values and expressions next.
 
 ### Functions with Return Values
 
 Functions can return values to the code that calls them. We don’t name return
 values, but we do declare their type after an arrow (`->`). In Rust, the return
 value of the function is synonymous with the value of the final expression in
-the block of the body of a function. Here’s an example of a function that
-returns a value:
+the block of the body of a function. You can return early from a function by
+using the `return` keyword and specifying a value, but most functions return
+the last expression implicitly. Here’s an example of a function that returns a
+value:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -262,6 +267,7 @@ running this code; the output should look like this:
 ```text
 $ cargo run
    Compiling functions v0.1.0 (file:///projects/functions)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.30 secs
      Running `target/debug/functions`
 The value of x is: 5
 ```
@@ -297,7 +303,7 @@ fn plus_one(x: i32) -> i32 {
 
 Running this code will print `The value of x is: 6`. What happens if we place a
 semicolon at the end of the line containing `x + 1`, changing it from an
-expression to a statement?
+expression to a statement? We’ll get an error:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -322,16 +328,12 @@ error[E0308]: mismatched types
 7 |   fn plus_one(x: i32) -> i32 {
   |  ____________________________^
 8 | |     x + 1;
+  | |          - help: consider removing this semicolon
 9 | | }
   | |_^ expected i32, found ()
   |
   = note: expected type `i32`
              found type `()`
-help: consider removing this semicolon:
- --> src/main.rs:8:10
-  |
-8 |     x + 1;
-  |          ^
 ```
 
 The main error message, “mismatched types,” reveals the core issue with this

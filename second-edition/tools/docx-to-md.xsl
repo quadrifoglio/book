@@ -14,6 +14,7 @@
     <xsl:template match="w:p[w:pPr/w:pStyle/@w:val = 'ChapterStart']" />
     <xsl:template match="w:p[w:pPr/w:pStyle/@w:val = 'Normal']" />
     <xsl:template match="w:p[w:pPr/w:pStyle/@w:val = 'Standard']" />
+    <xsl:template match="w:p[w:pPr/w:pStyle/@w:val = 'AuthorQuery']" />
 
     <!-- Paragraph styles -->
 
@@ -72,6 +73,12 @@
         <xsl:text>&#10;&#10;</xsl:text>
     </xsl:template>
 
+    <xsl:template match="w:p[w:pPr/w:pStyle[@w:val = 'SubBullet']]">
+        <xsl:text>  * </xsl:text>
+        <xsl:apply-templates select="*" />
+        <xsl:text>&#10;</xsl:text>
+    </xsl:template>
+
     <xsl:template match="w:p[w:pPr/w:pStyle[@w:val = 'BodyFirst' or @w:val = 'Body' or @w:val = 'BodyFirstBox' or @w:val = 'BodyBox' or @w:val = '1stPara']]">
         <xsl:if test=".//w:t">
             <xsl:apply-templates select="*" />
@@ -79,7 +86,7 @@
         </xsl:if>
     </xsl:template>
 
-    <xsl:template match="w:p[w:pPr/w:pStyle/@w:val = 'CodeA']">
+    <xsl:template match="w:p[w:pPr/w:pStyle[@w:val = 'CodeA' or @w:val = 'CodeAWingding']]">
         <xsl:text>```&#10;</xsl:text>
         <!-- Don't apply Emphasis/etc templates in code blocks -->
         <xsl:for-each select="w:r">
@@ -88,7 +95,7 @@
         <xsl:text>&#10;</xsl:text>
     </xsl:template>
 
-    <xsl:template match="w:p[w:pPr/w:pStyle/@w:val = 'CodeB']">
+    <xsl:template match="w:p[w:pPr/w:pStyle[@w:val = 'CodeB' or @w:val = 'CodeBWingding']]">
         <!-- Don't apply Emphasis/etc templates in code blocks -->
         <xsl:for-each select="w:r">
             <xsl:value-of select="w:t" />
@@ -96,7 +103,7 @@
         <xsl:text>&#10;</xsl:text>
     </xsl:template>
 
-    <xsl:template match="w:p[w:pPr/w:pStyle/@w:val = 'CodeC']">
+    <xsl:template match="w:p[w:pPr/w:pStyle[@w:val = 'CodeC' or @w:val = 'CodeCWingding']]">
         <!-- Don't apply Emphasis/etc templates in code blocks -->
         <xsl:for-each select="w:r">
             <xsl:value-of select="w:t" />
@@ -148,7 +155,7 @@ Unmatched: <xsl:value-of select="w:pPr/w:pStyle/@w:val" />
 
     <!-- Character styles -->
 
-    <xsl:template match="w:r[w:rPr/w:rStyle[@w:val = 'Literal' or @w:val = 'LiteralBold' or @w:val = 'EmphasisBold' or @w:val = 'LiteralCaption']]">
+    <xsl:template match="w:r[w:rPr/w:rStyle[@w:val = 'Literal' or @w:val = 'LiteralBold' or @w:val = 'LiteralCaption' or @w:val = 'LiteralBox']]">
         <xsl:choose>
             <xsl:when test="normalize-space(w:t) != ''">
                 <xsl:if test="starts-with(w:t, ' ')">
@@ -167,7 +174,26 @@ Unmatched: <xsl:value-of select="w:pPr/w:pStyle/@w:val" />
         </xsl:choose>
     </xsl:template>
 
-    <xsl:template match="w:r[w:rPr/w:rStyle[@w:val = 'EmphasisItalic' or @w:val = 'EmphasisItalicBox' or @w:val = 'EmphasisNote' or @w:val = 'EmphasisRevCaption']]">
+    <xsl:template match="w:r[w:rPr/w:rStyle[@w:val = 'EmphasisBold']]">
+        <xsl:choose>
+            <xsl:when test="normalize-space(w:t) != ''">
+                <xsl:if test="starts-with(w:t, ' ')">
+                    <xsl:text> </xsl:text>
+                </xsl:if>
+                <xsl:text>**</xsl:text>
+                <xsl:value-of select="normalize-space(w:t)" />
+                <xsl:text>**</xsl:text>
+                <xsl:if test="substring(w:t, string-length(w:t)) = ' '">
+                    <xsl:text> </xsl:text>
+                </xsl:if>
+            </xsl:when>
+            <xsl:when test="normalize-space(w:t) != w:t and w:t != ''">
+                <xsl:text> </xsl:text>
+            </xsl:when>
+        </xsl:choose>
+    </xsl:template>
+
+    <xsl:template match="w:r[w:rPr/w:rStyle[@w:val = 'EmphasisItalic' or @w:val = 'EmphasisItalicBox' or @w:val = 'EmphasisNote' or @w:val = 'EmphasisRevCaption' or @w:val = 'EmphasisRevItal']]">
         <xsl:choose>
             <xsl:when test="normalize-space(w:t) != ''">
                 <xsl:if test="starts-with(w:t, ' ')">

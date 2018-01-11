@@ -21,13 +21,14 @@ error, which means the compiler needs more information from us to know which
 possible type we want to use:
 
 ```text
-error[E0282]: unable to infer enough type information about `_`
+error[E0282]: type annotations needed
  --> src/main.rs:2:9
   |
 2 |     let guess = "42".parse().expect("Not a number!");
-  |         ^^^^^ cannot infer type for `_`
-  |
-  = note: type annotations or generic parameter binding required
+  |         ^^^^^
+  |         |
+  |         cannot infer type for `_`
+  |         consider giving `guess` a type
 ```
 
 You’ll see different type annotations as we discuss the various data types.
@@ -35,18 +36,18 @@ You’ll see different type annotations as we discuss the various data types.
 ### Scalar Types
 
 A *scalar* type represents a single value. Rust has four primary scalar types:
-integers, floating-point numbers, booleans, and characters. You’ll likely
+integers, floating-point numbers, Booleans, and characters. You’ll likely
 recognize these from other programming languages, but let’s jump into how they
 work in Rust.
 
 #### Integer Types
 
 An *integer* is a number without a fractional component. We used one integer
-type earlier in this chapter, the `i32` type. This type declaration indicates
-that the value it’s associated with should be a signed integer (hence the `i`,
-as opposed to a `u` for unsigned) that takes up 32 bits of space. Table 3-1
-shows the built-in integer types in Rust. Each variant in the Signed and
-Unsigned columns (for example, *i32*) can be used to declare the type of an
+type earlier in this chapter, the `u32` type. This type declaration indicates
+that the value it’s associated with should be an unsigned integer (signed
+integer types start with `i` instead of `u`) that takes up 32 bits of space.
+Table 3-1 shows the built-in integer types in Rust. Each variant in the Signed
+and Unsigned columns (for example, *i16*) can be used to declare the type of an
 integer value.
 
 <span class="caption">Table 3-1: Integer Types in Rust</span>
@@ -104,12 +105,8 @@ you’d use `isize` or `usize` is when indexing some sort of collection.
 Rust also has two primitive types for *floating-point numbers*, which are
 numbers with decimal points. Rust’s floating-point types are `f32` and `f64`,
 which are 32 bits and 64 bits in size, respectively. The default type is `f64`
-because it’s roughly the same speed as `f32` but is capable of more precision.
-It’s possible to use an `f64` type on 32-bit systems, but it will be slower
-than using an `f32` type on those systems. Most of the time, trading potential
-worse performance for better precision is a reasonable initial choice, and you
-should benchmark your code if you suspect floating-point size is a problem in
-your situation.
+because on modern CPUs it’s roughly the same speed as `f32` but is capable of
+more precision.
 
 Here’s an example that shows floating-point numbers in action:
 
@@ -159,8 +156,8 @@ list of all operators that Rust provides.
 
 #### The Boolean Type
 
-As in most other programming languages, a boolean type in Rust has two possible
-values: `true` and `false`. The boolean type in Rust is specified using `bool`.
+As in most other programming languages, a Boolean type in Rust has two possible
+values: `true` and `false`. The Boolean type in Rust is specified using `bool`.
 For example:
 
 <span class="filename">Filename: src/main.rs</span>
@@ -173,7 +170,7 @@ fn main() {
 }
 ```
 
-The main way to consume boolean values is through conditionals, such as an `if`
+The main way to consume Boolean values is through conditionals, such as an `if`
 expression. We’ll cover how `if` expressions work in Rust in the “Control Flow”
 section.
 
@@ -181,7 +178,8 @@ section.
 
 So far we’ve only worked with numbers, but Rust supports letters too. Rust’s
 `char` type is the language’s most primitive alphabetic type, and the following
-code shows one way to use it:
+code shows one way to use it. Note that the `char` type is specified with
+single quotes, as opposed to strings that use double quotes:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -327,8 +325,9 @@ get the value `2` from index `[1]` in the array.
 
 ##### Invalid Array Element Access
 
-What happens if we try to access an element of an array that is past the end of
-the array? Say we change the example to the following:
+What happens if you try to access an element of an array that is past the end
+of the array? Say you change the example to the following code, which will
+compile but exit with an error when it runs:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -348,6 +347,7 @@ Running this code using `cargo run` produces the following result:
 ```text
 $ cargo run
    Compiling arrays v0.1.0 (file:///projects/arrays)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.31 secs
      Running `target/debug/arrays`
 thread '<main>' panicked at 'index out of bounds: the len is 5 but the index is
  10', src/main.rs:6

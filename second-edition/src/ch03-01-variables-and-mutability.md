@@ -28,23 +28,24 @@ Save and run the program using `cargo run`. You should receive an error
 message, as shown in this output:
 
 ```text
-error[E0384]: re-assignment of immutable variable `x`
+error[E0384]: cannot assign twice to immutable variable `x`
  --> src/main.rs:4:5
   |
 2 |     let x = 5;
   |         - first assignment to `x`
 3 |     println!("The value of x is: {}", x);
 4 |     x = 6;
-  |     ^^^^^ re-assignment of immutable variable
+  |     ^^^^^ cannot assign twice to immutable variable
 ```
 
 This example shows how the compiler helps you find errors in your programs.
 Even though compiler errors can be frustrating, they only mean your program
 isn’t safely doing what you want it to do yet; they do *not* mean that you’re
-not a good programmer! Experienced Rustaceans still get compiler errors. The
-error indicates that the cause of the error is `re-assignment of immutable
-variable`, because we tried to assign a second value to the immutable `x`
-variable.
+not a good programmer! Experienced Rustaceans still get compiler errors.
+
+The error indicates that the cause of the error is that we `cannot assign twice
+to immutable variable x`, because we tried to assign a second value to the
+immutable `x` variable.
 
 It’s important that we get compile-time errors when we attempt to change a
 value that we previously designated as immutable because this very situation
@@ -83,6 +84,7 @@ When we run this program, we get the following:
 ```text
 $ cargo run
    Compiling variables v0.1.0 (file:///projects/variables)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.30 secs
      Running `target/debug/variables`
 The value of x is: 5
 The value of x is: 6
@@ -108,12 +110,12 @@ immutable variables, constants are also values  that are bound to a name and
 are not allowed to change, but there are a few differences between constants
 and variables.
 
-First, we aren’t allowed to use `mut` with constants: constants aren't only
-immutable by default, they're always immutable.
+First, we aren’t allowed to use `mut` with constants: constants aren’t only
+immutable by default, they’re always immutable.
 
 We declare constants using the `const` keyword instead of the `let` keyword,
-and the type of the value *must* be annotated. We're about to cover types and
-type annotations in the next section, “Data Types,” so don't worry about the
+and the type of the value *must* be annotated. We’re about to cover types and
+type annotations in the next section, “Data Types,” so don’t worry about the
 details right now, just know that we must always annotate the type.
 
 Constants can be declared in any scope, including the global scope, which makes
@@ -123,7 +125,7 @@ The last difference is that constants may only be set to a constant expression,
 not the result of a function call or any other value that could only be
 computed at runtime.
 
-Here's an example of a constant declaration where the constant's name is
+Here’s an example of a constant declaration where the constant’s name is
 `MAX_POINTS` and its value is set to 100,000. (Rust constant naming convention
 is to use all upper case with underscores between words):
 
@@ -174,6 +176,7 @@ When you run this program, it will output the following:
 ```text
 $ cargo run
    Compiling variables v0.1.0 (file:///projects/variables)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.31 secs
      Running `target/debug/variables`
 The value of x is: 12
 ```
@@ -199,15 +202,14 @@ and the second `spaces` variable, which is a brand-new variable that happens to
 have the same name as the first one, is a number type. Shadowing thus spares us
 from having to come up with different names, like `spaces_str` and
 `spaces_num`; instead, we can reuse the simpler `spaces` name. However, if we
-try to use `mut` for this, as shown here:
+try to use `mut` for this, as shown here, we’ll get a compile-time error:
 
 ```rust,ignore
 let mut spaces = "   ";
 spaces = spaces.len();
 ```
 
-we’ll get a compile-time error because we’re not allowed to mutate a variable’s
-type:
+The error says we’re not allowed to mutate a variable’s type:
 
 ```text
 error[E0308]: mismatched types
