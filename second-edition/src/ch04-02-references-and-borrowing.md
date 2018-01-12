@@ -246,18 +246,19 @@ données ne correspondent pas à ce que vous pensiez qu'elles étaient.
 
 ### Références en suspension
 
-In languages with pointers, it’s easy to erroneously create a *dangling
-pointer*, a pointer that references a location in memory that may have been
-given to someone else, by freeing some memory while preserving a pointer to
-that memory. In Rust, by contrast, the compiler guarantees that references will
-never be dangling references: if we have a reference to some data, the compiler
-will ensure that the data will not go out of scope before the reference to the
-data does.
+Avec les langages qui utilisent les pointeurs, c'est facile de créer par erreur
+un *pointeur en suspension*, qui est un pointeur qui désigne un endroit dans la
+mémoire qui a été donné par quelqu'un d'autre, en libérant une partie de la
+mémoire mais en conservant un pointeur vers cette mémoire. En revanche, dans
+Rust, le compilateur garantie que les références ne seront jamais des
+références en suspension : si nous avons une référence vers des données, le
+compilateur va s'assurer que cette donnée ne vas pas sortir de la portée avant
+que la référence vers cette donnée soit sortie.
 
-Let’s try to create a dangling reference, which Rust will prevent with a
-compile-time error:
+Essayons de créer une référence en suspension, que Rust va empêcher avec une
+erreur au moment de la compilation :
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Nom du fichier : src/main.rs</span>
 
 ```rust,ignore
 fn main() {
@@ -271,7 +272,7 @@ fn dangle() -> &String {
 }
 ```
 
-Here’s the error:
+Voici l'erreur :
 
 ```text
 error[E0106]: missing lifetime specifier
@@ -285,35 +286,33 @@ error[E0106]: missing lifetime specifier
   = help: consider giving it a 'static lifetime
 ```
 
-This error message refers to a feature we haven’t covered yet: *lifetimes*.
-We’ll discuss lifetimes in detail in Chapter 10. But, if you disregard the
-parts about lifetimes, the message does contain the key to why this code is a
-problem:
+Ce message d'erreur parle d'une fonctionnalité que nous n'avons pas encore vu :
+les *durées de vie*. Nous allons voir plus en détail les durées de vie dans le
+Chapitre 10. Mais, si vous mettez de coté les parties qui parlent de la durée
+de vie, le message désigne l'élément de code qui pose problème :
 
 ```text
 this function's return type contains a borrowed value, but there is no value
 for it to be borrowed from.
 ```
 
-Let’s take a closer look at exactly what’s happening at each stage of our
-`dangle` code:
+Regardons de plus pret ce qui se passe à chaque étape de notre code `dangle` :
 
 ```rust,ignore
-fn dangle() -> &String { // dangle returns a reference to a String
+fn dangle() -> &String { // dangle returnes une référence vers un String
 
-    let s = String::from("hello"); // s is a new String
+    let s = String::from("hello"); // s est un nouveau String
 
-    &s // we return a reference to the String, s
-} // Here, s goes out of scope, and is dropped. Its memory goes away.
-  // Danger!
+    &s // nous retournons une référence vers le String, s
+} // Ici, s sort de la portée, et est libéré. Sa mémoire disparait. Danger !
 ```
 
-Because `s` is created inside `dangle`, when the code of `dangle` is finished,
-`s` will be deallocated. But we tried to return a reference to it. That means
-this reference would be pointing to an invalid `String`! That’s no good. Rust
-won’t let us do this.
+Parce que `s` est céé dans `dangle`, quand le code de `dangle` est terminé, `s`
+va être désaloué. Mais nous avions essayé de renvoyer une référence vers elle.
+Cela veut dire que cette référence va pointer vers un `String` invalide ! Ce
+n'est pas bon. Rust ne nous laissera pas faire cela.
 
-The solution here is to return the `String` directly:
+Ici la solution est renvoyer le `String` directement :
 
 ```rust
 fn no_dangle() -> String {
@@ -323,16 +322,18 @@ fn no_dangle() -> String {
 }
 ```
 
-This works without any problems. Ownership is moved out, and nothing is
-deallocated.
+Cela fonctionne sans problème. L'appartenance est déplacée, et rien n'est
+désaloué.
 
-### The Rules of References
+### Les règles de référencement
 
-Let’s recap what we’ve discussed about references:
+Récapitulons ce que nous avons vu à propos des références :
 
-1. At any given time, you can have *either* but not both of:
-  * One mutable reference.
-  * Any number of immutable references.
-2. References must always be valid.
+1. Vous pouvez avoir *un* des deux cas suivants mais pas les deux en même
+temps :
+  * Une référence modifiable.
+  * Un nombre illimité de références immuables.
+2. Les références doivent toujours être en vigueur.
 
-Next, we’ll look at a different kind of reference: slices.
+A l'étape suivant, nous allons aborder un type différent de référence : les
+slices.
