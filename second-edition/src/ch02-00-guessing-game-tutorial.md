@@ -354,12 +354,7 @@ Ce code afficherait `x = 5 et y = 10`.
 
 ### Test de la première partie
 
-<<<<<<< HEAD
-Let’s test the first part of the guessing game. You can run it using
-`cargo run`:
-=======
 Pour tester notre début de programme, lançons-le à l'aide de la commande `cargo run`.
->>>>>>> 50911483... fr translation: ch02-00: Printing Values & Testing the First Part
 
 ```text
 $ cargo run
@@ -375,29 +370,31 @@ Votre déduction: 6
 À ce stade, la première partie de notre programme est terminée. Nous sommes
 capables de recevoir une entrée de l'utilisateur et de l'afficher à l'écran.
 
-## Generating a Secret Number
+## Générer le nombre secret
 
-Next, we need to generate a secret number that the user will try to guess. The
-secret number should be different every time so the game is fun to play more
-than once. Let’s use a random number between 1 and 100 so the game isn’t too
-difficult. Rust doesn’t yet include random number functionality in its standard
-library. However, the Rust team does provide a [`rand` crate][randcrate].
+Maintenant, il nous faut générer un nombre secret que notre joueur va tenter
+de deviner. Ce nombre se devra d'être différent à chaque lancement du programme,
+afin qu'on puisse y jouer plusieurs fois. Utilisons un nombre aléatoire entre
+1 et 100 afin que le jeu de soit pas trop difficile. Rust n'inclue pour l'instant
+pas de fonctionnalité de génération de nombre aléatoire dans la librairie standard.
+L'équipe de développement propose cependant une [`rand` crate][randcrate] pour cela.
 
 [randcrate]: https://crates.io/crates/rand
 
-### Using a Crate to Get More Functionality
+### Étendre les fonctionnalités de Rust avec une Crate.
 
-Remember that a *crate* is a package of Rust code. The project we’ve been
-building is a *binary crate*, which is an executable. The `rand` crate is a
-*library crate*, which contains code intended to be used in other programs.
+Souvenez-vous, une *crate* est un paquet de code Rust. Le projet sur lequel
+nous travaillons est une *binary crate*, c'est-à-dire un programme exécutable.
+La crate `rand` est une *library crate*, donc qui contient du code qui peut
+être utilisé par d'autres programmes.
 
-Cargo’s use of external crates is where it really shines. Before we can write
-code that uses `rand`, we need to modify the *Cargo.toml* file to include the
-`rand` crate as a dependency. Open that file now and add the following line to
-the bottom beneath the `[dependencies]` section header that Cargo created for
-you:
+Le gros point positif de Cargo est la facilité avec laquelle il gère les crates
+externes. Afin de pouvoir utiliser la crate `rand`, il nous faut éditer le fichier
+*Cargo.toml* pour y spécifier `rand` en tant que dépendance de notre projet.
+Ouvrons donc ce fichier, et ajoutons la ligne suivante à la fin, dans la section
+`[dependencies]` qui a été automatiquement créée pour vous par Cargo.
 
-<span class="filename">Filename: Cargo.toml</span>
+<span class="filename">Fichier: Cargo.toml</span>
 
 ```toml
 [dependencies]
@@ -405,20 +402,20 @@ you:
 rand = "0.3.14"
 ```
 
-In the *Cargo.toml* file, everything that follows a header is part of a section
-that continues until another section starts. The `[dependencies]` section is
-where you tell Cargo which external crates your project depends on and which
-versions of those crates you require. In this case, we’ll specify the `rand`
-crate with the semantic version specifier `0.3.14`. Cargo understands [Semantic
-Versioning][semver]<!-- ignore --> (sometimes called *SemVer*), which is a
-standard for writing version numbers. The number `0.3.14` is actually shorthand
-for `^0.3.14`, which means “any version that has a public API compatible with
-version 0.3.14.”
+Dans le fichier *Cargo.toml*, tout ce qui suit une entête fait partie de cette
+section, et ce jusqu'au démarrage d'une autre section. La section `[dependencies]`.
+permet d'informer Cargo de quelles crates externes notre projet dépend, et en
+quelle version. Dans notre cas, on spécifie que l'on requiert la crate `rand` en
+version 0.3.14. Il s'agit d'un numéro de version [Semantic
+Versioning][semver]<!-- ignore --> (aussi appelé *SemVer*), qui est un standard
+d'écriture de numéros de version. En réalité `0.3.14` est un alias pour `^0.3.14`,
+ce qui signifie “n'importe quelle version qui propose une API publique compatible
+avec la version 0.3.14”.
 
 [semver]: http://semver.org
 
-Now, without changing any of the code, let’s build the project, as shown in
-Listing 2-2:
+Maintenant, sans apporter aucun changement au code, lançons une compilation
+du projet, comme dans la figure 2-2:
 
 ```text
 $ cargo build
@@ -431,32 +428,34 @@ $ cargo build
     Finished dev [unoptimized + debuginfo] target(s) in 2.53 secs
 ```
 
-<span class="caption">Listing 2-2: The output from running `cargo build` after
-adding the rand crate as a dependency</span>
+<span class="caption">Figure 2-2: Lancement de `cargo build` après
+avoir ajouté la dépendance à `rand`</span>
 
-You may see different version numbers (but they will all be compatible with
-the code, thanks to SemVer!), and the lines may be in a different order.
+Il est possible que vous ne voyiez pas exactement les mêmes numéros de version,
+(mais elles seront compatibles avec votre code, merci SemVer !), et les lignes
+ne seront pas forcément affichées dans le même ordre.
 
-Now that we have an external dependency, Cargo fetches the latest versions of
-everything from the *registry*, which is a copy of data from
-[Crates.io][cratesio]. Crates.io is where people in the Rust ecosystem post
-their open source Rust projects for others to use.
+Maintenant que nous avons notre dépendance externe, Cargo récupère la dernière
+version de tous les objets depuis le *registre*, qui est une copie des données
+de [Crates.io][cratesio]. Crates.io est l'endroit où les développeurs de
+l'écosystème Rust publient leurs projets open source afin de les rendre disponible
+aux autres.
 
 [cratesio]: https://crates.io
 
-After updating the registry, Cargo checks the `[dependencies]` section and
-downloads any you don’t have yet. In this case, although we only listed `rand`
-as a dependency, Cargo also grabbed a copy of `libc`, because `rand` depends on
-`libc` to work. After downloading them, Rust compiles them and then compiles
-the project with the dependencies available.
+Une fois le registre mis à jour, Cargo lit la section `[dependencies]` et se
+charge de télécharger les crates que vous n'avez pas encore chez vous. Dans
+notre cas, bien que nous n'ayons spécifié qu'une seule dépendance, `rand`,
+Cargo a aussi téléchargé la crate `libc`, parce que `rand` dépend de `libc`
+pour fonctionner. Une fois le téléchargement terminé, Cargo compile les
+dépendances, puis notre projet qui les utilise.
 
-If you immediately run `cargo build` again without making any changes, you won’t
-get any output. Cargo knows it has already downloaded and compiled the
-dependencies, and you haven’t changed anything about them in your *Cargo.toml*
-file. Cargo also knows that you haven’t changed anything about your code, so it
-doesn’t recompile that either. With nothing to do, it simply exits. If you open
-up the *src/main.rs* file, make a trivial change, then save it and build again,
-you’ll only see two lines of output:
+Si vous relancez tout de suite `cargo build` sans aucun changement apporté au code,
+vous n'obtiendrez aucun message. Cargo sait qu'il a déjà téléchargé et compilé les
+dépendances, et puisque le code de notre projet n'a pas changé, il ne le
+recompile pas non plus. Étant donné qu'il n'a rien à faire, Cargo termine immédiatement.
+En revanche, si vous ouvrez *src/main.rs*, et faites un changement très simple,
+enregistrez le fichier, et relancez Cargo, vous verrez une seule ligne en sortie:
 
 ```text
 $ cargo build
@@ -464,10 +463,10 @@ $ cargo build
     Finished dev [unoptimized + debuginfo] target(s) in 2.53 secs
 ```
 
-These lines show Cargo only updates the build with your tiny change to the
-*src/main.rs* file. Your dependencies haven’t changed, so Cargo knows it can
-reuse what it has already downloaded and compiled for those. It just rebuilds
-your part of the code.
+Cette ligne nous informe que Cargo a compilé le projet, avec notre petit changement
+dans le fichier *src/main.rs*. Les dépendances n'ayant pas changé, Cargo sait qu'il
+peut simplement utiliser ce qu'il a déjà téléchargé et compilé précédemment. Il se
+contente donc de ne recompiler que notre partie du code.
 
 #### The *Cargo.lock* File Ensures Reproducible Builds
 
