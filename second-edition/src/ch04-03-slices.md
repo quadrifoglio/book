@@ -1,26 +1,28 @@
-## Slices
+## Les Slices
 
-Another data type that does not have ownership is the *slice*. Slices let you
-reference a contiguous sequence of elements in a collection rather than the
-whole collection.
+Un autre type de données qui n'applique pas le principe d'appartenance est le
+*slice*. Les slices vous permet d'avoir une référence vers une séquence
+continue d'élements dans une collection plutôt que toute la collection.
 
-Here’s a small programming problem: write a function that takes a string and
-returns the first word it finds in that string. If the function doesn’t find a
-space in the string, it means the whole string is one word, so the entire
-string should be returned.
+Voici un petit problème de programmation : écrire une fonction qui prends une
+chaine de caractères et retourne le premier mot qu'elle trouve dans cette
+chaine. Si la fonction ne trouve pas d'espace dans la chaine, cela veut dire
+que le toute la chaine est un seul mot, donc la chaine en entier doit être
+retournée.
 
-Let’s think about the signature of this function:
+Immaginons la signature de cette fonction :
 
 ```rust,ignore
 fn first_word(s: &String) -> ?
 ```
 
-This function, `first_word`, has a `&String` as a parameter. We don’t want
-ownership, so this is fine. But what should we return? We don’t really have a
-way to talk about *part* of a string. However, we could return the index of the
-end of the word. Let’s try that as shown in Listing 4-5:
+Cette fonction, `first_word`, prends un `&String` comme paramètre. Nous ne
+voulons pas se l'approprier, donc tout va bien. Mais que devons-nous
+retourner ? Nous n'avons pas de moyen de désigner une *partie* de chaine de
+caractères. Cependant, nous pouvons retourner l'index de la fin du mot.
+Essayons cela dans l'entrée 4-5 :
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Nom du fichier : src/main.rs</span>
 
 ```rust
 fn first_word(s: &String) -> usize {
@@ -36,39 +38,41 @@ fn first_word(s: &String) -> usize {
 }
 ```
 
-<span class="caption">Listing 4-5: The `first_word` function that returns a
-byte index value into the `String` parameter</span>
+<span class="caption">Entrée 4-5 : la fonction `first_word` qui retourne la
+valeur d'index d'octet dans le paramètre `String`</span>
 
-Let’s break down this code a bit. Because we need to go through the `String`
-element by element and check whether a value is a space, we’ll convert our
-`String` to an array of bytes using the `as_bytes` method:
+Regardons un peu plus en détail ce code. Parceque nous avons besoin de
+parcourir le `String` éléments par éléments et vérifier si leur valeur est un
+espace, nous allons convertir notre `String` en tableau d'octets en utilisant
+la méthode `as_bytes` :
 
 ```rust,ignore
 let bytes = s.as_bytes();
 ```
-
-Next, we create an iterator over the array of bytes using the `iter` method:
+Ensuite, nous créons un itérateur sur le tableau d'octets en utilisant la
+méthode `iter` :
 
 ```rust,ignore
 for (i, &item) in bytes.iter().enumerate() {
 ```
 
-We’ll discuss iterators in more detail in Chapter 13. For now, know that `iter`
-is a method that returns each element in a collection, and `enumerate` wraps
-the result of `iter` and returns each element as part of a tuple instead. The
-first element of the returned tuple is the index, and the second element is a
-reference to the element. This is a bit more convenient than calculating the
-index ourselves.
+Nous discuterons plus en détail des itérateur dans le chapitre 13. Pour le
+moment, sachez que ce `iter` est une méthode qui retourne chaque éléments dans
+une collection, et que `enumerate` enveloppe le résultat de `iter` et retourne
+plutôt chaque élément comme une partie d'un tuple. Le premier élément du tuple
+retourné est l'index, et le second  élément est une référence vers l'élément.
+C'est un peu plus pratique que de calculer les index par nous-même.
 
-Because the `enumerate` method returns a tuple, we can use patterns to
-destructure that tuple, just like everywhere else in Rust. So in the `for`
-loop, we specify a pattern that has `i` for the index in the tuple and `&item`
-for the single byte in the tuple. Because we get a reference to the element
-from `.iter().enumerate()`, we use `&` in the pattern.
+Comme la méthode `enumerate` retourne un tuple, ne pouvons utiliser une
+technique pour décomposer ce tuple, comme nous pourrions le faire n'importe où
+avec Rust. Donc dans la boucle `for`, nous précisions un schéma qui indique que
+nous définissons `i` pour l'index à partir du tuple et `&item` for chaque octet
+dans le tuple. Comme nous obtenons une référence vers l'élément avec
+`.iter().enumerate()`, nous utilisons `&` dans le schéma.
 
-We search for the byte that represents the space by using the byte literal
-syntax. If we find a space, we return the position. Otherwise, we return the
-length of the string by using `s.len()`:
+Nous recherchons l'octet qui repérsente l'espace en utilisant la syntaxe des
+mots binaires. Si nous trouvons un espace, nous retournons sa position. Sinon,
+nous retournons la taille du string en utilisant `s.len()` :
 
 ```rust,ignore
     if item == b' ' {
@@ -78,14 +82,14 @@ length of the string by using `s.len()`:
 s.len()
 ```
 
-We now have a way to find out the index of the end of the first word in the
-string, but there’s a problem. We’re returning a `usize` on its own, but it’s
-only a meaningful number in the context of the `&String`. In other words,
-because it’s a separate value from the `String`, there’s no guarantee that it
-will still be valid in the future. Consider the program in Listing 4-6 that
-uses the `first_word` function from Listing 4-5:
+Nous avons maintenant une façon de trouver l'index de la fin du premier mot
+dans la chaine de caractères, mais il y a un problème. Nous retournons un
+`usize` seul, mais il n'est important que lorsqu'il est mis en rapport avec
+le `&String`. Autrement dit, parcequ'il a une valeur séparée du `String`, il
+n'y a pas de garanties qu'il sera toujours valide dans le futur. Immaginons
+le programme dans l'entrée 4-6 qui utilise la fonction de l'entrée 4-5 :
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Nom du fichier : src/main.rs</span>
 
 ```rust
 # fn first_word(s: &String) -> usize {
@@ -103,17 +107,17 @@ uses the `first_word` function from Listing 4-5:
 fn main() {
     let mut s = String::from("hello world");
 
-    let word = first_word(&s); // word will get the value 5.
+    let word = first_word(&s); // word aura 5 comme valeur.
 
-    s.clear(); // This empties the String, making it equal to "".
+    s.clear(); // Ceci vide le String, il faut maintenant "".
 
-    // word still has the value 5 here, but there's no more string that
-    // we could meaningfully use the value 5 with. word is now totally invalid!
+    // word a toujours la valeur 5 ici, mais il n'y a plus de chaine qui donne
+    // du sens à la valeur 5. word est maintenant complètement invalide !
 }
 ```
 
-<span class="caption">Listing 4-6: Storing the result from calling the
-`first_word` function then changing the `String` contents</span>
+<span class="caption">Entrée 4-6 : On stocke le résultat de l'appel à la
+fonction `first_word` et ensuite on change le contenu du `String`</span>
 
 This program compiles without any errors and also would if we used `word` after
 calling `s.clear()`. `word` isn’t connected to the state of `s` at all, so
