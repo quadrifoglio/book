@@ -119,30 +119,34 @@ fn main() {
 <span class="caption">Entrée 4-6 : On stocke le résultat de l'appel à la
 fonction `first_word` et ensuite on change le contenu du `String`</span>
 
-This program compiles without any errors and also would if we used `word` after
-calling `s.clear()`. `word` isn’t connected to the state of `s` at all, so
-`word` still contains the value `5`. We could use that value `5` with the
-variable `s` to try to extract the first word out, but this would be a bug
-because the contents of `s` have changed since we saved `5` in `word`.
+Ce programme se compile sans aucune erreur et serait toujours OK si nous
+utilisions `word` après avoir appellé `s.clear()`. `word` n'est pas du tout lié
+à l'état de `s`, donc `word` contient toujours la valeur `5`. Nous pourrions
+utiliser cette valeur `5` avec la variable `s` pour essayer d'en extraire le
+premier mot, mais cela serait un bogue car le contenu de `s` a changé depuis
+que nous avons enregistré `5` dans `word`.
 
-Having to worry about the index in `word` getting out of sync with the data in
-`s` is tedious and error prone! Managing these indices is even more brittle if
-we write a `second_word` function. Its signature would have to look like this:
+Se préoccuper en permanance que l'index dans `word` ne soit plus synchronisé
+avec les données dans `s` est fastidieux et source d'erreur ! La gestion de ces
+index est encore plus risquée si nous écrivons une fonction second_word. Sa
+signature ressemblerait à quelque chose comme ceci :
 
 ```rust,ignore
 fn second_word(s: &String) -> (usize, usize) {
 ```
 
-Now we’re tracking a start *and* an ending index, and we have even more values
-that were calculated from data in a particular state but aren’t tied to that
-state at all. We now have three unrelated variables floating around that need
-to be kept in sync.
+Maintenant nous gérons un index de début *et* un index de fin, et nous avons
+encore plus de valeurs qui sont calculées à partir de la donnée dans un
+contexte donné qui ne sont pas lié en temps réel à son état instantanné. Nous
+avons maintenant trois variables isolées qui ont besoin d'être maintenu à jour.
 
-Luckily, Rust has a solution to this problem: string slices.
+Heureusement, Rust a une solution pour ce problème : les slices de chaînes de
+caractères.
 
-### String Slices
+### les slices de chaînes de caractères
 
-A *string slice* is a reference to part of a `String`, and looks like this:
+Un *slice de chaîne de caractère* est une référence à une partie d'un `String`,
+et ressemble à ceci :
 
 ```rust
 let s = String::from("hello world");
@@ -151,28 +155,31 @@ let hello = &s[0..5];
 let world = &s[6..11];
 ```
 
-This is similar to taking a reference to the whole `String` but with the extra
-`[0..5]` bit. Rather than a reference to the entire `String`, it’s a reference
-to a portion of the `String`. The `start..end` syntax is a range that begins at
-`start` and continues up to, but not including, `end`.
+C'est comme prendre une référence pour tout le `String` mais avec en plus le
+mot `[0..5]`. Plutôt qu'une référence vers tout le `String`, c'est une
+référence à une partie du `String`. La syntaxe `début..fin` est une intervalle
+qui commence à `start` et comprends la suite jusqu'à `end` exclus.
 
-We can create slices using a range within brackets by specifying
-`[starting_index..ending_index]`, where `starting_index` is the first position
-included in the slice and `ending_index` is one more than the last position
-included in the slice. Internally, the slice data structure stores the starting
-position and the length of the slice, which corresponds to `ending_index` minus
-`starting_index`. So in the case of `let world = &s[6..11];`, `world` would be
-a slice that contains a pointer to the 6th byte of `s` and a length value of 5.
+Nous pouvons créer des slices en utilisant une intervalle entre crochets en
+spécifiant `[index_debut..index_fin]`, où `index_debut` est la première
+position dans le slice et `index_fin` est une position en plus que la dernière
+position dans le slice. En interne, la structure de données du slice enregistre
+la position de départ et la longeur du slice, ce qui correspond à `index_fin`
+moins `index_debut`. Donc dans le cas de `let world = &s[6..11];`, `world` va
+être un slice qui a un pointeur vers le sixième octet de `s` et une longueur
+de 5.
 
-Figure 4-6 shows this in a diagram.
+L'illustration 4-6 montre cela dans un diagramme.
 
-<img alt="world containing a pointer to the 6th byte of String s and a length 5" src="img/trpl04-06.svg" class="center" style="width: 50%;" />
 
-<span class="caption">Figure 4-6: String slice referring to part of a
-`String`</span>
+<img alt="world contient un pointeur vers le sixième octet du String s et une longueur de 5" src="img/trpl04-06.svg" class="center" style="width: 50%;" />
 
-With Rust’s `..` range syntax, if you want to start at the first index (zero),
-you can drop the value before the two periods. In other words, these are equal:
+<span class="caption">Illustration 4-6 : un slice de String qui pointe vers
+une partie de `String`</span>
+
+Avec la syntaxe d'interface `..` de Rust, si vous voulez commencer au premier
+index (zéro), vous pouvez ne rien mettre avant les deux points. Autrement dit,
+ceci est identique :
 
 ```rust
 let s = String::from("hello");
@@ -181,8 +188,9 @@ let slice = &s[0..2];
 let slice = &s[..2];
 ```
 
-By the same token, if your slice includes the last byte of the `String`, you
-can drop the trailing number. That means these are equal:
+De la même manière, si votre slice contient les derniers octets du `String`,
+vous pouvez ne rien mettre à la fin. Cela veut dire que ces deux instructions
+sont identiques :
 
 ```rust
 let s = String::from("hello");
@@ -193,8 +201,8 @@ let slice = &s[3..len];
 let slice = &s[3..];
 ```
 
-You can also drop both values to take a slice of the entire string. So these
-are equal:
+Vous pouvez aussi ne mettre aucune limite pour faire un slice de toute la
+chaine de caractères. Donc ces deux cas sont identiques :
 
 ```rust
 let s = String::from("hello");
@@ -205,17 +213,19 @@ let slice = &s[0..len];
 let slice = &s[..];
 ```
 
-> Note: String slice range indices must occur at valid UTF-8 character
-> boundaries. If you attempt to create a string slice in the middle of a
-> multibyte character, your program will exit with an error. For the purposes
-> of introducing string slices, we are assuming ASCII only in this section; a
-> more thorough discussion of UTF-8 handling is in the “Strings” section of
-> Chapter 8.
+> Note : Les indexes de l'intervalle d'un slice d'un String doivent toujours
+> être des valeurs compatibles avec l'UTF-8. Si vous essayez de créer un slice
+> d'une chaine de caractères au millieu d'un caractère codé sur plusieurs
+> octets, votre programme va se fermer avec une erreur. Pour que nous abordions
+> simplement les slice de chaines de caractères, nous supposerons que nous
+> utilisons l'ASCII uniquement dans cette section; nous discuterons plus en
+> détails de la gestion UTF-8 dans la section “Chaines de caractères” au
+> chapitre 8.
 
-With all this information in mind, let’s rewrite `first_word` to return a
-slice. The type that signifies “string slice” is written as `&str`:
+Avec toutes ces informations, essayons de ré-écrire `first_word` pour retourner
+un slice. Le type pour les “slices de chaines de caractères” s'écrit `&str` :
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Nom du fichier : src/main.rs</span>
 
 ```rust
 fn first_word(s: &String) -> &str {
@@ -231,16 +241,17 @@ fn first_word(s: &String) -> &str {
 }
 ```
 
-We get the index for the end of the word in the same way as we did in Listing
-4-5, by looking for the first occurrence of a space. When we find a space, we
-return a string slice using the start of the string and the index of the space
-as the starting and ending indices.
+Nous récupérons l'index de la fin du mot de la même façon que nous l'avons fait
+dans l'entrée 4-5, en cherchant la première occurence d'un espace. Quand nous
+trouvons un espace, nous retournons un slice de chaine de caractère en
+utilisant le début de la chaine de caractères et l'index de l'espace comme
+indices de début et fin.
 
-Now when we call `first_word`, we get back a single value that is tied to the
-underlying data. The value is made up of a reference to the starting point of
-the slice and the number of elements in the slice.
+Maintenant, quand nous appellons `first_word`, nous récupérons une seule valeur
+qui est liée à la donnée de base. La valeur est construite avec une référence
+vers le point de départ du slice et nombre d'éléments dans le slice.
 
-Returning a slice would also work for a `second_word` function:
+Retourner un slice fonctionnerait aussi pour une fonction `second_word` :
 
 ```rust,ignore
 fn second_word(s: &String) -> &str {
