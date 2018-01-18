@@ -257,17 +257,19 @@ Retourner un slice fonctionnerait aussi pour une fonction `second_word` :
 fn second_word(s: &String) -> &str {
 ```
 
-We now have a straightforward API that’s much harder to mess up, since the
-compiler will ensure the references into the `String` remain valid. Remember
-the bug in the program in Listing 4-6, when we got the index to the end of the
-first word but then cleared the string so our index was invalid? That code was
-logically incorrect but didn’t show any immediate errors. The problems would
-show up later if we kept trying to use the first word index with an emptied
-string. Slices make this bug impossible and let us know we have a problem with
-our code much sooner. Using the slice version of `first_word` will throw a
-compile time error:
+Nous avons maintenant une API simple qui est bien plus difficile à perturber,
+puisque le compilateur va s'assurer que les références dans le `String` seront
+toujours en vigueur. Souvenez-vous du bogue dans le programme de l'entrée 4-6,
+quand nous avions un index vers la fin du premier mot mais qu'ensuite nous
+avions vidé la chaine de caractères et que notre index n'était plus valide ?
+Ce code était logiquement incorrect mais nous n'avons pas immédiatement vu
+d'erreurs. Les problèmes vont arriver plus tard si nous essayons d'utiliser
+l'index du premir mot avec une chaine de caractère qui a été vidée. Les slices
+rendent ce bogue impossible et nous fait savoir bien plus tôt quand nous avons
+un problème avec notre code. Utiliser la version avec le slice de `first_word`
+va lever une erreur au moment de la compilation :
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Nom du fichier : src/main.rs</span>
 
 ```rust,ignore
 fn main() {
@@ -275,11 +277,11 @@ fn main() {
 
     let word = first_word(&s);
 
-    s.clear(); // Error!
+    s.clear(); // Erreur !
 }
 ```
 
-Here’s the compiler error:
+Voici l'erreur du compilateur :
 
 ```text
 error[E0502]: cannot borrow `s` as mutable because it is also borrowed as immutable
@@ -294,24 +296,26 @@ error[E0502]: cannot borrow `s` as mutable because it is also borrowed as immuta
   | - immutable borrow ends here
 ```
 
-Recall from the borrowing rules that if we have an immutable reference to
-something, we cannot also take a mutable reference. Because `clear` needs to
-truncate the `String`, it tries to take a mutable reference, which fails. Not
-only has Rust made our API easier to use, but it has also eliminated an entire
-class of errors at compile time!
+Rappellons-nous que d'après les règles de référencement, si nous avons une
+référence immuable vers quelque chose, nous ne pouvons pas avoir une référence
+modifiable en même temps. Parce que `clear` a besoin de raccourcir le `String`,
+il essaye de prendre une référence modifiable, ce qui échoue. Non seulement
+Rust a simplifié l'utilisation de notre API, mais il a aussi éliminé une
+catégorie entière d'erreurs au moment de la compilation !
 
-#### String Literals Are Slices
+#### Les chaines de caractères pures sont des Slices
 
-Recall that we talked about string literals being stored inside the binary. Now
-that we know about slices, we can properly understand string literals:
+Souvenez-vous lorsque nous avons vu les chaines des caractères pures qui
+étaient enregistrées dans le binaire. Maintenant que nous connaissons les
+slices, nous pouvons comprendre comme il faut les chaines des caractères pures.
 
 ```rust
 let s = "Hello, world!";
 ```
 
-The type of `s` here is `&str`: it’s a slice pointing to that specific point of
-the binary. This is also why string literals are immutable; `&str` is an
-immutable reference.
+Ici, le type de `s` est un `&str` : c'est un slice qui pointe vers un endroit
+spécifique du binaire. C'est pourquoi les chaines des caractères pures sont
+immuables; `&str` est une référence immuable.
 
 #### String Slices as Parameters
 
