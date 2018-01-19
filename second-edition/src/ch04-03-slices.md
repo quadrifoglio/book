@@ -317,28 +317,29 @@ Ici, le type de `s` est un `&str` : c'est un slice qui pointe vers un endroit
 spécifique du binaire. C'est pourquoi les chaines des caractères pures sont
 immuables; `&str` est une référence immuable.
 
-#### String Slices as Parameters
+#### Des slices de chaines de caractères en paramètres
 
-Knowing that you can take slices of literals and `String`s leads us to one more
-improvement on `first_word`, and that’s its signature:
+Apprendre que vous pouvez utiliser des slices de texte et de `String` nous
+amène à apporter quelques améliorations sur `first_word`, voici sa signature :
 
 ```rust,ignore
 fn first_word(s: &String) -> &str {
 ```
 
-A more experienced Rustacean would write the following line instead because it
-allows us to use the same function on both `String`s and `&str`s:
+Un Rustacéen plus expérimenté écrirait plutôt la ligne suivante car cela nous
+permet d'utiliser la même fonction sur les `String` et les `&str` :
 
 ```rust,ignore
 fn first_word(s: &str) -> &str {
 ```
 
-If we have a string slice, we can pass that directly. If we have a `String`, we
-can pass a slice of the entire `String`. Defining a function to take a string
-slice instead of a reference to a String makes our API more general and useful
-without losing any functionality:
+Si nous avions un slice de chaine de caractères, nous pouvons lui envoyer
+directement. Si nous avions un `String`, nous pourrions envoyer un slice de
+tout le `String`. Concevoir une fonction pour prendre un slice de chaine de
+caractères plutôt qu'une référence à une chaine de caractères rends notre API
+plus générique et plus utile sans perdre aucune fonctionnalité :
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Nom du fichier : src/main.rs</span>
 
 ```rust
 # fn first_word(s: &str) -> &str {
@@ -355,31 +356,33 @@ without losing any functionality:
 fn main() {
     let my_string = String::from("hello world");
 
-    // first_word works on slices of `String`s
+    // first_word travaille avec un slice de `String`
     let word = first_word(&my_string[..]);
 
     let my_string_literal = "hello world";
 
-    // first_word works on slices of string literals
+    // first_word travaille avec un slice de chaine de caractères pure
     let word = first_word(&my_string_literal[..]);
 
-    // since string literals *are* string slices already,
-    // this works too, without the slice syntax!
+    // puisque les chaines de caractères *sont* déjà des slices de chaines
+    // de caractères, ceci fonctionne aussi, sans la syntaxe de slice !
     let word = first_word(my_string_literal);
 }
 ```
 
-### Other Slices
+### Les autres slices
 
-String slices, as you might imagine, are specific to strings. But there’s a
-more general slice type, too. Consider this array:
+Les slices de chaines de caractères, comme vous pouvez l'immaginer, sont
+spécifiques aux chaines de caractères. Mais il y a aussi un type plus
+générique. Adméttons ce tableau :
 
 ```rust
 let a = [1, 2, 3, 4, 5];
 ```
 
-Just like we might want to refer to a part of a string, we might want to refer
-to part of an array and would do so like this:
+Comme si nous voudrions nous référer à une partie de chaine de caractères, nous
+voudrions nous référrer à une partie d'un tableau et nous le ferions comme
+ceci :
 
 ```rust
 let a = [1, 2, 3, 4, 5];
@@ -387,19 +390,22 @@ let a = [1, 2, 3, 4, 5];
 let slice = &a[1..3];
 ```
 
-This slice has the type `&[i32]`. It works the same way as string slices do, by
-storing a reference to the first element and a length. You’ll use this kind of
-slice for all sorts of other collections. We’ll discuss these collections in
-detail when we talk about vectors in Chapter 8.
+Ce slice est de type `&[i32]`. Il fonctionne de la même manière que les slices
+de chaines de caractères, en enregistrant une référence vers le premier élément
+et une longueur. Vous pouvez utiliser ce type de slice pour tout les autres
+types de collections. Nous discuterons de ces collections en détail quand nous
+verrons les vecteurs au Chapitre 8.
 
-## Summary
+## Résumé
 
-The concepts of ownership, borrowing, and slices are what ensure memory safety
-in Rust programs at compile time. The Rust language gives you control over your
-memory usage like other systems programming languages, but having the owner of
-data automatically clean up that data when the owner goes out of scope means
-you don’t have to write and debug extra code to get this control.
+Les concepts d'appartenance, d'emprunt, et les slices garantissent la sécurité
+de la mémoire dans les programmes Rust au moment de la compilation. Le langage
+Rust vous donne le contrôle sur l'utilisation de la mémoire comme tous les
+systèmes de langages de programmation, mais avoir le propriétaire des données
+qui nettoie automatiquement ces données quand il sort de la portée vous permet
+de ne pas avoir à écrire et déboguer du code en plus pour avoir ce contrôle.
 
-Ownership affects how lots of other parts of Rust work, so we’ll talk about
-these concepts further throughout the rest of the book. Let’s move on to the
-next chapter and look at grouping pieces of data together in a `struct`.
+L'appropriation influe sur de nombreuses façon dont laquelle Rust fonctionne,
+donc nous allons encore parler de ces conceptes plus loin dans le livre. Allons
+maintenant au chaptire suivant et regardons comment regrouper des données
+ensemble dans un `struct`.
