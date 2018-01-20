@@ -1,12 +1,12 @@
 ## Les références et l'emprunt
 
 Le problème avec le code du tuple à la fin de la section précédente c'est que
-nous avons besoin de retourner le `String` au code appellant pour qu'il puisse
+nous avons besoin de retourner le `String` au code appelant pour qu'il puisse
 encore utiliser le `String` après l'appel à `calculate_length`, car
 l'appartenance du `String` a été déplacée dans `calculate_length`.
 
-Ici vous allez définir et utiliser une fonction `calculate_length` qui prends
-une *référénce* à un objet en paramètre plutôt que de s'approprier la valeur :
+Ici vous allez définir et utiliser une fonction `calculate_length` qui prend
+une *référence* à un objet en paramètre plutôt que de s'approprier la valeur :
 
 <span class="filename">Nom du fichier : src/main.rs</span>
 
@@ -25,7 +25,7 @@ fn calculate_length(s: &String) -> usize {
 ```
 
 Premièrement, remarquez que tout le code avec le tuple dans la déclaration des
-variables et dans le retour de la fonction a été enlevé. Ensuite, on peux
+variables et dans le retour de la fonction a été enlevé. Ensuite, on peut
 constater que nous envoyons `&s1` dans `calculate_length`, et que dans sa
 définition, nous utilisons `&String` plutôt que `String`.
 
@@ -42,7 +42,7 @@ diagramme.
 > quelques utilisations de l'opérateur de déréférencement dans le Chapitre 8 et
 > nous discuterons des détails du déréférencement dans le Chapitre 15.
 
-Regardons de plus près les appels de fonction utilisés :
+Regardons de plus près les appels de fonction utilisées :
 
 ```rust
 # fn calculate_length(s: &String) -> usize {
@@ -70,21 +70,21 @@ fn calculate_length(s: &String) -> usize { // s est une référence à un String
 ```
 
 La portée dans laquelle la variable `s` est en vigueur est la même que toute
-portée de paramètre de fonction, mais nous ne libérons pas ce que que cette
-référence pointe quand elle sort de la portée car nous ne nous la sommes pas
+portée de paramètre de fonction, mais nous ne libérons pas ce sur quoi cette
+référence pointe quand elle sort de la portée, car nous ne nous l'avons pas
 approprié. Les fonctions qui ont des références en paramètres au lieu des
 valeurs effectives veulent dire que nous n'avons pas besoin de retourner les
 valeurs pour rendre leur appartenance, puis nous n'avons jamais eu
 l'appartenance.
 
 Quand nous avons des références dans les paramètres d'une fonction, nous
-appellons cela *l'emprunt*. Comme dans la vie réelle, quand un objet appartient
+appelons cela *l'emprunt*. Comme dans la vie réelle, quand un objet appartient
 à quelqu'un, vous pouvez lui emprunter. Quand vous avez fini, vous devez lui
 rendre.
 
-Donc qu'est-ce qu'il se passe si nous essayons de modifier quelque chose que
-nous empruntons ? Essayez le code dans l'entrée 4-4. Spoiler : cela ne
-fonctionne pas !
+Donc qu'est-ce qui se passe si nous essayons de modifier quelque chose que nous
+empruntons ? Essayez le code dans l'entrée 4-4. Spoiler : cela ne fonctionne
+pas !
 
 <span class="filename">Nom du fichier : src/main.rs</span>
 
@@ -116,8 +116,8 @@ error[E0596]: cannot borrow immutable borrowed content `*some_string` as mutable
 ```
 
 Comme les variables sont immuables par défaut, les références le sont aussi.
-Nous ne sommes pas autorisé à modifier une chose quand nous avons une référence
-vers elle.
+Nous ne sommes pas autorisés à modifier une chose quand nous avons une
+référence vers elle.
 
 ### Les références modifiables
 
@@ -169,27 +169,27 @@ error[E0499]: cannot borrow `s` as mutable more than once at a time
   | - first borrow ends here
 ```
 
-Cette restriction autorise les mutations mais de façon très contrôlée. C'est
+Cette restriction autorise les mutations, mais de façon très contrôlée. C'est
 ce avec quoi les nouveaux Rustacéens ont du mal, car la plupart des langages
 vous permettent de modifier les données quand vous voulez. L'avantage de cette
-restriction c'est que Rust peut empêcher la concurence des données au moment de
-la compilation.
+restriction c'est que Rust peut empêcher la concurrence des données au moment
+de la compilation.
 
-La *concurence des données* ressemble à une concurence critique et se produit
+La *concurrence des données* ressemble à une concurrence critique et se produit
 quand ces trois facteurs se combinent :
 
 1. Un ou plusieurs pointeurs accèdent à la même donnée au même moment.
 2. Au moins un des pointeurs est utilisé pour écrire dans les données.
-3. Il n'y a pas dispositif d'utilisé pour synchroniser l'accès aux données.
+3. On n'utilise pas de processus pour synchroniser l'accès aux données.
 
-La concurence des données provoque des comportements inexpliqués et il peut
+La concurrence des données provoque des comportements inexpliqués et il peut
 alors être difficile de diagnostiquer et résoudre le problème lorsque vous
 essayez de les traquer au moment de l'exécution; Rust évite que ce problème
-arrive parcequ'il ne va même pas compiler le code avec de la concurence de
+arrive parcequ'il ne va même pas compiler le code avec de la concurrence de
 données !
 
 Comme toujours, nous pouvons utiliser des accolades pour créer une nouvelle
-portée, nous permettant d'avoir plusieures références modifiables, mais pas
+portée, pour nous permettre d'avoir plusieurs références modifiables, mais pas
 *simultanées* :
 
 ```rust
@@ -204,8 +204,8 @@ let mut s = String::from("hello");
 let r2 = &mut s;
 ```
 
-Une règle simulaire existe pour mélanger les références immuables et
-modifiables. Ce code va meter à une erreur :
+Une règle similaire existe pour mélanger les références immuables et
+modifiables. Ce code va mener à une erreur :
 
 ```rust,ignore
 let mut s = String::from("hello");
@@ -234,9 +234,9 @@ immutable
 Ouah ! Nous ne pouvons pas *non plus* avoir une référence modifiable si nous en
 avons une d'immuable. Les utilisateurs d'une référence immuable ne s'attendent
 pas à ce que se valeur change soudainement ! Cependant, l'utilisation de
-plusieures références immuables ne pose pas de problème car personne de ceux
-qui lisent seulement la donnée n'a la possiblité de modifier la lecture de la
-données par les autres.
+plusieurs références immuables ne pose pas de problème, car personne de ceux
+qui lisent uniquement la donnée n'a la possibilité de modifier la lecture de la
+donnée par les autres.
 
 Même si ces erreurs peuvent parfois être frustrantes, souvenez-vous que le
 compilateur de Rust nous fait remarquer un futur bogue avant l'heure (au moment
@@ -249,7 +249,7 @@ données ne correspondent pas à ce que vous pensiez qu'elles étaient.
 Avec les langages qui utilisent les pointeurs, c'est facile de créer par erreur
 un *pointeur en suspension*, qui est un pointeur qui désigne un endroit dans la
 mémoire qui a été donné par quelqu'un d'autre, en libérant une partie de la
-mémoire mais en conservant un pointeur vers cette mémoire. En revanche, dans
+mémoire, mais en conservant un pointeur vers cette mémoire. En revanche, dans
 Rust, le compilateur garantie que les références ne seront jamais des
 références en suspension : si nous avons une référence vers des données, le
 compilateur va s'assurer que cette donnée ne vas pas sortir de la portée avant
@@ -288,7 +288,7 @@ error[E0106]: missing lifetime specifier
 
 Ce message d'erreur parle d'une fonctionnalité que nous n'avons pas encore vu :
 les *durées de vie*. Nous allons voir plus en détail les durées de vie dans le
-Chapitre 10. Mais, si vous mettez de coté les parties qui parlent de la durée
+Chapitre 10. Mais, si vous mettez de côté les parties qui parlent de la durée
 de vie, le message désigne l'élément de code qui pose problème :
 
 ```text
@@ -296,7 +296,7 @@ this function's return type contains a borrowed value, but there is no value
 for it to be borrowed from.
 ```
 
-Regardons de plus pret ce qui se passe à chaque étape de notre code `dangle` :
+Regardons de plus près ce qui se passe à chaque étape de notre code `dangle` :
 
 ```rust,ignore
 fn dangle() -> &String { // dangle returnes une référence vers un String
@@ -307,12 +307,12 @@ fn dangle() -> &String { // dangle returnes une référence vers un String
 } // Ici, s sort de la portée, et est libéré. Sa mémoire disparait. Danger !
 ```
 
-Parce que `s` est céé dans `dangle`, quand le code de `dangle` est terminé, `s`
-va être désaloué. Mais nous avions essayé de renvoyer une référence vers elle.
-Cela veut dire que cette référence va pointer vers un `String` invalide ! Ce
-n'est pas bon. Rust ne nous laissera pas faire cela.
+Parce que `s` est créé dans `dangle`, quand le code de `dangle` est terminé,
+`s` va être désaloué. Mais nous avions essayé de renvoyer une référence vers
+elle. Cela veut dire que cette référence va pointer vers un `String` invalide !
+Ce n'est pas bon. Rust ne nous laissera pas faire cela.
 
-Ici la solution est renvoyer le `String` directement :
+Ici la solution est de renvoyer le `String` directement :
 
 ```rust
 fn no_dangle() -> String {
@@ -329,11 +329,11 @@ désaloué.
 
 Récapitulons ce que nous avons vu à propos des références :
 
-1. Vous pouvez avoir *un* des deux cas suivants mais pas les deux en même
+1. Vous pouvez avoir *un* des deux cas suivants, mais pas les deux en même
 temps :
   * Une référence modifiable.
   * Un nombre illimité de références immuables.
 2. Les références doivent toujours être en vigueur.
 
-A l'étape suivant, nous allons aborder un type différent de référence : les
+A l'étape suivante, nous allons aborder un type différent de référence : les
 slices.
