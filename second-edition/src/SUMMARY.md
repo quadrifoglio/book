@@ -5,6 +5,7 @@
 - [Introduction](ch01-00-introduction.md)
     - [Installation](ch01-01-installation.md)
     - [Hello, World!](ch01-02-hello-world.md)
+    - [How Rust is Made and “Nightly Rust”](ch01-03-how-rust-is-made-and-nightly-rust.md)
 
 - [Tutoriel : Le Jeu du Plus ou Moins](ch02-00-guessing-game-tutorial.md)
 
