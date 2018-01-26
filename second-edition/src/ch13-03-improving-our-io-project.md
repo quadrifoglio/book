@@ -1,22 +1,18 @@
-## Improving our I/O Project
+## Amélioration de notre Projet d'I/O
 
-We can improve our implementation of the I/O project in Chapter 12 by using
-iterators to make places in the code clearer and more concise. Let's take a
-look at how iterators can improve our implementation of both the `Config::new`
-function and the `search` function.
+Grâce à ces nouvelles connaissances sur les itérateurs, nous pouvons améliorer le projet d' I/O du chapitre 12 en utilisant des itérateurs pour rendre certains endroits du code plus clairs et plus concis. Voyons comment les itérateurs peuvent améliorer notre implémentation de la fonction `Config:: new` et de la fonction `search`.
 
-### Removing a `clone` Using an Iterator
 
-In Listing 12-13, we had code that took a slice of `String` values and created
-an instance of the `Config` struct by checking for the right number of
-arguments, indexing into the slice, and cloning the values so that the `Config`
-struct could own those values. We've reproduced the code here in Listing 13-23:
+### Suppression de l'appel à `clone` à l'aide d'un Itérateur
 
-<span class="filename">Filename: src/main.rs</span>
+Dans le Listing 12-6, nous avons ajouté du code qui a pris une *slice* de valeurs `String` et créé une instance de la structure `Config` en utilisant les index de la *slice* et en clonant les valeurs, permettant ainsi à la structure `Config` de posséder ces valeurs. Dans le Listing 13-24, nous avons reproduit l'implémentation de la fonction `Config:: new` comme dans le Listing 12-23 à la fin du chapitre 12:
+
+
+<span class="filename">Fichier: src/lib.rs</span>
 
 ```rust,ignore
 impl Config {
-    fn new(args: &[String]) -> Result<Config, &'static str> {
+    pub fn new(args: &[String]) -> Result<Config, &'static str> {
         if args.len() < 3 {
             return Err("not enough arguments");
         }
@@ -24,146 +20,96 @@ impl Config {
         let query = args[1].clone();
         let filename = args[2].clone();
 
-        Ok(Config {
-            query, filename
-        })
+        let case_sensitive = env::var("CASE_INSENSITIVE").is_err();
+
+        Ok(Config { query, filename, case_sensitive })
     }
 }
 ```
 
-<span class="caption">Listing 13-23: Reproduction of the `Config::new` function
-from Listing 12-13</span>
+<span class="caption">Listing 13-24: Reproduction de la fonction `Config:: new` à la fin du Chapitre 12</span>
 
-<!--Is this why we didn't want to use clone calls, they were inefficient, or
-was it that stacking clone calls can become confusing/is bad practice? -->
-<!-- Yep, it's for performance reasons /Carol -->
+À ce moment-là, nous avions dit de ne pas s'inquiéter des appels inefficaces à `clone` parce que nous les supprimerions à l'avenir. Eh bien, le moment est venu!
 
-At the time, we said not to worry about the inefficient `clone` calls here
-because we would remove them in the future. Well, that time is now!
+Nous avions besoin de `clone` ici parce que nous avons une *slice* avec des éléments `String` dans le paramètre `args`, mais la fonction `new` ne possède pas `args`. Pour rendre la propriété d'une instance `Config`, nous avons dû cloner les valeurs des champs `query` et `filename` de `Config` pour que l'instance `Config` puisse posséder ses propres valeurs.
 
-The reason we needed `clone` here in the first place is that we have a slice
-with `String` elements in the parameter `args`, but the `new` function does not
-own `args`. In order to be able to return ownership of a `Config` instance, we
-need to clone the values that we put in the `query` and `filename` fields of
-`Config`, so that the `Config` instance can own its values.
+Avec nos nouvelles connaissances sur les itérateurs, nous pouvons changer la fonction `new` pour prendre en charge un itérateur comme argument au lieu d'emprunter une *slice*. Nous utiliserons la fonctionnalité itérateur au lieu du code qui vérifie la longueur de la *slice* et les index dans des emplacements spécifiques. Ceci clarifiera ce que la fonction `Config:: new` fait parce que l'itérateur accédera aux valeurs.
 
-With our new knowledge about iterators, we can change the `new` function to
-take ownership of an iterator as its argument instead of borrowing a slice.
-We'll use the iterator functionality instead of the code we had that checks the
-length of the slice and indexes into specific locations. This will clear up
-what the `Config::new` function is doing since the iterator will take care of
-accessing the values.
 
-<!-- use the iterator functionality to what? How will iterating allow us to do
-the same thing, can you briefly lay that out? -->
-<!-- It's mostly for clarity and using a good abstraction, I've tried fixing
-/Carol -->
+Une fois que `Config:: new` prend possession de l'itérateur et cesse d'utiliser les opérations d'indexation qui empruntent, nous pouvons déplacer les valeurs `String` de l'iterator dans `Config` plutôt que d'appeler `clone` et de faire une nouvelle allocation.
 
-Once `Config::new` taking ownership of the iterator and not using indexing
-operations that borrow, we can move the `String` values from the iterator into
-`Config` rather than calling `clone` and making a new allocation.
+### Utilisation directe de l'Itérateur renvoyé
 
-<!-- below: which file are we in, can you specify here? -->
-<!-- done /Carol -->
+Ouvrez le fichier *src/main. rs* de votre projet d' I/O, qui devrait ressembler à ceci:
 
-#### Using the Iterator Returned by `env::args` Directly
-
-In your I/O project's *src/main.rs*, let's change the start of the `main`
-function from this code that we had in Listing 12-23:
+<span class="filename">Fichier: src/main.rs</span>
 
 ```rust,ignore
 fn main() {
     let args: Vec<String> = env::args().collect();
-    let mut stderr = std::io::stderr();
 
     let config = Config::new(&args).unwrap_or_else(|err| {
-        writeln!(
-            &mut stderr,
-            "Problem parsing arguments: {}",
-            err
-        ).expect("Could not write to stderr");
+        eprintln!("Problem parsing arguments: {}", err);
         process::exit(1);
     });
-    // ...snip...
+
+    // --snip--
 }
 ```
 
-To the code in Listing 13-24:
+Nous allons changer le début de la fonction `main` que nous avions dans le Listing 12-24 à la fin du Chapitre 12 pour le code dans le Listing 13-25. Ceci ne compilera pas encore jusqu' à ce que nous mettions également à jour `Config:: new`:
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Fichier: src/main.rs</span>
 
 ```rust,ignore
 fn main() {
-    let mut stderr = std::io::stderr();
-
     let config = Config::new(env::args()).unwrap_or_else(|err| {
-        writeln!(
-            &mut stderr,
-            "Problem parsing arguments: {}",
-            err
-        ).expect("Could not write to stderr");
+        eprintln!("Problem parsing arguments: {}", err);
         process::exit(1);
     });
-    // ...snip...
+
+    // --snip--
 }
 ```
 
-<span class="caption">Listing 13-24: Passing the return value of `env::args` to
-`Config::new`</span>
+<span class="caption">Listing 13-25: Transmission de la valeur de retour de `env:: args` à `Config:: new`.</span>
 
-<!-- I think, if we're going to be building this up bit by bit, it might be
-worth adding listing numbers and file names to each, can you add those? Don't
-worry about being accurate with the numbers, we can update them more easily
-later -->
-<!-- That's nice of you to offer, but since we're maintaining an online version
-that we're keeping in sync with each round of edits, we need to keep the
-listing numbers making sense as well. We'll just take care of them. /Carol -->
+La fonction `env:: args` retourne un itérateur! Plutôt que de collecter les valeurs de l'itérateur dans un vecteur et de passer ensuite une *slice* à `Config:: new`, maintenant nous passons la propriété de l'itérateur directement de `env:: args` à `Config:: new`.
 
-The `env::args` function returns an iterator! Rather than collecting the
-iterator values into a vector and then passing a slice to `Config::new`, now
-we're passing ownership of the iterator returned from `env::args` to
-`Config::new` directly.
+Ensuite, nous devons mettre à jour la définition de `Config:: new`. Dans le fichier *src/lib.rs* de votre projet d' I/O, modifions la signature de `Config:: new` pour ressembler au Listing 13-26. Ceci ne compilera pas encore parce que nous devons mettre à jour le corps de la fonction:
 
-Next, we need to update the definition of `Config::new`. In your I/O project's
-*src/lib.rs*, let's change the signature of `Config::new` to look like Listing
-13-25:
-
-<!-- can you give the filename here too? -->
-<!-- done /Carol -->
-
-<span class="filename">Filename: src/lib.rs</span>
+<span class="filename">Fichier: src/lib.rs</span>
 
 ```rust,ignore
 impl Config {
-    fn new(args: std::env::Args) -> Result<Config, &'static str> {
-        // ...snip...
+    pub fn new(mut args: std::env::Args) -> Result<Config, &'static str> {
+        // --snip--
 ```
 
-<span class="caption">Listing 13-25: Updating the signature of `Config::new` to
-expect an iterator</span>
+<span class="caption">Listing 13-26:Mise à jour de la signature de `Config:: new` pour recevoir un itérateur</span>
 
-The standard library documentation for the `env::args` function shows that the
-type of the iterator it returns is `std::env::Args`. We've updated the
-signature of the `Config::new` function so that the parameter `args` has the
-type `std::env::Args` instead of `&[String]`.
+La documentation standard de la bibliothèque pour la fonction `env:: args` montre que le type de l'itérateur qu'elle renvoie est `std:: env:: Args`. Nous avons mis à jour la signature de la fonction `Config:: new` pour que le paramètre `args` ait le type `std:: env:: Args` au lieu de `&[String]`. Parce que nous prenons la propriété de `args` et que nous allons muter `args` en itérant dessus, nous pouvons ajouter le mot-clé `mut` dans la spécification du paramètre `args` pour le rendre mutable.
+
 
 #### Using `Iterator` Trait Methods Instead of Indexing
+#### Utilisation des Méthodes du Trait `Iterator` au lieu de l'Indexation
 
-Next, we'll fix the body of `Config::new`. The standard library documentation
-also mentions that `std::env::Args` implements the `Iterator` trait, so we know
-we can call the `next` method on it! Listing 13-26 has the new code:
+Ensuite, nous allons réparer le corps de `Config:: new`. La documentation standard de la bibliothèque mentionne aussi que `std:: env:: Args` implémente le trait `Iterator`, donc nous savons que nous pouvons appeler la méthode `next` dessus! Le Le listing 13-27 met à jour le code du Listing 12-23 afin d'utiliser la méthode `next`:
 
-<span class="filename">Filename: src/lib.rs</span>
+<span class="filename">Fichier: src/lib.rs</span>
 
 ```rust
+# use std::env;
+#
 # struct Config {
 #     query: String,
 #     filename: String,
+#     case_sensitive: bool,
 # }
 #
 impl Config {
-    fn new(mut args: std::env::Args) -> Result<Config, &'static str> {
-    	args.next();
+    pub fn new(mut args: std::env::Args) -> Result<Config, &'static str> {
+        args.next();
 
         let query = match args.next() {
             Some(arg) => arg,
@@ -175,46 +121,25 @@ impl Config {
             None => return Err("Didn't get a file name"),
         };
 
-        Ok(Config {
-            query, filename
-        })
+        let case_sensitive = env::var("CASE_INSENSITIVE").is_err();
+
+        Ok(Config { query, filename, case_sensitive })
     }
 }
 ```
 
-<span class="caption">Listing 13-26: Changing the body of `Config::new` to use
-iterator methods</span>
+<span class="caption">Listing 13-27: Changement du corps de `Config::new` afin d'utiliser les méthodes d'itération</span>
 
-<!-- is this the *full* new lib.rs code? Worth noting for ghosting purposes -->
-<!-- No, this is just the `Config::new` function, which I thought would be
-clear by saying "Next, we'll fix the body of `Config::new`.", can you elaborate
-on why that's not clear enough? I would expect programmers to be able to
-understand where a function starts and ends. /Carol -->
+Rappelez-vous que la première valeur dans ce qui est retourné par `env:: args` est le nom du programme. Nous voulons ignorer cette valeur et passer à la valeur suivante, donc d'abord nous appelons `next` et ne faisons rien avec la valeur de retour. Deuxièmement, nous appelons `next` sur la valeur que nous voulons mettre dans le champ `query` de `Config`. Si `next` renvoie un `Some`, nous utilisons un `match` pour extraire la valeur. S'il retourne `None`, cela signifie qu'il n' y a pas assez d'arguments donnés et nous revenons plus tôt avec une valeur `Err`. De même pour la valeur `filename`.
 
-Remember that the first value in the return value of `env::args` is the name of
-the program. We want to ignore that and get to the next value, so first we call
-`next` and do nothing with the return value. Second, we call `next` on the
-value we want to put in the `query` field of `Config`. If `next` returns a
-`Some`, we use a `match` to extract the value. If it returns `None`, it means
-not enough arguments were given and we return early with an `Err` value. We do
-the same thing for the `filename` value.
+### Rendre le Code plus Clair avec des Adaptateurs d'Itérateurs
 
-<!-- Hm, if ? would not work anyway, I'm not clear on why we mention, why it's
-a shame we cant use it on Option? -->
-<!-- We've taken this out, it's something that a portion of the readers might
-be wondering and something that Rust might let you do someday, but yeah, it's
-probably just distracting to most people /Carol -->
+Nous pouvons également tirer parti des itérateurs dans la fonction `search` de notre projet d' I/O, qui est reproduite ici dans le Listing 13-28, comme elle l'était dans Listing 12-19 à la fin du chapitre 12:
 
-### Making Code Clearer with Iterator Adaptors
-
-The other place in our I/O project we could take advantage of iterators is in
-the `search` function, as implemented in Listing 12-19 and reproduced here in
-Listing 13-27:
-
-<span class="filename">Filename: src/lib.rs</span>
+<span class="filename">Fichier: src/lib.rs</span>
 
 ```rust,ignore
-fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
+pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
     let mut results = Vec::new();
 
     for line in contents.lines() {
@@ -227,55 +152,24 @@ fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
 }
 ```
 
-<span class="caption">Listing 13-27: The implementation of the `search`
-function from Listing 12-19</span>
+<span class="caption">Listing 13-28: La mise en uvre de la fonction `search` telle qu'au chapitre 12</span>
 
-We can write this code in a much shorter way by using iterator adaptor methods
-instead. This also lets us avoid having a mutable intermediate `results`
-vector. The functional programming style prefers to minimize the amount of
-mutable state to make code clearer. Removing the mutable state might make it
-easier for us to make a future enhancement to make searching happen in
-parallel, since we wouldn't have to manage concurrent access to the `results`
-vector. Listing 13-28 shows this change:
+Nous pouvons écrire ce code de façon plus concise en utilisant des méthodes d'adaptateur d'itérateur. Ce faisant, nous évitons aussi d'avoir un vecteur intermédiaire mutable: `results`. Le style de programmation fonctionnel préfère minimiser la quantité d'état modifiable pour rendre le code plus clair. Supprimer l'état mutable pourrait nous aider à faire une amélioration future pour que la recherche se fasse en parallèle, car nous n'aurions pas à gérer l'accès simultané au vecteur `results`. Le Listing 13-29 montre ce changement:
 
-<!-- Remind us why we want to avoid the mutable results vector? -->
-<!-- done /Carol -->
-
-<span class="filename">Filename: src/lib.rs</span>
+<span class="filename">Fichier: src/lib.rs</span>
 
 ```rust,ignore
-fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
+pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
     contents.lines()
         .filter(|line| line.contains(query))
         .collect()
 }
 ```
 
-<span class="caption">Listing 13-28: Using iterator adaptor methods in the
-implementation of the `search` function</span>
+<span class="caption">Listing 13-29: Utilisation de méthodes d'adaptateurs d'itérateurs dans l'implémentation de la fonction `search`</span>
 
-Recall that the purpose of the `search` function is to return all lines in
-`contents` that contain the `query`. Similarly to the `filter` example in
-Listing 13-18, we can use the `filter` adaptor to keep only the lines that
-`line.contains(query)` returns true for. We then collect the matching lines up
-into another vector with `collect`. Much simpler!
+Souvenez-vous que le but de la fonction `search` est de renvoyer toutes les lignes dans `contents` qui contiennent `query`. Comme dans l'exemple de `filter` dans le Listing 13-19, nous pouvons utiliser l'adaptateur `filter` pour ne garder que les lignes pour lesquelles `line.contains(query)` renvoie true. Nous collectons ensuite les lignes correspondantes dans un autre vecteur avec `collect`. Bien plus simple! N'hésitez pas à faire le même changement pour utiliser les méthodes d'itération dans la fonction `search_case_insensitive`.
 
-<!-- what is that, here, only lines that contain a matching string? A bit more
-context would help out, we probably can't rely on readers remembering all the
-details I'm afraid -->
-<!-- done /Carol -->
+Logiquement la question suivante est de savoir quel style utiliser dans votre propre code et pourquoi: l'implémentation originale dans le Listing 13-28 ou la version utilisant les itérateurs dans le Listing 13-29. La plupart des développeurs Rust préfèrent utiliser le style itérateur. C'est un peu plus difficile au début, mais une fois que vous avez une idée des différents adaptateurs d'itérateur et de ce qu'ils font, les itérateurs peuvent être plus faciles à comprendre. Au lieu de jouer avec les différents boucles et de construire de nouveaux vecteurs, le code se concentre sur l'objectif de haut niveau de la boucle. Cette abstraction élimine une partie du code trivial, de sorte qu'il est plus facile de voir les concepts qui sont uniques à ce code, comme la condition de filtration que chaque élément de l'itérateur doit passer.
 
-The next logical question is which style you should choose in your own code:
-the original implementation in Listing 13-27, or the version using iterators in
-Listing 13-28. Most Rust programmers prefer to use the iterator style. It's a
-bit tougher to get the hang of at first, but once you get a feel for the
-various iterator adaptors and what they do, iterators can be easier to
-understand. Instead of fiddling with the various bits of looping and building
-new vectors, the code focuses on the high-level objective of the loop. This
-abstracts away some of the commonplace code so that it's easier to see the
-concepts that are unique to this code, like the filtering condition each
-element in the iterator must pass.
-
-But are the two implementations truly equivalent? The intuitive assumption
-might be that the more low-level loop will be faster. Let's talk about
-performance.
+Mais les deux implémentations sont-elles réellement équivalentes? L'hypothèse intuitive pourrait être que la boucle de plus bas niveau sera plus rapide. Intéressons nous au performance.
