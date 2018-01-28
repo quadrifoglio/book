@@ -1,28 +1,30 @@
-## `mod` and the Filesystem
+## `mod` et le sytème de fichier
 
-We’ll start our module example by making a new project with Cargo, but instead
-of creating a binary crate, we’ll make a library crate: a project that other
-people can pull into their projects as a dependency. For example, the `rand`
-crate discussed in Chapter 2 is a library crate that we used as a dependency in
-the guessing game project.
+Nous alons commencer notre exemple de module en créant un nouveau projet avec
+Cargo, mais au lieu de créer un crate pour un binaire, nous allons créer un
+crate pour une bibliothèque : ce sera un projet que les autres personnes
+pourront intégrer dans leurs projets comme étant une dépendance. Par exemple,
+le crate `rand` utilisé dans le chapitre 2 est un crate de bibliothèque que
+nous avons utilisé comme dépendance quand le projet du jeu du plus ou moins.
 
-We’ll create a skeleton of a library that provides some general networking
-functionality; we’ll concentrate on the organization of the modules and
-functions but we won’t worry about what code goes in the function bodies. We’ll
-call our library `communicator`. By default, Cargo will create a library unless
-another type of project is specified: if we omit the `--bin` option that we’ve
-been using in all of the chapters preceding this one, our project will be a
-library:
+Nous alons créer une structure de bibliothèque qui va apporter des
+fonctionnalités pour des réseaux génériques; nous nous concentrerons sur
+l'organisation des modules et des fonctions mais nous ne nous préoccuperons pas
+du code qui est dans le corps des fonctions. Nous allons appeller notre
+bibliothèque `communicator`. Par défaut, Cargo va créer une bibliothèque sauf
+si un autre type de projet est précisé : si nous enlevons l'option `--bin` que
+nous avons utilisé tout au long des chapitres précédents, notre projet sera une
+bibliothèque :
 
 ```text
 $ cargo new communicator
 $ cd communicator
 ```
 
-Notice that Cargo generated *src/lib.rs* instead of *src/main.rs*. Inside
-*src/lib.rs* we’ll find the following:
+Notez que Cargo a généré *src/lib.rs* au lieu de *src/main.rs*. Dans
+*src/lib.rs* nous avons ceci :
 
-<span class="filename">Filename: src/lib.rs</span>
+<span class="filename">Nom du fichier : src/lib.rs</span>
 
 ```rust
 #[cfg(test)]
@@ -34,20 +36,20 @@ mod tests {
 }
 ```
 
-Cargo creates an example test to help us get our library started, rather than
-the “Hello, world!” binary that we get when we use the `--bin` option. We’ll
-look at the `#[]` and `mod tests` syntax in the “Using `super` to Access a
-Parent Module” section later in this chapter, but for now, leave this code at
-the bottom of *src/lib.rs*.
+Cargo crée un exemple de test pour nous aider à démarrer notre bibliothèque,
+à la place du code "Hello, world!" que nous avons quand nous utilisons l'option
+`--bin`. Nous verrons les syntaxes `#[]` et `mod tests` dans la section
+“Utiliser `super` pour accéder au module parent” plus tard dans ce chapitre,
+mais pour le moment, laissez ce code en bas de *src/lib.rs*.
 
-Because we don’t have a *src/main.rs* file, there’s nothing for Cargo to
-execute with the `cargo run` command. Therefore, we’ll use the `cargo build`
-command to compile our library crate’s code.
+Comme nous n'avons pas de fichier *src/main.rs*, il n'y a rien à exécuter pour
+Cargo avec la commande `cargo run`. C'est pourquoi nous allons utiliser la
+commande `cargo build` pour compiler le code de notre crate de bibliothèque.
 
-We’ll look at different options for organizing your library’s code that will be
-suitable in a variety of situations, depending on the intent of the code.
+Nous examinerons plusieures façons d'organiser le code de notre bibliothèque
+qui se prêterons à différentes situations, en fonction de la finalité du code.
 
-### Module Definitions
+### Définitions des Modules
 
 For our `communicator` networking library, we’ll first define a module named
 `network` that contains the definition of a function called `connect`. Every
