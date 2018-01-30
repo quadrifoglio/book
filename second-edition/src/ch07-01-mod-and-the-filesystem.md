@@ -165,15 +165,15 @@ de votre projet. Utilisez les techniques montrées içi pour créer des modules
 l'un à coté de l'autre et les modules imbriqués l'un dans l'autre dans
 n'importe quelle structure que vous avez besoin.
 
-### Moving Modules to Other Files
+### Déplacer les modules dans d'autres fichiers
 
-Modules form a hierarchical structure, much like another structure in computing
-that you’re used to: filesystems! We can use Rust’s module system along with
-multiple files to split up Rust projects so not everything lives in
-*src/lib.rs* or *src/main.rs*. For this example, let’s start with the code in
-Listing 7-3:
+Les modules créent une structure hiérarchique, un peu comme une autre structure
+informatique que vous avez déjà utilisé : le système de fichiers ! Nous pouvons
+utiliser le système de module de Rust avec plusieurs fichiers pour découper les
+projets Rust afin que tout ne soit pas dans *src/lib.rs* ou *src/main.rs*. Dans
+notre exemple, nous alons commencer avec le code dans l'entrée 7-3 :
 
-<span class="filename">Filename: src/lib.rs</span>
+<span class="filename">Nom du fichier : src/lib.rs</span>
 
 ```rust
 mod client {
@@ -192,10 +192,10 @@ mod network {
 }
 ```
 
-<span class="caption">Listing 7-3: Three modules, `client`, `network`, and
-`network::server`, all defined in *src/lib.rs*</span>
+<span class="caption">Entrée 7-3: trois modules, `client`, `network`, et
+`network::server`, tous définis dans *src/lib.rs*</span>
 
-The file *src/lib.rs* has this module hierarchy:
+Le fichier *src/lib.rs* a cette hierarchie de modules :
 
 ```text
 communicator
@@ -204,17 +204,19 @@ communicator
      └── server
 ```
 
-If these modules had many functions, and those functions were becoming lengthy,
-it would be difficult to scroll through this file to find the code we wanted to
-work with. Because the functions are nested inside one or more `mod` blocks,
-the lines of code inside the functions will start getting lengthy as well.
-These would be good reasons to separate the `client`, `network`, and `server`
-modules from *src/lib.rs* and place them into their own files.
+Si ces modules avaient beaucoup de fonctions, et que ces fonctions devenaient
+très verbeuses, il serait difficile de parcourir ce fichier pour trouver le
+code avec lequel nous voulons travailler. Parce que ces fonctions sont
+imbriquées dans un ou plusieurs blocs `mod`, les lignes de code à l'intérieur
+des fonctions vont également s'allonger. Ce sont des bonnes raisons pour
+séparer les modules `client`, `network`, et `server` de *src/lib.rs* et les
+placer dans leurs propres fichiers.
 
-First, replace the `client` module code with only the declaration of the
-`client` module, so that your *src/lib.rs* looks like code shown in Listing 7-4:
+Premièrement, remplacez le code du module `client` avec seulement la
+déclaration du module `client`, de sorte que votre *src/lib.rs* ressemble au
+code montré dans l'entrée 7-4 :
 
-<span class="filename">Filename: src/lib.rs</span>
+<span class="filename">Nom du fichier : src/lib.rs</span>
 
 ```rust,ignore
 mod client;
@@ -230,7 +232,8 @@ mod network {
 }
 ```
 
-<span class="caption">Listing 7-4: Extracting the contents of the `client` module but leaving the declaration in *src/lib.rs*</span>
+<span class="caption">Entrée 7-4 : on déplace le contenu du module `client`
+mais on laisse la déclaration dans *src/lib.rs*</span>
 
 We’re still *declaring* the `client` module here, but by replacing the block
 with a semicolon, we’re telling Rust to look in another location for the code
