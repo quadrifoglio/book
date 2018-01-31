@@ -235,33 +235,34 @@ mod network {
 <span class="caption">Entrée 7-4 : on déplace le contenu du module `client`
 mais on laisse la déclaration dans *src/lib.rs*</span>
 
-We’re still *declaring* the `client` module here, but by replacing the block
-with a semicolon, we’re telling Rust to look in another location for the code
-defined within the scope of the `client` module. In other words, the line `mod
-client;` means:
+Nous continuons à *déclarer* the module `client` içi, mais en remplaçant le
+bloc par un point-virgule, nous disons à Rust de chercher le code à autre
+endroit, défini dans la portée du module `client`. Pour dire autrement, la
+ligne `mod client;` signifie ceci :
 
 ```rust,ignore
 mod client {
-    // contents of client.rs
+    // contenu du fichier client.rs içi
 }
 ```
 
-Now we need to create the external file with that module name. Create a
-*client.rs* file in your *src/* directory and open it. Then enter the
-following, which is the `connect` function in the `client` module that we
-removed in the previous step:
+Maintenant, nous avons besoin de créer les fichiers avec ces noms de modules.
+Créez donc un fichier *client.rs* dans votre répertoire *src/* et modifiez-le.
+Saisissez alors le code suivant, qui est la fonction `connect` dans le module
+`client` que nous avons enlevé dans l'étape précédente :
 
-<span class="filename">Filename: src/client.rs</span>
+<span class="filename">Nom du fichier : src/client.rs</span>
 
 ```rust
 fn connect() {
 }
 ```
 
-Note that we don’t need a `mod` declaration in this file because we already
-declared the `client` module with `mod` in *src/lib.rs*. This file just
-provides the *contents* of the `client` module. If we put a `mod client` here,
-we’d be giving the `client` module its own submodule named `client`!
+Observez que nous n'avons pas besoin de faire une déclaration avec `mod` dans
+ce fichier car nous avons déjà déclaré le module `client` avec `mod` dans
+*src/lib.rs*. Ce fichier donne juste le *contenu* du module `client`. Si nous
+ajoutons un `mod client` içi, on ajouterais alors au module `client` son propre
+sous-module qui s'appelle aussi `client` !
 
 Rust only knows to look in *src/lib.rs* by default. If we want to add more
 files to our project, we need to tell Rust in *src/lib.rs* to look in other
