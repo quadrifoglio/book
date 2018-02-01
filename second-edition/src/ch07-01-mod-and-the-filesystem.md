@@ -264,14 +264,15 @@ ce fichier car nous avons déjà déclaré le module `client` avec `mod` dans
 ajoutons un `mod client` içi, on ajouterais alors au module `client` son propre
 sous-module qui s'appelle aussi `client` !
 
-Rust only knows to look in *src/lib.rs* by default. If we want to add more
-files to our project, we need to tell Rust in *src/lib.rs* to look in other
-files; this is why `mod client` needs to be defined in *src/lib.rs* and can’t
-be defined in *src/client.rs*.
+Rust ne sait que chercher dans *src/lib.rs* par défaut. Si nous voulons ajouter
+plus de fichiers à notre projet, nous devons dire à Rust dans *src/lib.rs* de
+chercher dans d'autres fichiers; c'est pourquoi `mod client` doit être placé
+dans *src/lib/rs* et ne peut pas être utilisé dans *src/client.rs*.
 
-Now the project should compile successfully, although you’ll get a few
-warnings. Remember to use `cargo build` instead of `cargo run` because we have
-a library crate rather than a binary crate:
+Maintenant le projet devrait être compilé sans problèmes, bien que vous
+obtiendrez quelques avertissements. N'oubliez pas d'utiliser `cargo build`
+plutôt que `cargo run` car nous avons un crate de bibliothèque plutôt qu'un
+crate de binaire :
 
 ```text
 $ cargo build
@@ -300,16 +301,17 @@ warning: function is never used: `connect`
   | |_________^
 ```
 
-These warnings tell us that we have functions that are never used. Don’t worry
-about these warnings for now; we’ll address them later in this chapter in the
-“Controlling Visibility with `pub`” section. The good news is that they’re just
-warnings; our project built successfully!
+Ces avertissements nous préviennent que nous avons des fonctions qui ne sont
+jamais utilisées. Ne vous préoccupez pas de ces avertissements pour le moment;
+nous nous en occuperons plus tard dans ce chapitre dans la section “Gérer la
+visibilité avec `pub`”. La bonne nouvelle c'est que ce sont juste des
+avertissements; notre projet a été compilé avec succès !
 
-Next, let’s extract the `network` module into its own file using the same
-pattern. In *src/lib.rs*, delete the body of the `network` module and add a
-semicolon to the declaration, like so:
+Ensuite, nous allons déplacer le module `network` dans son propre fichier en
+suivant le même principe. Dans *src/lib.rs*, supprimez le corps du module
+`network` et ajoutez un point-virgule à la déclaration, comme ceci :
 
-<span class="filename">Filename: src/lib.rs</span>
+<span class="filename">Nom du fichier : src/lib.rs</span>
 
 ```rust,ignore
 mod client;
@@ -317,9 +319,10 @@ mod client;
 mod network;
 ```
 
-Then create a new *src/network.rs* file and enter the following:
+Créez ensuite un nouveau fichier *src/network.rs* et saisissez le code
+suivant :
 
-<span class="filename">Filename: src/network.rs</span>
+<span class="filename">Nom du fichier : src/network.rs</span>
 
 ```rust
 fn connect() {
@@ -331,16 +334,19 @@ mod server {
 }
 ```
 
-Notice that we still have a `mod` declaration within this module file; this is
-because we still want `server` to be a submodule of `network`.
+Notez que nous avons toujours une déclaration `mod` dans ce fichier de module;
+c'est parceque nous voulons toujours que `server` soit un sous-module de
+`network`.
 
-Run `cargo build` again. Success! We have one more module to extract: `server`.
-Because it’s a submodule—that is, a module within a module—our current tactic
-of extracting a module into a file named after that module won’t work. We’ll
-try anyway so you can see the error. First, change *src/network.rs* to have
-`mod server;` instead of the `server` module’s contents:
+Lancez `cargo build` à nouveau. Cela fonctionne ! Nous avons encore un autre
+module à extraire : `server`. Comme c'est un sous-module (c'est à dire, un
+module dans un module), notre principe actuel de déplacement des modules dans
+un fichier qui s'appelle selon le nom du module ne va pas fonctionner. Nous
+allons essayer tout de même et vous allez constater l'erreur. Pour commencer,
+changez *src/network.rs* pour avoir `mod server;` plutôt que le contenu du
+module `server` :
 
-<span class="filename">Filename: src/network.rs</span>
+<span class="filename">Nom du fichier : src/network.rs</span>
 
 ```rust,ignore
 fn connect() {
@@ -349,17 +355,18 @@ fn connect() {
 mod server;
 ```
 
-Then create a *src/server.rs* file and enter the contents of the `server`
-module that we extracted:
+Ensuite, créez un fichier *src/server.ts* et saisissez le contenu du module
+`server` que nous avons extrait :
 
-<span class="filename">Filename: src/server.rs</span>
+<span class="filename">Nom du fichier : src/server.rs</span>
 
 ```rust
 fn connect() {
 }
 ```
 
-When we try to `cargo build`, we’ll get the error shown in Listing 7-5:
+Lorsque nous essayons `cargo build`, nous avons l'erreur montrée dans l'entrée
+7-5 :
 
 ```text
 $ cargo build
@@ -382,30 +389,31 @@ note: ... or maybe `use` the module `server` instead of possibly redeclaring it
   |     ^^^^^^
 ```
 
-<span class="caption">Listing 7-5: Error when trying to extract the `server`
-submodule into *src/server.rs*</span>
+<span class="caption">Entrée 7-5 : erreur lorsque nous essayons de déplacer le
+sous-module `server` dans *src/server.rs*</span>
 
-The error says we `cannot declare a new module at this location` and is
-pointing to the `mod server;` line in *src/network.rs*. So *src/network.rs* is
-different than *src/lib.rs* somehow: keep reading to understand why.
+Cette erreur nous dit que nous *ne pouvons pas déclarer un nouveau module à cet
+emplacement* et qu'elle pointe sur la ligne du `mod server;` dans
+*src/network.rs*. Donc *src/network.rs* est en-soi différent de *src/lib.rs* :
+continuons à lire pour comprendre pourquoi.
 
-The note in the middle of Listing 7-5 is actually very helpful because it
-points out something we haven’t yet talked about doing:
+La note au millieu de l'entrée 7-5 est très utile dans notre cas car elle
+souligne un point que nous n'avons pas encore parlé :
 
 ```text
 note: maybe move this module `network` to its own directory via
 `network/mod.rs`
 ```
 
-Instead of continuing to follow the same file naming pattern we used
-previously, we can do what the note suggests:
+Plutôt que de continuer à suite la même stratégie de nommage des fichiers que
+nous avons utilisé précedemment, nous pouvons faire ce que recommende la note :
 
-1. Make a new *directory* named *network*, the parent module’s name.
-2. Move the *src/network.rs* file into the new *network* directory, and
-   rename it to *src/network/mod.rs*.
-3. Move the submodule file *src/server.rs* into the *network* directory.
+1. Créer un nouveau *dossier* *network*, le nom du module parent.
+2. Déplacer le fichier *src/network.rs* dans ce nouveau dossier *network*, et
+   le renomer en *src/network/mod.rs*.
+3. Déplacer le fichier de sous-module *src/server.rs* dans le dossier *network*
 
-Here are commands to carry out these steps:
+Voici les commandes bash pour procéder à ces changements :
 
 ```text
 $ mkdir src/network
