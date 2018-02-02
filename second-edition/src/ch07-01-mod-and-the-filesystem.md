@@ -421,9 +421,11 @@ $ mv src/network.rs src/network/mod.rs
 $ mv src/server.rs src/network
 ```
 
-Now when we try to run `cargo build`, compilation will work (we’ll still have
-warnings though). Our module layout still looks like this, which is exactly the
-same as it did when we had all the code in *src/lib.rs* in Listing 7-3:
+Maintenant, quand nous essayons de lancer `cargo build`, la compilation devrait
+fonctionner (cependant, nous avons toujours des avertissements). Notre
+hierarchie de module ressemble toujours à ceci, c'est exactement le même que
+nous avions défini quand nous avions tout le code dans *src/lib.rs* dans
+l'entrée 7-3 :
 
 ```text
 communicator
@@ -432,7 +434,7 @@ communicator
      └── server
 ```
 
-The corresponding file layout now looks like this:
+La hierarchie de fichier ressemble maintenant à ceci :
 
 ```text
 ├── src
@@ -443,15 +445,16 @@ The corresponding file layout now looks like this:
 │       └── server.rs
 ```
 
-So when we wanted to extract the `network::server` module, why did we have to
-also change the *src/network.rs* file to the *src/network/mod.rs* file and put
-the code for `network::server` in the *network* directory in
-*src/network/server.rs* instead of just being able to extract the
-`network::server` module into *src/server.rs*? The reason is that Rust wouldn’t
-be able to recognize that `server` was supposed to be a submodule of `network`
-if the *server.rs* file was in the *src* directory. To clarify Rust’s behavior
-here, let’s consider a different example with the following module hierarchy,
-where all the definitions are in *src/lib.rs*:
+Mais, quand nous avons voulu déplacer le module `network::server`, pourquoi
+avons-nous aussi déplacé le fichier *src/network.rs* dans le fichier
+*src/network/mod.rs* en plus de déplacer le code de `network::server` dans le
+fichier *src/network/server.rs*, plutôt que de simplement déplacer le module
+`network::server` dans *src/server.rs* ? La raison est que Rust ne serait pas
+capable de comprendre que ce `server` est supposé être un sous-module de
+`network` si le fichier *server.rs* était dans le dossier *src*. Pour éclaircir
+le fonctionnement de Rust dans ce cas, immaginons un cas différent avec la
+hierarchie de modules suivant, où toutes les définitions sont dans
+*src/lib.rs* :
 
 ```text
 communicator
@@ -460,23 +463,25 @@ communicator
      └── client
 ```
 
-In this example, we have three modules again: `client`, `network`, and
-`network::client`. Following the same steps we did earlier for extracting
-modules into files, we would create *src/client.rs* for the `client` module.
-For the `network` module, we would create *src/network.rs*. But we wouldn’t be
-able to extract the `network::client` module into a *src/client.rs* file
-because that already exists for the top-level `client` module! If we could put
-the code for *both* the `client` and `network::client` modules in the
-*src/client.rs* file, Rust wouldn’t have any way to know whether the code was
-for `client` or for `network::client`.
+Dans cet exemple, nous avons aussi trois modules : `client`, `network`, et
+`network::client`. En suivant les mêmes la même stratégie que nous avons
+employé précédemment pour déplacer les modules dans des fichiers, nous allons
+créer *src/client.rs* pour le module `client`. Pour le module `network`, nous
+allons créer *src/network.rs*. Mais nous ne pourrons pas déplacer le module
+`network::client` dans un fichier *src/client.rs* car il existe déjà pour le
+module `client` du premier niveau ! Si nous pouvions mettre le code pour
+*chacun* des modules `client` et `network::client` dans le fichier
+*src/client.rs*, Rust n'aurait aucun moyen de savoir quel code serait pour
+`client` ou pour `network::client`.
 
-Therefore, in order to extract a file for the `network::client` submodule of
-the `network` module, we needed to create a directory for the `network` module
-instead of a *src/network.rs* file. The code that is in the `network` module
-then goes into the *src/network/mod.rs* file, and the submodule
-`network::client` can have its own *src/network/client.rs* file. Now the
-top-level *src/client.rs* is unambiguously the code that belongs to the
-`client` module.
+Cependant, pour pouvoir déplacer dans un fichier le sous-module
+`network::client` du module `network`, nous avons besoin de créer un dossier
+pour le module `network` plutôt qu'un fichier *src/network.rs*. Le code
+qu'il y aura dans le module `network` ira alors dans le fichier
+*src/network/mod.rs*, et le sous-module `network::client` peut avoir son
+propre fichier *src/network/client.rs*. Désormais le premier niveau
+*src/client.rs* n'est plus en en conflit et le code est clairement utilisé pour
+le module `client`.
 
 ### Rules of Module Filesystems
 
