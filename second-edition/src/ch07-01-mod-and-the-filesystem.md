@@ -1,16 +1,16 @@
-## `mod` et le sytème de fichier
+## `mod` et le système de fichier
 
-Nous alons commencer notre exemple de module en créant un nouveau projet avec
+Nous allons commencer notre exemple de module en créant un nouveau projet avec
 Cargo, mais au lieu de créer un crate pour un binaire, nous allons créer un
 crate pour une bibliothèque : ce sera un projet que les autres personnes
 pourront intégrer dans leurs projets comme étant une dépendance. Par exemple,
 le crate `rand` utilisé dans le chapitre 2 est un crate de bibliothèque que
 nous avons utilisé comme dépendance quand le projet du jeu du plus ou moins.
 
-Nous alons créer une structure de bibliothèque qui va apporter des
+Nous allons créer une structure de bibliothèque qui va apporter des
 fonctionnalités pour des réseaux génériques; nous nous concentrerons sur
-l'organisation des modules et des fonctions mais nous ne nous préoccuperons pas
-du code qui est dans le corps des fonctions. Nous allons appeller notre
+l'organisation des modules et des fonctions, mais nous ne nous préoccuperons
+pas du code qui est dans le corps des fonctions. Nous allons appeller notre
 bibliothèque `communicator`. Par défaut, Cargo va créer une bibliothèque sauf
 si un autre type de projet est précisé : si nous enlevons l'option `--bin` que
 nous avons utilisé tout au long des chapitres précédents, notre projet sera une
@@ -46,12 +46,12 @@ Comme nous n'avons pas de fichier *src/main.rs*, il n'y a rien à exécuter pour
 Cargo avec la commande `cargo run`. C'est pourquoi nous allons utiliser la
 commande `cargo build` pour compiler le code de notre crate de bibliothèque.
 
-Nous examinerons plusieures façons d'organiser le code de notre bibliothèque
+Nous étudierons plusieurs façons d'organiser le code de notre bibliothèque
 qui se prêterons à différentes situations, en fonction de la finalité du code.
 
 ### Définitions des Modules
 
-Pour notre bibliothèque `communicator`, nous alons commencer par définir un
+Pour notre bibliothèque `communicator`, nous allons commencer par définir un
 module `network` qui contiendra la définition d'une fonction `connect`. Chaque
 définition de module dans Rust commence par le mot-clé `mod`. Ajoutez ce code
 au début du fichier *src/lib.rs*, devant le code de test :
@@ -66,14 +66,14 @@ mod network {
 ```
 
 Après le mot-clé `mod`, nous ajoutons le nom du module, `network`, et ensuite
-un bloc de code entre les acollades. Tout ce qui est dans ce bloc est à
+un bloc de code entre les accolades. Tout ce qui est dans ce bloc est à
 l'intérieur de l'espace de nom `network`. Ainsi, nous avons une seule fonction,
 `connect`. Si nous voulons appeler cette fonction à partir de code à
 l'extérieur du module `network`, nous avons besoin de préciser le module et
 d'utiliser la syntaxe d'espace de nom `::`, comme ceci : `network::connect()`
 et non pas juste `connect()`.
 
-Nous pouvons aussi avoir plusieurs modules, l'un à coté de l'autre, dans le
+Nous pouvons aussi avoir plusieurs modules, l'un à côté de l'autre, dans le
 même fichier *src/lib.rs*. Par exemple, pour avoir aussi un module `client` qui
 a lui aussi une fonction `connect`, nous pouvons l'ajouter comme dans l'entrée
 7-1 :
@@ -93,11 +93,11 @@ mod client {
 ```
 
 <span class="caption">Entrée 7-1 : le module `network` et le module `client`,
-définis l'un à coté de l'autre dans *src/lib.rs*</span>
+définis l'un à côté de l'autre dans *src/lib.rs*</span>
 
 Nous avons maintenant une fonction `network::connect` et une fonction
 `client::connect`. Elles peuvent fonctionner complètement différemment, et les
-noms de fonctions ne seront pas en conflit l'un envers l'autre car elles sont
+noms de fonctions ne seront pas en conflit l'un envers l'autre, car elles sont
 dans des modules différents.
 
 Dans notre exemple, comme nous construisons une bibliothèque, le fichier qui
@@ -105,12 +105,12 @@ sert de point d'entrée pour construire notre bibliothèque est *src/lib.rs*.
 Nous pouvons aussi créer des modules dans *src/main.rs* pour un crate de
 binaire de la même façon que nous l'avons fait dans *src/lib.rs* pour le crate
 de bibliothèque. En fait, nous pouvons insérer des modules dans des modules,
-ce qui peut être pratique lorsque vos modules grossisent, afin de garder les
+ce qui peut être pratique lorsque vos modules grossissent, afin de garder les
 fonctionnalités liées entre elles et séparer les fonctionnalités indépendantes.
 Vous devez choisir comment organiser votre code en fonction de comment vous
 envisagez les relations entre vos parties de codes. Par exemple, le code de
 `client` et sa fonction `connect` peut avoir plus de sens aux utilisateurs
-de notre bibliothèque si ils étaient plutôt dans l'espace de nom `network`,
+de notre bibliothèque s'ils étaient plutôt dans l'espace de nom `network`,
 comme dans l'entrée 7-2 :
 
 <span class="filename">Nom du fichier : src/lib.rs</span>
@@ -130,17 +130,17 @@ mod network {
 <span class="caption">Entrée 7-2 : déplacement du module `client` à l'intérieur
 du module `network`</span>
 
-Dans votre fichier *src/lib.rs*, remplacez le définitions existantes
+Dans votre fichier *src/lib.rs*, remplacez les définitions existantes
 `mod network` et `mod client` par celles de l'entrée 7-2, qui ont le module
-`client` à l'interieur du module `network`. Maintenant nous avons les fonctions
+`client` à l'intérieur du module `network`. Maintenant nous avons les fonctions
 `network::connect` et `network::client::connect` : de nouveau, les deux
-fonctions `connect` ne sont pas en conflit l'un envers l'autre car elmes sont
+fonctions `connect` ne sont pas en conflit l'un envers l'autre, car elles sont
 dans des espaces de nom différents.
 
-De cette façon, les modules construisent une hierarchie. Le contennu de
+De cette façon, les modules construisent une hiérarchie. Le contenu de
 *src/lib.rs* sont à la plus haute place. Voici ce à quoi ressemble
 l'organisation de notre exemple dans le module 7-1 quand nous analysons la
-hierarchie :
+hiérarchie :
 
 ```text
 communicator
@@ -148,7 +148,7 @@ communicator
  └── client
 ```
 
-Et voici la hierarchie correspondant à l'exemple dans l'entrée 7-2 :
+Et voici la hiérarchie correspondant à l'exemple dans l'entrée 7-2 :
 
 ```text
 communicator
@@ -156,13 +156,13 @@ communicator
      └── client
 ```
 
-La hierarchie montre que dans l'entrée 7-2, `client` est un enfant du module
+La hiérarchie montre que dans l'entrée 7-2, `client` est un enfant du module
 `network` plutôt qu'un frère. Les projets plus compliqués peuvent avoir de
 nombreux modules, et ils auront besoin d'être organisés logiquement pour
 pouvoir les maintenir. Ce que “logiquement” signifie dans votre projet dépends
-de comment vous et les utilisateurs de la bibliothèque immaginent le domaine
-de votre projet. Utilisez les techniques montrées içi pour créer des modules
-l'un à coté de l'autre et les modules imbriqués l'un dans l'autre dans
+de comment vous et les utilisateurs de la bibliothèque imaginent le domaine
+de votre projet. Utilisez les techniques montrées ici pour créer des modules
+l'un à côté de l'autre et les modules imbriqués l'un dans l'autre dans
 n'importe quelle structure que vous avez besoin.
 
 ### Déplacer les modules dans d'autres fichiers
@@ -171,7 +171,7 @@ Les modules créent une structure hiérarchique, un peu comme une autre structur
 informatique que vous avez déjà utilisé : le système de fichiers ! Nous pouvons
 utiliser le système de module de Rust avec plusieurs fichiers pour découper les
 projets Rust afin que tout ne soit pas dans *src/lib.rs* ou *src/main.rs*. Dans
-notre exemple, nous alons commencer avec le code dans l'entrée 7-3 :
+notre exemple, nous allons commencer avec le code dans l'entrée 7-3 :
 
 <span class="filename">Nom du fichier : src/lib.rs</span>
 
@@ -195,7 +195,7 @@ mod network {
 <span class="caption">Entrée 7-3: trois modules, `client`, `network`, et
 `network::server`, tous définis dans *src/lib.rs*</span>
 
-Le fichier *src/lib.rs* a cette hierarchie de modules :
+Le fichier *src/lib.rs* a cette hiérarchie de modules :
 
 ```text
 communicator
@@ -206,11 +206,11 @@ communicator
 
 Si ces modules avaient beaucoup de fonctions, et que ces fonctions devenaient
 très verbeuses, il serait difficile de parcourir ce fichier pour trouver le
-code avec lequel nous voulons travailler. Parce que ces fonctions sont
-imbriquées dans un ou plusieurs blocs `mod`, les lignes de code à l'intérieur
-des fonctions vont également s'allonger. Ce sont des bonnes raisons pour
-séparer les modules `client`, `network`, et `server` de *src/lib.rs* et les
-placer dans leurs propres fichiers.
+code avec lequel nous voulons travailler. Puisque ces fonctions sont imbriquées
+dans un ou plusieurs blocs `mod`, les lignes de code à l'intérieur des
+fonctions vont également s'allonger. Ce sont des bonnes raisons pour séparer
+les modules `client`, `network`, et `server` de *src/lib.rs* et les placer dans
+leurs propres fichiers.
 
 Premièrement, remplacez le code du module `client` avec seulement la
 déclaration du module `client`, de sorte que votre *src/lib.rs* ressemble au
@@ -232,17 +232,17 @@ mod network {
 }
 ```
 
-<span class="caption">Entrée 7-4 : on déplace le contenu du module `client`
+<span class="caption">Entrée 7-4 : on déplace le contenu du module `client`,
 mais on laisse la déclaration dans *src/lib.rs*</span>
 
-Nous continuons à *déclarer* the module `client` içi, mais en remplaçant le
+Nous continuons à *déclarer* le module `client` ici, mais en remplaçant le
 bloc par un point-virgule, nous disons à Rust de chercher le code à autre
-endroit, défini dans la portée du module `client`. Pour dire autrement, la
+endroit, défini dans la portée du module `client`. Pour le dire autrement, la
 ligne `mod client;` signifie ceci :
 
 ```rust,ignore
 mod client {
-    // contenu du fichier client.rs içi
+    // contenu du fichier client.rs ici
 }
 ```
 
@@ -259,9 +259,9 @@ fn connect() {
 ```
 
 Observez que nous n'avons pas besoin de faire une déclaration avec `mod` dans
-ce fichier car nous avons déjà déclaré le module `client` avec `mod` dans
+ce fichier, car nous avons déjà déclaré le module `client` avec `mod` dans
 *src/lib.rs*. Ce fichier donne juste le *contenu* du module `client`. Si nous
-ajoutons un `mod client` içi, on ajouterais alors au module `client` son propre
+ajoutons un `mod client` ici, on ajouterait alors au module `client` son propre
 sous-module qui s'appelle aussi `client` !
 
 Rust ne sait que chercher dans *src/lib.rs* par défaut. Si nous voulons ajouter
@@ -269,8 +269,8 @@ plus de fichiers à notre projet, nous devons dire à Rust dans *src/lib.rs* de
 chercher dans d'autres fichiers; c'est pourquoi `mod client` doit être placé
 dans *src/lib/rs* et ne peut pas être utilisé dans *src/client.rs*.
 
-Maintenant le projet devrait être compilé sans problèmes, bien que vous
-obtiendrez quelques avertissements. N'oubliez pas d'utiliser `cargo build`
+Maintenant le projet devrait être compilé sans problème, bien que vous
+obtiendriez quelques avertissements. N'oubliez pas d'utiliser `cargo build`
 plutôt que `cargo run` car nous avons un crate de bibliothèque plutôt qu'un
 crate de binaire :
 
@@ -335,13 +335,13 @@ mod server {
 ```
 
 Notez que nous avons toujours une déclaration `mod` dans ce fichier de module;
-c'est parceque nous voulons toujours que `server` soit un sous-module de
+c'est parce que nous voulons toujours que `server` soit un sous-module de
 `network`.
 
 Lancez `cargo build` à nouveau. Cela fonctionne ! Nous avons encore un autre
-module à extraire : `server`. Comme c'est un sous-module (c'est à dire, un
+module à extraire : `server`. Comme c'est un sous-module (c'est-à-dire, un
 module dans un module), notre principe actuel de déplacement des modules dans
-un fichier qui s'appelle selon le nom du module ne va pas fonctionner. Nous
+un fichier qui se nomme selon le nom du module ne va pas fonctionner. Nous
 allons essayer tout de même et vous allez constater l'erreur. Pour commencer,
 changez *src/network.rs* pour avoir `mod server;` plutôt que le contenu du
 module `server` :
@@ -397,8 +397,8 @@ emplacement* et qu'elle pointe sur la ligne du `mod server;` dans
 *src/network.rs*. Donc *src/network.rs* est en-soi différent de *src/lib.rs* :
 continuons à lire pour comprendre pourquoi.
 
-La note au millieu de l'entrée 7-5 est très utile dans notre cas car elle
-souligne un point que nous n'avons pas encore parlé :
+La note au milieu de l'entrée 7-5 est très utile dans notre cas, car elle
+souligne un point que nous n'avons pas encore abordé :
 
 ```text
 note: maybe move this module `network` to its own directory via
@@ -406,11 +406,11 @@ note: maybe move this module `network` to its own directory via
 ```
 
 Plutôt que de continuer à suite la même stratégie de nommage des fichiers que
-nous avons utilisé précedemment, nous pouvons faire ce que recommende la note :
+nous avons utilisé précédemment, nous pouvons faire ce que recommande la note :
 
 1. Créer un nouveau *dossier* *network*, le nom du module parent.
 2. Déplacer le fichier *src/network.rs* dans ce nouveau dossier *network*, et
-   le renomer en *src/network/mod.rs*.
+   le renommer en *src/network/mod.rs*.
 3. Déplacer le fichier de sous-module *src/server.rs* dans le dossier *network*
 
 Voici les commandes bash pour procéder à ces changements :
@@ -423,7 +423,7 @@ $ mv src/server.rs src/network
 
 Maintenant, quand nous essayons de lancer `cargo build`, la compilation devrait
 fonctionner (cependant, nous avons toujours des avertissements). Notre
-hierarchie de module ressemble toujours à ceci, c'est exactement le même que
+hiérarchie de module ressemble toujours à ceci, c'est exactement le même que
 nous avions défini quand nous avions tout le code dans *src/lib.rs* dans
 l'entrée 7-3 :
 
@@ -434,7 +434,7 @@ communicator
      └── server
 ```
 
-La hierarchie de fichier ressemble maintenant à ceci :
+La hiérarchie de fichier ressemble maintenant à ceci :
 
 ```text
 ├── src
@@ -451,9 +451,9 @@ avons-nous aussi déplacé le fichier *src/network.rs* dans le fichier
 fichier *src/network/server.rs*, plutôt que de simplement déplacer le module
 `network::server` dans *src/server.rs* ? La raison est que Rust ne serait pas
 capable de comprendre que ce `server` est supposé être un sous-module de
-`network` si le fichier *server.rs* était dans le dossier *src*. Pour éclaircir
-le fonctionnement de Rust dans ce cas, immaginons un cas différent avec la
-hierarchie de modules suivant, où toutes les définitions sont dans
+`network` si le fichier *server.rs* était dans le dossier *src*. Pour clarifier
+le fonctionnement de Rust dans ce cas, imaginons un cas différent avec la
+hiérarchie de modules suivante, où toutes les définitions sont dans
 *src/lib.rs* :
 
 ```text
