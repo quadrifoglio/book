@@ -483,26 +483,27 @@ propre fichier *src/network/client.rs*. Désormais le premier niveau
 *src/client.rs* n'est plus en en conflit et le code est clairement utilisé pour
 le module `client`.
 
-### Rules of Module Filesystems
+### Les règles du système de fichiers des modules
 
-Let’s summarize the rules of modules with regard to files:
+Synthétisons les règles des modules en fonction des fichiers :
 
-* If a module named `foo` has no submodules, you should put the declarations
-  for `foo` in a file named *foo.rs*.
-* If a module named `foo` does have submodules, you should put the declarations
-  for `foo` in a file named *foo/mod.rs*.
+* Si un module `foo` n'a pas de sous-modules, vous devriez placer les
+  déclarations de `foo` dans le fichier *foo.rs*
+* Si un module `foo` a bien des sous-modules, vous devriez placer les
+  déclarations de `foo` dans le fichier *foo/mod.rs*
 
-These rules apply recursively, so if a module named `foo` has a submodule named
-`bar` and `bar` does not have submodules, you should have the following files
-in your *src* directory:
+Ces règles s'appliquent récursivement, donc si un module `foo` a un sous-module
+`bar` et `bar` n'a pas de sous-modules, vous devriez avoir les fichiers
+suivants dans votre dossier *src* :
 
 ```text
 ├── foo
-│   ├── bar.rs (contains the declarations in `foo::bar`)
-│   └── mod.rs (contains the declarations in `foo`, including `mod bar`)
+│   ├── bar.rs (contient les déclarations de `foo::bar`)
+│   └── mod.rs (contient les déclarations de `foo`, dont le `mod bar`)
 ```
 
-The modules should be declared in their parent module’s file using the `mod`
-keyword.
+Les modules doivent être déclarées dans les fichiers des modules parents avec
+le mot-clé `mod`.
 
-Next, we’ll talk about the `pub` keyword and get rid of those warnings!
+Ensuite, nous allons parler du mot-clé `pub` et nous débarrasser de ces
+avertissements !
