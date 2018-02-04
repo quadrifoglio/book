@@ -1,17 +1,18 @@
-## Variables and Mutability
+## Variables et Mutabilité
 
-As mentioned in Chapter 2, by default variables are *immutable*. This is one of
-many nudges in Rust that encourages you to write your code in a way that takes
-advantage of the safety and easy concurrency that Rust offers. However, you
-still have the option to make your variables mutable. Let’s explore how and why
-Rust encourages you to favor immutability, and why you might want to opt out.
+Comme mentionné dans le Chapitre 2, par défaut, les variables sont *immuables*.
+C'est un des nombreux coups de pouces de Rust vous encourageant à écrire votre
+code d'une façon à tirer avantage de la sûreté et de la concurrence facilitée
+que Rust propose. Cependant, vous avez tout de même la possibilité de rendre
+vos variables mutables. Explorons comment et pourquoi Rust vous encourage à
+favoriser l'immutabilité, et pourquoi vous pourriez choisir d'y renoncer.
 
-When a variable is immutable, that means once a value is bound to a name, you
-can’t change that value. To illustrate, let’s generate a new project called
-*variables* in your *projects* directory by using `cargo new --bin variables`.
+Lorsque qu'une variable est immuable, cela signifie qu'une fois qu'une valeur
+est liée à un nom, vous ne pouvez pas changer cette valeur. À titre
+d'illustration, générons un nouveau projet appelé *variables* dans votre
+dossier *projects* en utilisant `cargo new --bin variables`.
 
-Then, in your new *variables* directory, open *src/main.rs* and replace its
-code with the following:
+Ensuite, dans votre nouveau dossier *variables*, ouvrez *src/main.rs* et remplacez son contenu par ceci :
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -24,8 +25,7 @@ fn main() {
 }
 ```
 
-Save and run the program using `cargo run`. You should receive an error
-message, as shown in this output:
+Sauvegardez et lancez le programme en utilisant `cargo run`. Vous devriez obtenir un message d'erreur, tel qu'indiqué par la sortie suivante :
 
 ```text
 error[E0384]: cannot assign twice to immutable variable `x`
@@ -38,33 +38,36 @@ error[E0384]: cannot assign twice to immutable variable `x`
   |     ^^^^^ cannot assign twice to immutable variable
 ```
 
-This example shows how the compiler helps you find errors in your programs.
-Even though compiler errors can be frustrating, they only mean your program
-isn’t safely doing what you want it to do yet; they do *not* mean that you’re
-not a good programmer! Experienced Rustaceans still get compiler errors.
+Cet exemple montre comment le compilateur vous aide à identifier les erreurs
+dans vos programmes. Même si les erreurs de compilation peuvent s'avérer
+frustrantes, elles signifient uniquement que votre programme n'est pour le
+moment pas en train de faire ce que vous voulez qu'il fasse en toute sécurité ;
+elles ne signifient *pas* que vous êtes un mauvais en programmation ! Même les
+Rustacéens et Rustacéennes ayant de l'expérience continuent d'avoir des erreurs de compilation.
 
-The error indicates that the cause of the error is that we `cannot assign twice
-to immutable variable x`, because we tried to assign a second value to the
-immutable `x` variable.
+Cette erreur indique que la cause du problème est qu'il est `impossible 
+d'assigner à deux reprises la variable immuable x`, car nous avons essayé de 
+donner à `x`, qui est une variable immuable, une seconde valeur.
 
-It’s important that we get compile-time errors when we attempt to change a
-value that we previously designated as immutable because this very situation
-can lead to bugs. If one part of our code operates on the assumption that a
-value will never change and another part of our code changes that value, it’s
-possible that the first part of the code won’t do what it was designed to do.
-This cause of bugs can be difficult to track down after the fact, especially
-when the second piece of code changes the value only *sometimes*.
+Il est important que nous obtenions des erreurs lors de la compilation quand
+nous essayons de changer une valeur qui a précédemment été désignée comme
+immuable, car cette situation précise peut donner lieu à des bugs. Si une
+partie de notre code opère sur le postulat qu'une valeur ne changera jamais et
+qu'une autre partie de notre code modifie cette valeur, il est possible que la
+première partie du code ne fera pas ce pour quoi elle a été conçue. Cette
+source d'erreur peut être difficile à identifier après coup, particulièrement
+lorsque la seconde partie du code ne modifie que *quelquefois* cette valeur.
 
-In Rust the compiler guarantees that when we state that a value won’t change,
-it really won’t change. That means that when you’re reading and writing code,
-you don’t have to keep track of how and where a value might change, which can
-make code easier to reason about.
+En Rust, le compilateur garantie que lorsque nous déclarons qu'une variable ne
+changera pas, elle ne changera vraiment pas. Cela signifie que lorsque que vous
+lisez et écrivez du code, vous n'avez pas à vous souvenir de comment et où une
+valeur pourrait changer, ce qui peut rendre le code plus facile à comprendre.
 
-But mutability can be very useful. Variables are immutable only by default; we
-can make them mutable by adding `mut` in front of the variable name. In
-addition to allowing this value to change, it conveys intent to future readers
-of the code by indicating that other parts of the code will be changing this
-variable value.
+Mais la mutabilité peut s'avérer très utile. Les variables ne sont seulement
+qu'immuables par défaut ; nous pouvons les rendre mutables en ajoutant `mut`
+devant notre nom de variable. En plus d'autoriser cette valeur à changer, cela
+communique l'intention aux futurs lecteurs de ce code que d'autres parties du
+code vont modifier cette valeur variable.
 
 For example, change *src/main.rs* to the following:
 
