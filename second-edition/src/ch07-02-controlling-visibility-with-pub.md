@@ -1,11 +1,11 @@
-## Controlling Visibility with `pub`
+## Gérer la visibilité avec `pub`
 
-We resolved the error messages shown in Listing 7-5 by moving the `network` and
-`network::server` code into the *src/network/mod.rs* and
-*src/network/server.rs* files, respectively. At that point, `cargo build` was
-able to build our project, but we still get warning messages about the
-`client::connect`, `network::connect`, and `network::server::connect` functions
-not being used:
+Nous avons résolu les messages d'erreur de l'entrée 7-5 en déplaçant le code de
+`network` et de `network::server`, respectivement dans les fichiers
+*src/network/mod.rs* et *src/network/server.rs*. A partir de la, nous avons pu
+compiler notre projet avec `cargo build`, mais nous avions toujours des
+messages d'avertissement à propos des fonctions `client::connect`,
+`network::connect` et `network::server::connect` qui n'étaient pas utilisées :
 
 ```text
 warning: function is never used: `connect`
@@ -32,18 +32,19 @@ warning: function is never used: `connect`
   | |_^
 ```
 
-So why are we receiving these warnings? After all, we’re building a library
-with functions that are intended to be used by our *users*, not necessarily by
-us within our own project, so it shouldn’t matter that these `connect`
-functions go unused. The point of creating them is that they will be used by
-another project, not our own.
+Donc, pourquoi avons-nous ces avertissements ? Après tout, nous contruisons une
+bibliothèque avec des fonctions qui devrons être utilisées par ses
+*utilisateurs*, et pas forcément par nous dans notre propre projet, donc ce
+n'est pas grave si ces fonctions `connect` ne sont pas utilisées. Leur raison
+d'être est qu'elles vont être utilisées par d'autres projets, pas par le nôtre.
 
-To understand why this program invokes these warnings, let’s try using the
-`connect` library from another project, calling it externally. To do that,
-we’ll create a binary crate in the same directory as our library crate by
-making a *src/main.rs* file containing this code:
+Pour comprendre pourquoi ce programme lance ces avertissements, essayons
+d'utiliser la bibliothèque `connect` à partir d'un autre projet, appellons-la à
+partir de l'extérieur. Pour faire ceci, nous allons créer un crate pour binaire
+dans le même dossier que notre crate de bibliothèque en créant un fichier
+*src/main.rs* qui contient le code suivant :
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Nom du fichier : src/main.rs</span>
 
 ```rust,ignore
 extern crate communicator;
@@ -53,13 +54,15 @@ fn main() {
 }
 ```
 
-We use the `extern crate` command to bring the `communicator` library crate
-into scope. Our package now contains *two* crates. Cargo treats *src/main.rs*
-as the root file of a binary crate, which is separate from the existing library
-crate whose root file is *src/lib.rs*. This pattern is quite common for
-executable projects: most functionality is in a library crate, and the binary
-crate uses that library crate. As a result, other programs can also use the
-library crate, and it’s a nice separation of concerns.
+Nous utilisons la commande `extern crate` pour apporter le crate de
+bibliothèque dans notre portée. Notre package contient maintenant *deux*
+crates. Cargo considère que le fichier *src/main.rs* est le fichier racine du
+crate de binaire, qui est séparé du crate de bibliothèque existant dont le
+fichier racine est *src/lib.rs*. Cette organisation est courrant pour des
+projets exécutables : la pluspart des fonctionnalités sont dans le crate de
+bibliothèque, et le crate de binaire utilise ce crate de bibliothèque. Au
+final, les autres programmes peuvent aussi utiliser le crate de bibliothèque,
+et c'est une bonne séparations des tâches.
 
 From the point of view of a crate outside the `communicator` library looking
 in, all the modules we’ve been creating are within a module that has the same
