@@ -14,7 +14,7 @@ dossier *projects* en utilisant `cargo new --bin variables`.
 
 Ensuite, dans votre nouveau dossier *variables*, ouvrez *src/main.rs* et remplacez son contenu par ceci :
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Fichier: src/main.rs</span>
 
 ```rust,ignore
 fn main() {
@@ -69,9 +69,9 @@ devant notre nom de variable. En plus d'autoriser cette valeur à changer, cela
 communique l'intention aux futurs lecteurs de ce code que d'autres parties du
 code vont modifier cette valeur variable.
 
-For example, change *src/main.rs* to the following:
+Par exemple, modifions *src/main.rs* par :
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Fichier: src/main.rs</span>
 
 ```rust
 fn main() {
@@ -82,7 +82,7 @@ fn main() {
 }
 ```
 
-When we run this program, we get the following:
+Lorsque nous exécutons le programme, nous obtenons :
 
 ```text
 $ cargo run
@@ -93,44 +93,44 @@ The value of x is: 5
 The value of x is: 6
 ```
 
-Using `mut`, we’re allowed to change the value that `x` binds to from `5` to
-`6`. In some cases, you’ll want to make a variable mutable because it makes the
-code more convenient to write than an implementation that only uses immutable
-variables.
+En utilisant `mut`, nous sommes autorisés à changer la valeur à laquelle `x`
+est reliée de `5` à `6`. Dans certains cas, vous allez vouloir rendre une
+variable mutable car cela rend le code plus pratique à écrire qu'une
+implémentation n'utilisant que des variables immuables.
 
-There are multiple trade-offs to consider, in addition to the prevention of
-bugs. For example, in cases where you’re using large data structures, mutating
-an instance in place may be faster than copying and returning newly allocated
-instances. With smaller data structures, creating new instances and writing in
-a more functional programming style may be easier to reason about, so the lower
-performance might be a worthwhile penalty for gaining that clarity.
+Il y a plusieurs compromis à prendre en considération, outre la prévention des
+bugs. Par exemple, dans le cas où vous utiliseriez de larges structures de
+données, muter une instance déjà existante peut être plus rapide que copier et
+retourner une instance nouvellement allouée. Sur des structures de données plus
+petites, créer de nouvelles instances et écrire dans un style de programmation
+plus fonctionnel peut rendre votre code plus facile à comprendre, ainsi, peut
+être qu'un coût plus élevé en performance est un moindre mal face au gain de
+clareté apporté.
 
-### Differences Between Variables and Constants
+### Différences Entre Variable et Constante
 
-Being unable to change the value of a variable might have reminded you of
-another programming concept that most other languages have: *constants*. Like
-immutable variables, constants are also values  that are bound to a name and
-are not allowed to change, but there are a few differences between constants
-and variables.
+Être incapable de changer la valeur d'une variable peut vous avoir rappelé un autre concept de programmation que de nombreux autres langages possèdent : les *constantes*. Comme les variables immuables, les constantes sont également des valeurs qui sont liées à un nom et qui ne peuvent être modifiées, mais il y a quelques différences entre les constantes et les variables.
 
-First, we aren’t allowed to use `mut` with constants: constants aren’t only
-immutable by default, they’re always immutable.
+D'abord, nous ne sommes pas autorisés à utiliser `mut` avec les constantes : les constantes ne sont pas seulement immuables par défaut, elles le sont toujours.
 
-We declare constants using the `const` keyword instead of the `let` keyword,
-and the type of the value *must* be annotated. We’re about to cover types and
-type annotations in the next section, “Data Types,” so don’t worry about the
-details right now, just know that we must always annotate the type.
+Nous déclarons les constantes en utilisant le mot-clé `const` à la place du
+mot-clé `let`, et le type de la valeur *doit* être annoté. Nous sommes sur le
+point de traiter des types et des annotations de types dans la prochaine
+section, “Types de données,” donc ne vous inquiétez pas des détails pour le
+moment, rappelez-vous juste que vous devez toujours annoter leur type.
 
-Constants can be declared in any scope, including the global scope, which makes
-them useful for values that many parts of code need to know about.
+Les constantes peuvent être déclarées dans n'importe quelle portée, y compris
+la portée globale, ce qui les rend très utiles pour des valeurs que de
+nombreuses parties de votre code ont besoin de connaître.
 
-The last difference is that constants may only be set to a constant expression,
-not the result of a function call or any other value that could only be
-computed at runtime.
+La dernière différence est que les constantes ne peuvent être définies que par
+une expression constante, et non pas le résultat d'un appel de fonction ou
+n'importe quelle autre valeur qui ne pourrait être calculée qu'à l'exécution.
 
-Here’s an example of a constant declaration where the constant’s name is
-`MAX_POINTS` and its value is set to 100,000. (Rust constant naming convention
-is to use all upper case with underscores between words):
+Voici un exemple d'une déclaration de constante où le nom de la constante est 
+MAX_POINTS` et que sa valeur est définie à 100 000 (en Rust, la convention de 
+nommage des constantes est d'utiliser des majuscules pour chaque lettre et des
+tirets bas entre chaque mots) :
 
 ```rust
 const MAX_POINTS: u32 = 100_000;
