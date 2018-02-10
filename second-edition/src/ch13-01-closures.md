@@ -3,34 +3,34 @@
 Les *closures* en Rust sont des fonctions anonymes qui peuvent être sauvegardés
 dans une variable ou qui peuvent être passées en argument à d'autres fonctions.
 Il est possible de créer une *closure* à un endroit du code et ensuite de
-l'appeler dans un contexte différent pour l'évaluer. Contrairement aux
+l'appeler dans un contexte différent pour l'exécuter. Contrairement aux
 fonctions, les *closures* ont la possibilité de capturer les valeurs présentes
 dans le contexte où elles sont appelées. Nous allons montrer comment les
-caractéristiques des *closures* permet de faire de la réutilisation de code et
-des comportements personnalisés.
+caractéristiques des *closures* permettent la réutilisation du code et la
+personnalisation du comportement.
 
-### Création d'une Abstraction de Comportement à l'aide d'une *Closure*
+### Créer une Abstraction de Comportement avec une *Closure*
 
-Travaillons sur un exemple d'une situation où il est utile de stocker une
-*closure* qui s'exécutera ultérieurement. Nous allons parler de la syntaxe des
-*closures*, de l'inférence de type, et des traits au cours de ce chapitre.
+Nous allons travailler sur un exemple de situation où il est utile de stocker
+une *closure* qui s'exécutera ultérieurement. Nous allons parler de la syntaxe
+des *closures*, de l'inférence de type, et des traits au cours de ce chapitre.
 
-Considérez cette situation hypothétique: nous travaillons au démarrage d'une
-application pour générer des plans d'entraînement personnalisés. Le backend est
-écrit en Rust et l'algorithme qui génère les exercices prend en compte beaucoup
-de facteurs comme l'age de l'utilisateur, son indice de masse corporelle, ses
-préférences et une intensité paramétrable par l'utilisateur. L'algorithme
-réellement utilisé n'est pas important pour cet exemple: ce qui est important
-est que le calcul prenne plusieurs secondes. Nous voulons appeler l'algorithme
-uniquement quand nous avons besoin, et seulement une fois, afin que
-l'utilisateur n'est pas à attendre plus que nécessaire.
+Considérez cette situation hypothétique : nous travaillons dans une start-up
+qui édite une application pour générer des plans d'entraînements physiques
+personnalisés. Le backend est écrit en Rust et l'algorithme qui génère les
+exercices prend en compte beaucoup de facteurs comme l'âge de l'utilisateur,
+son indice de masse corporelle, ses préférences et une intensité paramétrable
+par l'utilisateur. L'algorithme réellement utilisé n'est pas important pour cet
+exemple: ce qui est important est que le calcul prenne plusieurs secondes. Nous
+voulons appeler l'algorithme uniquement quand nous avons besoin, et seulement
+une fois, afin que l'utilisateur n'ai pas à attendre plus que nécessaire.
 
 Nous allons, pour simuler l'appel à cet algorithme hypothétique, utiliser la
-fonction `simulated_expensive_calculation` montré dans le Listing 13-1, qui
-affichera `calculating slowly...`, attend 2 secondes, et ensuite retourne le
-nombre qui lui a été passé :
+fonction `simulated_expensive_calculation` décrite dans l'entrée 13-1, qui
+affichera `calculating slowly...`, attendra deux secondes, et ensuite
+retournera le nombre qui lui a été passé :
 
-<span class="filename">Fichier: src/main.rs</span>
+<span class="filename">Nom du fichier : src/main.rs</span>
 
 ```rust
 use std::thread;
@@ -43,30 +43,29 @@ fn simulated_expensive_calculation(intensity: i32) -> i32 {
 }
 ```
 
-<span class="caption">Listing 13-1: Une fonction pour remplacer un calcul
+<span class="caption">Entrée 13-1 : Une fonction pour simuler un calcul
 hypothétique qui prend environ deux secondes à exécuter</span>
 
-Ensuite, vient la fonction `main` qui contient les parties, de l'application
+Ensuite, vient la fonction `main` qui contient les éléments de l'application
 d'entraînement, importantes pour cet exemple. Cette fonction représente le code
 que l'application appellera quand un utilisateur demande un plan d'entraînement.
-Parce que l'interaction avec le frontend de l'application n'est pas pertinente à
-l'utilisation des *closures*, nous allons coder en dur les valeurs représentant
-les entrées de notre programme et afficher les résultats.
+Comme l'interaction avec le frontend de l'application n'est pas utile pour notre
+utilisation des *closures*, nous allons coder en dur dans le code les valeurs
+représentant les entrées de notre programme et afficher les résultats.
 
  Les paramètres d'entrées requis sont:
 
-- Un nombre `intensité` de l'utilisateur, spécifié quand ils demandent un
+- Un nombre `intensity` de l'utilisateur, spécifié quand ils demandent un
   entraînement, afin qu'ils puissent indiquer s'ils veulent un entraînement de
   faible ou de haute intensité.
-- Un nombre aléatoire qui produira une certaine variété dans les plans
-  d'entraînement
+- Un nombre aléatoire qui introduira une diversité dans les plans
+  d'entraînement.
 
 Le résultat imprimé par le programme sera le plan d'entraînement recommandé.
 
-Le résultat sera le plan d'entraînement recommandé. Le Listing 13-2 montre la
-fonction `main` que nous allons utiliser :
+L'entrée 13-2 montre la fonction `main` que nous allons utiliser :
 
-<span class="filename">Fichier: src/main.rs</span>
+<span class="filename">Nom du fichier: src/main.rs</span>
 
 ```rust
 fn main() {
@@ -78,8 +77,7 @@ fn main() {
 # fn generate_workout(intensity: i32, random_number: i32) {}
 ```
 
-
-<span class="caption">Listing 13-2: Une fonction `main` avec des valeurs codées
+<span class="caption">Entrée 13-2 : Une fonction `main` avec des valeurs codées
 en dur pour simuler l'entrée d'un utilisateur et la génération de nombres
 aléatoires</span>
 
@@ -87,16 +85,16 @@ Nous avons codé en dur la variable `simulated_user_specified_value` à 10 et la
 variable `simulated_random_number` à 7 pour des raisons de simplicité ; dans un
 programme réel, nous obtiendrions le nombre d'intensité à partir du frontend de
 l'application et nous utiliserions la crate `rand` pour générer un nombre
-aléatoire, comme nous l'avons fait dans l'exemple du Guessing Game dans le
+aléatoire, comme nous l'avons fait dans l'exemple du *plus ou du moins* dans le
 chapitre 2. La fonction `main` appelle une fonction `generate_workout` avec les
 valeurs d'entrée simulées.
 
 Maintenant que nous avons le contexte, passons à l'algorithme. La fonction
-`generate_workout` dans le Listing 13-3 contient la logique métier de
+`generate_workout` dans l'entrée 13-3 contient la logique métier de
 l'application qui nous préoccupe le plus dans cet exemple. Le reste des
 changements de code dans cet exemple sera apporté à cette fonction :
 
-<span class="filename">Fichier: src/main.rs</span>
+<span class="filename">Nom du fichier : src/main.rs</span>
 
 ```rust
 # use std::thread;
@@ -131,14 +129,14 @@ fn generate_workout(intensity: i32, random_number: i32) {
 }
 ```
 
-<span class="caption">Listing 13-3: La logique de gestion du programme qui
-imprime les plans d'entraînement basés sur les entrées et les appels à la
-fonction `simulated_expensive_calculation`.</span>
+<span class="caption">Entrée 13-3 : La logique métier du programme qui affiche
+les plans d'entraînement basés sur les entrées et les appels à la fonction
+`simulated_expensive_calculation`.</span>
 
-Le code dans le Listing 13-3 a plusieurs appels à la fonction de calcul lent: le
-premier bloc `if` appelle `simulated_expensive_calculation` deux fois, le `if`à
-l'intérieur de l'`else` extérieur ne l'appelle pas du tout, et le code à
-l'intérieur du second `else` cas l'appelle une fois.
+Le code dans l'entrée 13-3 a plusieurs appels à la fonction de calcul lente. Le
+premier bloc `if` appelle `simulated_expensive_calculation` deux fois, le `if`
+à l'intérieur du `else` extérieur ne l'appelle pas du tout, et le code à
+l'intérieur du second `else` l'appelle une fois.
 
 <!-- NEXT PARAGRAPH WRAPPED WEIRD INTENTIONALLY SEE #199 -->
 
@@ -150,27 +148,30 @@ ou plus).
 Les plans d'entraînement à faible intensité recommanderont un certain nombre de
 pompes et d'abdominaux basés sur l'algorithme complexe que nous simulons.
 
-Si l'utilisateur souhaite un entraînement de haute intensité, il y a une logique
-supplémentaire: si la valeur du nombre aléatoire généré par l'application est 3,
-l'application recommandera une pause et une hydratation à la place. Sinon,
-l'utilisateur recevra un nombre de minutes de course qui provient de
-l'algorithme complexe.
+Si l'utilisateur souhaite un entraînement de haute intensité, il y a une
+condition supplémentaire : si la valeur du nombre aléatoire généré par
+l'application est 3, l'application recommandera une pause et de s'hydrater à la
+place. Sinon, l'utilisateur recevra un nombre de minutes de course qui provient
+de l'algorithme complexe.
 
-L'équipe de data science nous a fait savoir qu'il va y avoir des changements
-dans la façon dont nous devrons appeler l'algorithme à l'avenir. Pour simplifier
-la mise à jour lorsque ces changements se produisent, nous voulons refactorer ce
-code pour qu'il n'appelle la fonction `simulated_expensive_calculation` qu'une
-seule fois. Nous voulons également nous débarrasser de l'endroit où nous
-appelons actuellement la fonction deux fois inutilement, sans ajouter d'autres
-appels à cette fonction au cours de ce processus. C'est-à-dire, nous ne voulons
-pas l'appeler si le résultat n'est pas nécessaire, et nous voulons quand même
-l'appeler une seule fois.
+L'équipe scientifique nous a fait savoir que nous devrons faire quelques
+changements dans la façon dont nous allons appeler l'algorithme à l'avenir.
+Pour simplifier la mise à jour lorsque ces changements se produisent, nous
+voulons remanier ce code pour qu'il n'appelle la fonction
+`simulated_expensive_calculation` qu'une seule fois. Nous voulons également
+nous débarrasser de l'endroit où nous appelons actuellement la fonction deux
+fois inutilement, sans ajouter d'autres appels à cette fonction au cours de ce
+processus. C'est-à-dire que nous ne voulons pas l'appeler si le résultat n'est
+pas nécessaire, mais nous voulons quand même l'appeler une seule fois.
 
-Nous pourrions restructurer le programme d'entraînement de plusieurs façons.
-Tout d'abord, nous allons essayer d'extraire l'appel dupliqué à la fonction
-`expensive_calculation` dans une variable, comme le montre le Listing 13-4 :
+#### Remaniement en utilisant des fonctions
 
-<span class="filename">Fichier: src/main.rs</span>
+Nous pourrions restructurer le programme d'entraînement de plusieurs façons
+différentes. Tout d'abord, nous allons essayer d'extraire l'appel dupliqué de
+la fonction `expensive_calculation` dans une variable, comme le montre l'entrée
+13-4 :
+
+<span class="filename">Nom du fichier: src/main.rs</span>
 
 ```rust
 # use std::thread;
@@ -208,11 +209,11 @@ fn generate_workout(intensity: i32, random_number: i32) {
 }
 ```
 
-<span class="caption">Listing 13-4: Extraction des appels à
-`simulated_expensive_calculation` à un seul endroit avant les blocs `if` et
+<span class="caption">Entrée 13-4 : Extraction des appels à
+`simulated_expensive_calculation` dans un seul endroit avant les blocs `if` et
 stockage du résultat dans la variable `expensive_result`.</span>
 
-Ce changement unifie tous les appels à `simulated_expensive_calculation` et
+Ce changement réunit tous les appels à `simulated_expensive_calculation` et
 résout le problème du premier bloc `if` qui appelle la fonction deux fois
 inutilement. Malheureusement, nous appelons maintenant cette fonction et
 attendons le résultat dans tous les cas, ce qui inclut le bloc `if` interne qui
@@ -220,17 +221,18 @@ n'utilise pas du tout la valeur du résultat.
 
 Nous voulons définir le code à un seul endroit dans notre programme, mais
 seulement *exécuter* ce code-là où nous avons réellement besoin du résultat.
-C'est un cas d'utilisation pour les *closures*!
+C'est un cas d'utilisation pour les *closures* !
 
-### Les Closures stockent du code pour une exécution ultérieure
+#### Remaniement avec les *Closures* qui stockent du code pour une exécution ultérieure
 
-Au lieu d'appeler toujours la fonction `simulated_expensive_calculation` avant
-les blocs `if`, nous pouvons définir une closure et enregistrer la closure dans
-une variable au lieu du résultat comme le montre le Listing 13-5. Nous pouvons
-en fait choisir de déplacer l'ensemble du corps de
-`simulated_expensive_calculation` dans la closure que nous introduisons ici :
+Au lieu d'appeler systématiquement la fonction
+`simulated_expensive_calculation` avant les blocs `if`, nous pouvons définir
+une closure et l'enregistrer dans une variable au lieu du résultat comme le
+montre l'entrée 13-5. Nous pouvons en fait choisir de déplacer l'ensemble du
+corps de `simulated_expensive_calculation` dans la closure que nous
+introduisons ici :
 
-<span class="filename">Fichier: src/main.rs</span>
+<span class="filename">Nom du fichier: src/main.rs</span>
 
 ```rust
 # use std::thread;
@@ -244,7 +246,7 @@ let expensive_closure = |num| {
 # expensive_closure(5);
 ```
 
-<span class="caption">Listing 13-5: Définition d'une *closure* et son
+<span class="caption">Entrée 13-5 : Définition d'une *closure* et son
 enregistrement dans la variable `expensive_closure`.</span>
 
 La définition de la *closure* vient après le `=` pour l'assigner à la variable
