@@ -164,21 +164,23 @@ warning: function is never used: `connect`
   | |_^
 ```
 
-The code compiled, and the warning about `client::connect` not being used is
-gone!
+Le code s'est compilé, et l'avertissement à propos de `client::connect` qui
+n'est pas utlisé a disparu !
 
-Unused code warnings don’t always indicate that an item in your code needs to
-be made public: if you *didn’t* want these functions to be part of your public
-API, unused code warnings could be alerting you to code you no longer need that
-you can safely delete. They could also be alerting you to a bug if you had just
-accidentally removed all places within your library where this function is
-called.
+Les avertissements à propos du code non utilisé ne signifient pas
+systématiquement que votre code doit être passé en publique : si vous
+*ne voulez pas* que ces fonctions fassent partie de votre API publique, les
+avertissements de code non utilisé peuvent être le signal que ce code est
+devenu inutile et que vous pouvez l'enlever sans risques. Ils peuvent aussi
+vous avertir d'un bogue potentiel si vous avez accidentellement enlevé cet
+appel de tous les endroits de votre bibliothèque.
 
-But in this case, we *do* want the other two functions to be part of our
-crate’s public API, so let’s mark them as `pub` as well to get rid of the
-remaining warnings. Modify *src/network/mod.rs* to look like the following:
+Mais dans notre cas, nous *voulons* que les deux autres fonctions fassent
+partie de l'API publique de notre crate, donc marquons-les elles aussi avec
+`pub` afin d'enlever les derniers avertissements. Modifions
+*src/network/mod.rs* pour qu'il ressemble à ceci :
 
-<span class="filename">Filename: src/network/mod.rs</span>
+<span class="filename">Nom du fichier : src/network/mod.rs</span>
 
 ```rust,ignore
 pub fn connect() {
@@ -187,7 +189,7 @@ pub fn connect() {
 mod server;
 ```
 
-Then compile the code:
+Nous compilons ensuite le code :
 
 ```text
 warning: function is never used: `connect`
@@ -207,14 +209,15 @@ warning: function is never used: `connect`
   | |_^
 ```
 
-Hmmm, we’re still getting an unused function warning, even though
-`network::connect` is set to `pub`. The reason is that the function is public
-within the module, but the `network` module that the function resides in is not
-public. We’re working from the interior of the library out this time, whereas
-with `client::connect` we worked from the outside in. We need to change
-*src/lib.rs* to make `network` public too, like so:
+Hmmm, nous avons toujours un avertissement pour une fonction non utilisée, même
+si `network::connect`est marqué avec `pub`. La raison à cela est que cette
+fonction est publique dans le module, mais le module `network` qui porte cette
+fonction n'est pas public. Cette fois-ci, nous opérons depuis l'intérieur de la
+bibliothèque, tandis qu'avec `client::connect` nous avions opéré depuis
+l'extérieur vers l'intérieur. Il nous faut changer *src/lib.rs* pour rendre
+aussi `network` publique, comme ceci :
 
-<span class="filename">Filename: src/lib.rs</span>
+<span class="filename">Nom du fichier : src/lib.rs</span>
 
 ```rust,ignore
 pub mod client;
@@ -222,7 +225,7 @@ pub mod client;
 pub mod network;
 ```
 
-Now when we compile, that warning is gone:
+Maintenons quand nous compilons, l'avertissement disparaît :
 
 ```text
 warning: function is never used: `connect`
@@ -235,23 +238,25 @@ warning: function is never used: `connect`
   = note: #[warn(dead_code)] on by default
 ```
 
-Only one warning is left! Try to fix this one on your own!
+Il ne reste plus qu'un avertissement ! Entraînez-vous en réglant cela par
+vous-même !
 
-### Privacy Rules
+### Règles du mode privé
 
-Overall, these are the rules for item visibility:
+Dans l'ensemble, voici les règles pour la visibilité des éléments :
 
-1. If an item is public, it can be accessed through any of its parent modules.
-2. If an item is private, it can be accessed only by its immediate parent
-   module and any of the parent’s child modules.
+1. Si un élément est public, il peut être accessible via n'importe quel module
+   parent.
+2. Si un élément est privé, il n'est accessible que part par son module
+   parent direct et tous les modules enfants de son parent.
 
-### Privacy Examples
+### Exemples du mode privé
 
-Let’s look at a few more privacy examples to get some practice. Create a new
-library project and enter the code in Listing 7-6 into your new project’s
-*src/lib.rs*:
+Analysons quelques exemples supplémentaire du mode privé pour pratiquer un peu.
+Créez un nouveau projet de bibliothèque et saisissez le code dans l'entrée 7-6
+dans le fichier *src/lib.rs* de votre nouveau projet :
 
-<span class="filename">Filename: src/lib.rs</span>
+<span class="filename">Nom du fichier : src/lib.rs</span>
 
 ```rust,ignore
 mod outermost {
@@ -274,14 +279,15 @@ fn try_me() {
 }
 ```
 
-<span class="caption">Listing 7-6: Examples of private and public functions,
-some of which are incorrect</span>
+<span class="caption">Entrée 7-6 : Exemples de fonctions privées et publiques,
+quelques unes d'entre-elles ne sont pas valides</span>
 
-Before you try to compile this code, make a guess about which lines in the
-`try_me` function will have errors. Then, try compiling the code to see whether
-you were right, and read on for the discussion of the errors!
+Avant que vous essayez de compiler ce code, essayez de deviner quelles lignes
+dans la fonction `try_me` vont générer des erreurs. Ensuite, compilez le code
+pour voir celles pour lesquelles vous aviez raison, et lisez les explications
+sur les erreurs !
 
-#### Looking at the Errors
+#### Rechercher les erreurs
 
 The `try_me` function is in the root module of our project. The module named
 `outermost` is private, but the second privacy rule states that the `try_me`
