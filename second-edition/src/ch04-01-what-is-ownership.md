@@ -7,16 +7,16 @@ reste du langage.
 Tous les programmes doivent gérer la façon dont ils utilisent la mémoire
 (vive, RAM) de l'ordinateur lorsqu'ils s'exécutent. Certains langages ont un
 ramasse-miettes qui scrute constamment la mémoire qui n'est plus utilisée par
-le programme pendant qu'il tourne; dans d'autres langages, le développeur doit
+le programme pendant qu'il tourne ; dans d'autres langages, le développeur doit
 explicitement allouer et libérer la mémoire. Rust aborde une troisième
-approche : la mémoire est gérée avec un système d'appropriation avec un jeu de
+approche : la mémoire est gérée par un système d'appropriation avec un jeu de
 règles que le compilateur vérifie au moment de la compilation. Il n'y a pas
-d'impact sur les performances au moment de l'exécution pour toutes les
+d'impact sur les performances au moment de l'exécution (en anglais "runtime") pour toutes les
 fonctionnalités d'appropriation.
 
 Parce que l'appropriation est un nouveau principe pour de nombreux
-développeurs, cela prend un certain temps à se familiariser. La bonne
-nouvelle c'est que plus vous devenez expérimenté avec Rust et ses règles
+développeurs, cela prend un certain temps à se familiariser avec ce concept. La bonne
+nouvelle c'est que plus vous devenez expérimenté en Rust et ses règles
 d'appropriation, plus vous pourrez développer naturellement du code sûr et
 efficace. Gardez bien cela à l'esprit !
 
@@ -30,9 +30,9 @@ chaînes de caractères.
 
 > ### La Stack et la Heap
 >
-> Dans de nombreux langages, nous n'avons pas besoin souvent de penser à la
+> Dans de nombreux langages, nous n'avons pas souvent besoin de penser à la
 > Stack et la Heap. Mais dans un système de langage de programmation comme
-> Rust, si une donnée est sur la Stack ou sur la Heap a plus d'effet sur 
+> Rust, si une donnée est sur la Stack ou sur la Heap, cela a plus d'effet sur
 > comment le langage se comporte et pourquoi nous devons faire certains choix.
 > Nous décrirons plus loin dans ce chapitre les différences entre la Stack et
 > la Heap, voici donc une brève explication en attendant.
@@ -41,7 +41,7 @@ chaînes de caractères.
 > sont à disposition de votre code lors de son exécution, mais elles sont
 > construites de manière différentes. La Stack enregistre les valeurs dans
 > l'ordre qu'elle les reçoit et enlève les valeurs dans l'autre sens. C'est
-> ce que l'on appelle : *dernier entré, premier sorti*. C'est comme une pile
+> ce que l'on appelle : *dernier entré, premier sorti* (ou "First In Last Out"). C'est comme une pile
 > d'assiettes : quand vous ajoutez des nouvelles assiettes, vous les déposez
 > sur le dessus de la pile, et quand vous avez besoin d'une assiette, vous en
 > prenez une sur le dessus. Ajouter ou enlever des assiettes au milieu ou en
@@ -53,7 +53,7 @@ chaînes de caractères.
 > car c'est toujours au-dessus. Une autre caractéristique qui fait que la Stack
 > est rapide c'est que toutes les données de la Stack doivent avoir une taille
 > connue et fixe.
-> 
+>
 > Si les données ont une taille qui nous est inconnue au moment de la
 > compilation ou une taille qui peut changer, nous pouvons plutôt les stocker
 > dans la Heap. La Heap est moins organisée : quand nous poussons des données
@@ -62,40 +62,40 @@ chaînes de caractères.
 > dans la Heap, le marque comme en cours d'utilisation, et nous retourne un
 > *pointeur*, qui est l'adresse de cet emplacement. Ce processus est appellé
 > *allouer de la place sur la Heap*, et parfois nous raccourcissons cette
-> phrase à simplement *allouer*. Mais pousser des valeurs sur Stack n'est pas
-> considéré comme allouer. Parce que le pointeur a une taille connue et fixée,
+> phrase à simplement *allouer*. Mais pousser des valeurs sur la Stack n'est pas
+> considéré comme de l'allocation. Puisque que le pointeur a une taille connue et fixée,
 > nous pouvons stocker ce pointeur sur la Stack, mais quand nous voulons la
 > donnée concernée, nous avons besoin de suivre le pointeur.
-> 
+>
 > C'est comme si vous vouliez manger à un restaurant. Quand vous entrez, vous
 > indiquez le nombre de personnes dans votre groupe, et le personnel trouve une
 > table vide qui peut recevoir tout le monde, et vous y conduit. Si quelqu'un
 > dans votre groupe arrive en retard, il peut leur demander où vous êtes assis
 > pour vous rejoindre.
-> 
+>
 > Accéder à des données dans la Heap est plus lent que d'accéder aux données
 > sur la Stack car nous devons suivre un pointeur pour l'obtenir. Les
-> processeurs modernes sont plus rapide s'ils sautent moins dans la mémoire.
-> Pour continuer avec notre analogie, immaginez une serveur dans un restaurant
-> qui prends les commandes de nombreuses tables. C'est plus efficace de
-> récupérer toutes les commandes à une seule table avant de passer à la table
-> suivante. Prendre une commande à la table A, puis prendre une commande à la
-> table B, puis ensuite une à la table A à nouveau, puis suite une à la table B
+> processeurs modernes sont plus rapides si la mémoire est moins souvent modifiée.
+> Pour continuer avec notre analogie, imaginez un serveur dans un restaurant
+> qui prend les commandes de nombreuses tables. C'est plus efficace de
+> récupérer toutes les commandes d'une seule table avant de passer à la table
+> suivante. Au contraire prendre une commande à la table A, puis prendre une commande à la
+> table B, puis ensuite une à la table A de nouveau, ensuite une à la table B
 > à nouveau sera un processus bien plus lent. De la même manière, un processeur
-> sera plus efficace dans sa tâche s'il travaille sur des données qui sont
-> proches l'une de l'autre (comme c'est sur la Stack) plutôt que si elles sont
+> sera plus efficace à la tâche s'il travaille sur des données qui sont
+> proches l'une de l'autre (comme c'est le cas sur la Stack) plutôt que si elles sont
 > plus éloignées (comme cela peut être le cas sur la Heap). Allouer une grande
 > quantité d'espace sur la Heap peut aussi prendre plus de temps.
-> 
+>
 > Quand notre code utilise une fonction, les valeurs envoyées à la fonction
 > (incluant, potentiellement, des pointeurs vers des données sur la Heap) et
 > les variables locales de la fonction sont poussées sur la Stack. Quand la
 > fonction est terminée, ces données sont sorties de la Stack.
-> 
-> Faire attention à telles parties du code utilise telles parties de données
-> sur la Heap, minimiser la quantité de données en double sur la Heap, et
+>
+> Faire attention aux parties du code qui utilise certaines données
+> sur la Heap, minimiser la quantité de données redondantes sur la Heap, et
 > libérer les données inutilisées sur la Heap pour que nous ne soyons pas à
-> court d'espace, sont tous les problèmes que règle l'appropriation. Quand
+> court d'espace mémoire, sont des problèmes régler par l'appropriation. Quand
 > vous aurez compris l'appropriation, vous n'aurez plus souvent besoin de
 > penser à la Stack et la Heap, mais savoir que l'appropriation existe pour
 > gérer les données de la Heap, peut vous aider à comprendre pourquoi elle
@@ -108,7 +108,7 @@ chaînes de caractères.
 Tout d'abord, définissons les règles de l'appropriation. Gardez à l'esprit ces
 règles pendant que nous travaillons sur des exemples qui les illustrent :
 
-> 1. Chaque valeur dans Rust a une variable qui s'appelle son *propriétaire*.
+> 1. Chaque valeur dans Rust a une variable qui s'appelle son *propriétaire*. (ou "owner")
 > 2. Il ne peut y avoir qu'un seul propriétaire au même moment.
 > 3. Quand le propriétaire sort du bloc d'instructions, la valeur est supprimée.
 
@@ -117,20 +117,20 @@ règles pendant que nous travaillons sur des exemples qui les illustrent :
 Nous avons déjà vu un exemple dans le programme Rust du Chapitre 2. Maintenant
 que nous avons terminé la syntaxe de base, nous n'allons pas mettre tout le
 code de `fn main() {` dans des exemples, donc si vous suivez, vous devez mettre
-les exemples suivants manuellement dans une fonction `main`. De fait, nos
+les exemples suivants manuellement dans une fonction `main`. De ce fait, nos
 exemples seront plus concis, nous permettant de nous concentrer sur les détails
 actuels plutôt que sur du code conventionnel.
 
-Pour le premier exemple d'appropriation, nous allons analyser la *portée* de
+Pour le premier exemple d'appropriation, nous allons analyser la *portée* (ou "scope") de
 certaines variables. Une portée est une zone dans un programme dans lequel un
-objet est en vigueur. Imaginons que nous avons une variable qui ressemble à
+objet est en vigueur. Imaginons que nous ayions une variable qui ressemble à
 ceci :
 
 ```rust
 let s = "hello";
 ```
 
-La variable `s` fait référence à une chaîne de caractères pure, où la valeur de
+La variable `s` fait référence à une chaîne de caractères pure (ou "string literal"), où la valeur de
 la chaîne est codée en dur dans notre programme. La variable est en vigueur à
 partir du point où elle est déclarée jusqu'à la fin de la *portée* actuelle.
 L'entrée 4-1 a des commentaires pour indiquer quand la variable `s` est en
@@ -150,7 +150,7 @@ est en vigueur.</span>
 Autrement dit, il y a ici deux étapes importantes :
 
 1. Quand `s` rentre *dans la portée*, elle est en vigueur.
-2. Cela reste ainsi jusqu'à ce qu'elle *sort de la portée*.
+2. Cela reste ainsi jusqu'à ce qu'elle *sorte de la portée*.
 
 Pour le moment, la relation entre les portées et quand les variables sont en
 vigueur sont similaires à d'autres langages de programmation. Maintenant nous
@@ -171,26 +171,26 @@ s'appliquent aussi pour d'autres types de données complexes fournies par la
 librairie standard et celles que vous créez. Nous verrons `String` plus en
 détail dans le Chapitre 8.
 
-Nous avons déjà vu les chaînes de caractères pures, quand une valeur de chaîne
-est codée en dur dans notre programme. Les chaînes de caractères pures sont
+Nous avons déjà vu les chaînes de caractères pure, quand une valeur de chaîne
+est codée en dur dans notre programme. Les chaînes de caractères pure sont
 pratiques, mais elles ne conviennent pas toujours à tous les cas où vous voulez
-utiliser du texte. Une des raisons est qu'elle est immuable. Une autre est
+utiliser du texte. Une de ces raisons est qu'elles sont immuables. Une autre est
 qu'on ne connait pas forcément toutes les chaînes de caractères quand nous
 écrivons notre code : par exemple, comment faire si nous voulons récupérer du
 texte saisi par l'utilisateur et l'enregistrer ? Pour ces cas-ci, Rust a un
 second type de chaîne de caractères, `String`. Ce type est alloué sur la Heap
 et est ainsi capable de stocker une quantité de texte qui nous est inconnue au
-moment de la compilation. Vous pouvez créer un `String` à partir d'une chaîne
+moment de la compilation. Vous pouvez créer une `String` à partir d'une chaîne
 de caractères pure en utilisant la fonction `from`, comme ceci :
 
 ```rust
 let s = String::from("hello");
 ```
 
-Le deux-points double est un opérateur qui nous permet d'appeler cette
-fonction spécifique dans l'espace de nom du type `String` plutôt que d'utiliser
+Le double deux-points (`::`) est un opérateur qui nous permet d'appeler cette
+fonction spécifiquement localisée dans l'espace de nom (ou "namespace") du type `String` plutôt que d'utiliser
 un nom comme `string_from`. Nous allons voir cette syntaxe plus en détail dans
-la section “Syntaxe de méthode” du Chapitre 5 et lorsque nous allons aborder
+la section “Syntaxe de méthodes” du Chapitre 5 et lorsque nous allons aborder
 l'espace de nom avec les modules au Chapitre 7.
 
 Ce type de chaîne de caractères *peut* être mutable :
@@ -198,20 +198,20 @@ Ce type de chaîne de caractères *peut* être mutable :
 ```rust
 let mut s = String::from("hello");
 
-s.push_str(", world!"); // push_str() ajoute du texte dans un String
+s.push_str(", world!"); // push_str() ajoute du texte dans une String
 
 println!("{}", s); // Cela va afficher `hello, world!`
 ```
 
 Donc, quelle est la différence ici ? Pourquoi `String` peut être mutable, mais
-que les chaînes pures ne peuvent pas l'être ? La différence est comment ces
+que les chaînes de caractères pure ne peuvent pas l'être ? La différence est comment ces
 deux types travaillent avec la mémoire.
 
 ### Mémoire et attribution
 
 Dans le cas d'une chaîne de caractères pure, nous connaissons le contenu au
 moment de la compilation donc le texte est codé en dur directement dans
-l'exécutable final, ce qui fait que ces chaînes de caractères pures sont
+l'exécutable final, ce qui fait que ces chaînes de caractères pure sont
 performantes et rapides. Mais ces caractéristiques viennent de leur
 immuabilité. Malheureusement, nous ne pouvons pas stocker un blob de mémoire
 dans le binaire pour chaque morceau de texte qui n'a pas de taille connue au
@@ -233,19 +233,19 @@ le cas dans les langages de programmation.
 
 Cependant, le deuxième point est différent. Dans des langages avec un
 *ramasse-miettes*, le ramasse-miettes surveille et nettoie la mémoire qui n'est
-plus utilisée, sans que nous, les développeurs, nous ayons à nous en
+plus utilisée, sans que nous, les développeurs, ayons à nous en
 préoccuper. Sans un ramasse-miettes, c'est de la responsabilité du développeur
 d'identifier quand la mémoire n'est plus utilisée et d'appeler du code pour
 explicitement la libérer, comme nous l'avons fait pour la demander auparavant.
-Historiquement, faire ceci correctement a toujours été une difficulté pour
-développer. Si nous oublions de le faire, nous allons gaspiller de la mémoire.
+Historiquement, faire ceci correctement a toujours été un problème de programmation difficile.
+Si nous oublions de le faire, nous allons gaspiller de la mémoire.
 Si nous le faisons trop tôt, nous allons avoir une variable incorrecte. Si nous
-le faisons deux fois, c'est aussi un bogue. Nous avons besoin d'associer
+le faisons deux fois, c'est aussi un bug. Nous avons besoin d'associer
 exactement un `allocate` avec exactement un `free`.
 
 Rust prends un chemin différent : la mémoire est automatiquement libérée dès
 que la variable qui la possède sort de la portée. Voici une version de notre
-exemple de portée de l'entrée 4-1 qui utilise un `String` plutôt qu'une chaîne
+exemple de portée de l'entrée 4-1 qui utilise une `String` plutôt qu'une chaîne
 de caractères pure :
 
 ```rust
@@ -257,17 +257,17 @@ de caractères pure :
                                    // n'est plus en vigueur maintenant
 ```
 
-Il y a un cas naturel auquel nous devons rendre la mémoire de notre `String` au
+Il y a un cas naturel pour lequel nous devons rendre la mémoire de notre `String` au
 système d'exploitation : quand `s` sort de la portée. Quand une variable sort
 de la portée, Rust utilise une fonction spéciale pour nous. Cette fonction
-s'appelle `drop`, et ceci que l'auteur du `String` peut le mettre dans le code
+s'appelle `drop`, et ceci que l'auteur de la `String` peut le mettre dans le code
 pour libérer la mémoire. Rust utilise automatiquement `drop` à l'accolade
 fermante `}`.
 
-> Note : dans du C++, cette façon de libérer des ressources à la fin de la
+> Note : En C++, cette façon de libérer des ressources à la fin de la
 > durée de vie d'un objet est parfois appelé *Resource Acquisition Is
 > Initialization (RAII)*. La fonction `drop` de Rust vous sera familière si
-> vous avez déjà utilisé des fonctions de RAII. 
+> vous avez déjà utilisé des fonctions de RAII.
 
 Cette façon de faire a un impact profond sur la façon dont le code de Rust est
 écrit. Cela peut sembler simple ici, mais le comportement du code peut être
@@ -286,7 +286,7 @@ let y = x;
 ```
 
 <span class="caption">Entrée 4-2 : assigner la valeur entière de la variable
-`x` à la `y`</span>
+`x` à la variable `y`</span>
 
 Nous pouvons deviner ce qui va probablement se passer grâce à notre expérience
 avec d'autres langages : “Assigner la valeur `5` à `x`; ensuite faire une copie
@@ -308,7 +308,7 @@ de la valeur dans `s1` et l'assigner à `s2`. Mais ce n'est pas tout à fait ce
 qu'il se passe.
 
 Pour expliquer cela plus précisément, regardons à quoi ressemble `String` avec
-l'illustration 4-1. Un `String` est constitué de trois éléments, présentes sur
+l'illustration 4-1. Une `String` est constitué de trois éléments, présentes sur
 la gauche : un pointeur vers la mémoire qui contient le contenu de la chaîne
 de caractères, une taille, et une capacité. Ces données sont stockées sur la
 Stack. Sur la droite est la mémoire sur la Heap qui contient les données.
@@ -318,13 +318,13 @@ Stack. Sur la droite est la mémoire sur la Heap qui contient les données.
 <span class="caption">Illustration 4-1 : représentation d'un `String` dans la
 mémoire qui contient la valeur `"hello"` assignée à `s1`.</span>
 
-La taille est combien de mémoire, en octets, le contenu du `String` utilise
-actuellement. La capacité est la quantité totale de mémoire, en octets, que
+La taille (le champ "len") est combien de mémoire, en octets, le contenu du `String` utilise
+actuellement. La capacité (le champ "capacity") est la quantité totale de mémoire, en octets, que
 `String` a reçu du système d'exploitation. La différence entre la taille et la
 capacité est importante, mais pas dans ce contexte, donc pour l'instant, ce
 n'est pas grave de mettre de côté la capacité.
 
-Quand nous assignons `s1` à `s2`, les données de `String` sont copiées, ce qui
+Quand nous assignons `s1` à `s2`, les données de la `String` sont copiées, ce qui
 veut dire que nous copions le pointeur, la taille, et la capacité qu'il y a sur
 la Stack. Mais nous ne copions pas les données sur la Heap dont fait référence
 le pointeur. Autrement dit, la représentation des données dans la mémoire
@@ -345,13 +345,13 @@ performances d'exécution si les données sur la Heap étaient grosses.
 <span class="caption">Illustration 4-3 : une autre possibilité de ce que
 pourrait faire `s2 = s1` si Rust copiait aussi les données sur la Heap</span>
 
-Auparavant, nous avons que quand une variable sort de la portée, Rust appelait
+Auparavant, nous avions expliqué que quand une variable sort de la portée, Rust appelait
 automatiquement la fonction `drop` et nettoyait la mémoire sur la Heap
 concernant cette variable. Mais l'illustration 4-2 montre que les deux
 pointeurs de données pointaient au même endroit. C'est un problème : quand
 `s2` et `s1` sortent de la portée, elles vont essayer toutes les deux de
 libérer la même mémoire. C'est ce qu'on appelle une erreur de *double
-libération* et c'est un des bogues de sécurité de mémoire que nous avons
+libération* et c'est un des bugs de sécurité de mémoire que nous avons
 mentionné précédemment. Libérer la mémoire deux fois peut mener à des
 corruptions de mémoire, qui peut potentiellement mener à des vulnérabilités
 de sécurité.
@@ -359,7 +359,7 @@ de sécurité.
 Pour garantir la sécurité de la mémoire, il y a un autre détail en plus qui se
 passe dans cette situation avec Rust. Plutôt qu'essayer de copier la mémoire
 allouée, Rust considère que `s1` n'est plus en vigueur et du fait, Rust n'a pas
-besoin de libérer quoi que ce soit lorsque `s1` sort de la portée. Regardes ce
+besoin de libérer quoi que ce soit lorsque `s1` sort de la portée. Regardez ce
 qu'il se passe quand vous essayez d'utiliser `s1` après que `s2` soit créé,
 cela ne va pas fonctionner :
 
@@ -387,12 +387,12 @@ error[E0382]: use of moved value: `s1`
   not implement the `Copy` trait
 ```
 
-Si vous avez déjà entendu parler de “copie de surface” et de “copie en
-profondeur” en utilisant d'autres langages, l'idée de copier le pointeur, la
-taille et la capacité sans copier les données peut vous faire penser à de la
+Si vous avez déjà entendu parler de “copie de surface” (ou "shallow copy") et de “copie en
+profondeur” (ou "deep copy") en utilisant d'autres langages, l'idée de copier le pointeur, la
+taille et la capacité sans copier les données, peut vous faire penser à de la
 copie de surface. Mais parce que Rust invalide aussi la première variable, au
 lieu d'appeler cela une copie de surface, on appelle cela un *déplacement*.
-Ici nous pourrions lire ainsi en disant que `s1` a été *déplacé* dans `s2`.
+Ici nous pourrions lire cette situation en disant que `s1` a été *déplacé* dans `s2`.
 Donc ce qui se passe réellement est montré dans l'illustration 4-4.
 
 <img alt="s1 est déplacé dans s2" src="img/trpl04-04.svg" class="center" style="width: 50%;" />
@@ -410,9 +410,9 @@ d'exécution.
 
 #### Les interactions entre les variables et les données : le clonage
 
-Si nous *voulons* faire une copie profonde des données sur la Heap d'un
+Si nous *voulons* faire une copie profonde des données sur la Heap d'une
 `String`, et pas seulement des données sur la Stack, nous pouvons utiliser une
-méthode courante qui s'appelle `clone`. Nous allons aborderons la syntaxe des
+méthode courante qui s'appelle `clone`. Nous aborderons la syntaxe des
 méthodes dans le chapitre 5, mais parce que les méthodes sont un outil courant
 dans de nombreux langages, vous les avez probablement utilisé auparavant.
 
@@ -426,11 +426,11 @@ println!("s1 = {}, s2 = {}", s1, s2);
 ```
 
 Cela fonctionne très bien et c'est ainsi que vous pouvez reproduire le
-comportement décrit dans l'illustration 4-3, dans les données de la Heap sont
+comportement décrit dans l'illustration 4-3, quand les données de la Heap sont
 copiées.
 
 Quand vous voyez un appel à `clone`, vous savez que du code arbitraire est
-exécuté et que ce code peu coûteux. C'est un indicateur visuel qu'il se passe
+exécuté et que ce code peut être coûteux. C'est un indicateur visuel qu'il se passe
 quelque chose de différent.
 
 #### Données seulement sur la Stack : les copier
@@ -461,25 +461,27 @@ différent que la copie en surface habituelle et nous pouvons l'exclure.
 Rust a une annotation spéciale appelée le trait `Copy` que nous pouvons
 utiliser sur des types comme les entiers qui sont stockés sur la Stack (nous
 verrons les traits dans le chapitre 10). Si un type a le trait `Copy`,
-l'ancienne variable est toujours utilisable après son affectation. Rust ne pas
-nous autoriser à annoter type avec le trait `Copy` si ce type, ou un de ses
+l'ancienne variable est toujours utilisable après son affectation. Rust ne
+nous autorise pas à annoter un type avec le trait `Copy` si ce type, ou un de ses
 éléments, a implémenté le trait `Drop`. Si ce type a besoin que quelque chose
 de spécial se passe quand la valeur sort de la portée et que nous ajoutons
 l'annotation `Copy` sur ce type, nous allons avoir une erreur au moment de la
 compilation. Pour en savoir plus sur comment ajouter l'annotation `Copy` sur
 votre type, reférez-vous à l'annexe C sur les traits dérivés.
 
-Donc, quels sont les types qui ont `Copy` ? Vous pouvez regarder dans la
+Donc, quels sont les types qui ont le trait `Copy` ? Vous pouvez regarder dans la
 documentation pour un type donné pour vous en assurer, mais de manière
-générale, tout groupe de simple scalaire peut être `Copy`, (TODO) and nothing that requires allocation or is some form of resource is `Copy`.
-Voici quelques types qui sont `Copy` :
+générale, tout groupe de simple scalaire possède le trait `Copy`, et tout ce
+qui ne requiert pas d'allocation ou est une forme de resource possède le trait `Copy`.
+Voici quelques types qui ont le trait `Copy` :
 
 * Tous les types d'entiers, comme `u32`.
 * Le type booléen, `bool`, avec les valeurs `true` et `false`.
 * Le type de caractères, `char`.
 * Tous les types de nombres à virgule, comme `f64`.
-* Les Tuples, mais uniquement s'ils contiennent des types qui sont aussi
-`Copy`. Le `(i32, i32)` est `Copy`, mais `(i32, String)` ne l'est pas.
+* Les Tuples, mais uniquement s'ils contiennent des types qui ont aussi le trait
+`Copy`. Un tuple `(i32, i32)` a le trait `Copy`, mais un tuple `(i32, String)`
+ne l'a pas.
 
 ### L'appropriation et les fonctions
 
@@ -492,7 +494,7 @@ portée :
 <span class="filename">Nom du fichier : src/main.rs</span>
 
 ```rust
-fn main() { 
+fn main() {
     let s = String::from("hello");  // s rentre dans la portée.
 
     takes_ownership(s);             // La valeur de s est déplacée dans la fonction ...
@@ -506,7 +508,7 @@ fn main() {
 
 } // Ici, x sort de la portée, puis ensuite s. Mais puisque la valeur de s a
   // été déplacée, il ne se passe rien de spécial.
- 
+
 
 fn takes_ownership(some_string: String) { // some_string rentre dans la portée.
     println!("{}", some_string);
@@ -522,7 +524,7 @@ fn makes_copy(some_integer: i32) { // some_integer rentre dans la portée.
 portées qui sont commentées</span>
 
 Si nous essayons d'utiliser `s` après l'appel à `takes_ownership`, Rust va
-lever et retourner une erreur au moment de la compilation. Ces vérifications
+lever une erreur au moment de la compilation. Ces vérifications
 statiques nous protègent des erreurs. Essayez d'ajouter du code au `main` qui
 utilise `s` et `x` pour voir quand vous pouvez les utiliser et quand les règles
 de l'appartenance vous empêchent de le faire.
@@ -549,13 +551,13 @@ fn main() {
   // éliminée.
 
 fn gives_ownership() -> String {             // gives_ownership va déplacer sa
-                                             // valeur de retour dans la 
+                                             // valeur de retour dans la
                                              // fonction qui l'appelle.
 
     let some_string = String::from("hello"); // some_string rentre dans la
                                              //portée.
 
-    some_string                              // some_string est retrournée et
+    some_string                              // some_string est retournée et
                                              // est déplacée au code qui
                                              // l'appelle.
 }
@@ -571,15 +573,14 @@ fn takes_and_gives_back(a_string: String) -> String { // a_string rentre dans
 L'appartenance d'une variable suit toujours le même processus à chaque fois :
 assigner une valeur à une variable la déplace. Quand une variable qui contient
 des données sur la Heap sort de la portée, la valeur va être nettoyée de la
-mémoire avec `drop` à moins que la donnée aie été déplacée pour appartenir à
+mémoire avec `drop` à moins que la donnée n'aie été déplacée pour appartenir à
 une autre variable.
 
 Il est un peu fastidieux de prendre l'appartenance puis ensuite de retourner
 l'appartenance avec chaque fonction. Et qu'est ce qu'il se passe si nous
 voulons qu'une fonction utilise une valeur, mais ne se l'approprie pas ? C'est
-assez pénible que tout ce que nous envoyons doit être retourné si nous voulons
-l'utiliser à nouveau, en plus de toutes les données qui découlent de
-l'exécution de la fonction que nous voulons aussi récupérer.
+assez pénible que tout ce que nous envoyons doivent être retourné pour être réutilisé,
+en plus de toutes les données qui découlent de l'exécution de la fonction que nous voulons aussi récupérer.
 
 Il est possible de retourner plusieurs valeurs en utilisant un tuple, comme
 ceci :
@@ -596,7 +597,7 @@ fn main() {
 }
 
 fn calculate_length(s: String) -> (String, usize) {
-    let length = s.len(); // len() renvoie le nombre de caractères d'un String.
+    let length = s.len(); // len() renvoie le nombre de caractères d'une String.
 
     (s, length)
 }
