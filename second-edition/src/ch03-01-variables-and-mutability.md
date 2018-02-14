@@ -14,7 +14,7 @@ dossier *projects* en utilisant `cargo new --bin variables`.
 
 Ensuite, dans votre nouveau dossier *variables*, ouvrez *src/main.rs* et remplacez son contenu par ceci :
 
-<span class="filename">Fichier: src/main.rs</span>
+<span class="filename">Fichier : src/main.rs</span>
 
 ```rust,ignore
 fn main() {
@@ -71,7 +71,7 @@ code vont modifier cette valeur variable.
 
 Par exemple, modifions *src/main.rs* par :
 
-<span class="filename">Fichier: src/main.rs</span>
+<span class="filename">Fichier : src/main.rs</span>
 
 ```rust
 fn main() {
@@ -128,35 +128,37 @@ une expression constante, et non pas le résultat d'un appel de fonction ou
 n'importe quelle autre valeur qui ne pourrait être calculée qu'à l'exécution.
 
 Voici un exemple d'une déclaration de constante où le nom de la constante est 
-MAX_POINTS` et que sa valeur est définie à 100 000 (en Rust, la convention de 
+MAX_POINTS` et où sa valeur est définie à 100 000 (en Rust, la convention de 
 nommage des constantes est d'utiliser des majuscules pour chaque lettre et des
-tirets bas entre chaque mots) :
+tirets bas entre chaque mot) :
 
 ```rust
 const MAX_POINTS: u32 = 100_000;
 ```
 
-Constants are valid for the entire time a program runs, within the scope they
-were declared in, making them a useful choice for values in your application
-domain that multiple parts of the program might need to know about, such as the
-maximum number of points any player of a game is allowed to earn or the speed
-of light.
+Les constantes sont valables pendant toute la durée d'exécution du programme à
+l'intérieur de la portée dans laquelle elles sont déclarées, ce qui en font de
+très bon choix lorsque plusieurs parties d'un programme doivent connaître
+certaines valeurs, comme par exemple le nombre maximum de points qu'un joueur
+est autorisé à gagner ou la vitesse de la lumière.
 
-Naming hardcoded values used throughout your program as constants is useful in
-conveying the meaning of that value to future maintainers of the code. It also
-helps to have only one place in your code you would need to change if the
-hardcoded value needed to be updated in the future.
+Déclarer des valeurs codées en dur et utilisées tout le long de votre programme
+comme constantes est utile car cela transmet la signification de ces valeurs
+aux futurs mainteneurs de votre code. Cela permet également de n'avoir qu'un
+seul endroit de votre code à modifier si une valeur codée en dur doit être mise
+à jour dans le futur.
 
-### Shadowing
+### *Shadowing*
 
-As we saw in the guessing game tutorial in Chapter 2, we can declare a new
-variable with the same name as a previous variable, and the new variable
-*shadows* the previous variable. Rustaceans say that the first variable is
-*shadowed* by the second, which means that the second variable’s value is what
-we’ll see when we use the variable. We can shadow a variable by using the same
-variable’s name and repeating the use of the `let` keyword as follows:
+Comme nous l'avons vu dans le jeu du Chapitre 2, nous pouvons déclarer de
+nouvelles variables avec le même nom qu'une variable précédente, et que la
+nouvelle variable *shadow*, occulte la première. Les Rustacéens disent que la
+première variable est *shadowed*, occultée par la seconde, ce qui signifie que
+la valeur de la seconde variable sera ce que nous obtiendrons lorsque nous
+utiliserons cette variable. Nous pouvons occulter une variable en utilisant le
+même nom de variable et en réutilisant le mot-clé `let` comme suit :
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Fichier : src/main.rs</span>
 
 ```rust
 fn main() {
@@ -170,11 +172,12 @@ fn main() {
 }
 ```
 
-This program first binds `x` to a value of `5`. Then it shadows `x` by
-repeating `let x =`, taking the original value and adding `1` so the value of
-`x` is then `6`. The third `let` statement also shadows `x`, taking the
-previous value and multiplying it by `2` to give `x` a final value of `12`.
-When you run this program, it will output the following:
+En premier lieu, ce programme lie `x` à la valeur `5`. Puis il *shadow* `x` en
+répétant `let x =`, ce qui récupère la valeur originelle et lui ajoute `1` : la
+valeur de `x` est désormais `6`. La troisième déclaration `let` *shadow*
+également `x`, prenant la précédente valeur et la multipliant par `2` pour
+donner à `x` une valeur finale de `12`. Lorsque nous exécutons ce programme,
+nous obtenons en sortie ceci :
 
 ```text
 $ cargo run
@@ -184,35 +187,39 @@ $ cargo run
 The value of x is: 12
 ```
 
-This is different than marking a variable as `mut`, because unless we use the
-`let` keyword again, we’ll get a compile-time error if we accidentally try to
-reassign to this variable. We can perform a few transformations on a value but
-have the variable be immutable after those transformations have been completed.
+Ceci est différent que marquer une variable comme `mut`, car à moins d'utiliser
+le mot-clé `let` une nouvelle fois, nous obtenons une erreur de compilation si
+nous essayons accidentellement de réassigner cette variable. Nous pouvons
+effectuer quelques transformations sur une valeur puis faire en sorte que la
+variable soit immuable après que ces transformations soient terminées.
 
-The other difference between `mut` and shadowing is that because we’re
-effectively creating a new variable when we use the `let` keyword again, we can
-change the type of the value, but reuse the same name. For example, say our
-program asks a user to show how many spaces they want between some text by
-inputting space characters, but we really want to store that input as a number:
+L'autre différence entre le `mut` et le *shadowing* est la création effective
+d'une nouvelle variable lorsque nous utilisons le mot-clé `let` une nouvelle
+fois, ce qui nous permet de changer le type de la valeur, mais en réutilisant
+le même nom. Par exemple, disons que notre programme demande à un utilisateur
+le nombre d'espaces à afficher entre du texte en saisissant des caractères
+d'espace, mais que nous voulions quand même enregistrer cette saisie comme un
+nombre :
 
 ```rust
 let spaces = "   ";
 let spaces = spaces.len();
 ```
 
-This construct is allowed because the first `spaces` variable is a string type,
-and the second `spaces` variable, which is a brand-new variable that happens to
-have the same name as the first one, is a number type. Shadowing thus spares us
-from having to come up with different names, like `spaces_str` and
-`spaces_num`; instead, we can reuse the simpler `spaces` name. However, if we
-try to use `mut` for this, as shown here, we’ll get a compile-time error:
+Cette conception est autorisée car la première variable `spaces` est du type
+*string*, alors que la seconde variable `spaces`, qui est une toute nouvelle
+variable se trouvant avoir le même nom que la première, est du type nombre.
+L'utilisation du *shadowing* nous évite ainsi d'avoir à trouver des noms
+différents, comme `spaces_str` et `spaces_num` ; nous pouvons plutôt utiliser
+le simple nom de `spaces`. En revanche, si nous essayons d'utiliser `mut` pour
+cela, comme montré ci-dessous, nous obtenons une erreur de compilation :
 
 ```rust,ignore
 let mut spaces = "   ";
 spaces = spaces.len();
 ```
 
-The error says we’re not allowed to mutate a variable’s type:
+Cette erreur indique que nous ne pouvons pas muer le type d'une variable :
 
 ```text
 error[E0308]: mismatched types
@@ -225,5 +232,5 @@ error[E0308]: mismatched types
              found type `usize`
 ```
 
-Now that we’ve explored how variables work, let’s look at more data types they
-can have.
+Maintenant que nous avons exploré comment fonctionne les variables, étudions de
+nouveaux types de données qu'elles peuvent avoir.
