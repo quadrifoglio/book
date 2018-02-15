@@ -174,7 +174,7 @@ fn main() {
 
 En premier lieu, ce programme lie `x` à la valeur `5`. Puis il *shadow* `x` en
 répétant `let x =`, ce qui récupère la valeur originelle et lui ajoute `1` : la
-valeur de `x` est désormais `6`. La troisième déclaration `let` *shadow*
+valeur de `x` est désormais `6`. La troisième instruction `let` *shadow*
 également `x`, prenant la précédente valeur et la multipliant par `2` pour
 donner à `x` une valeur finale de `12`. Lorsque nous exécutons ce programme,
 nous obtenons en sortie ceci :
@@ -232,5 +232,5 @@ error[E0308]: mismatched types
              found type `usize`
 ```
 
-Maintenant que nous avons exploré comment fonctionne les variables, étudions de
-nouveaux types de données qu'elles peuvent avoir.
+Maintenant que nous avons exploré comment fonctionnent les variables, étudions
+désormais de nouveaux types de données que ces variables peuvent contenir.
