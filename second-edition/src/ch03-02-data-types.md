@@ -1,24 +1,26 @@
-## Data Types
+## Types de données
 
-Every value in Rust is of a certain *type*, which tells Rust what kind of data
-is being specified so it knows how to work with that data. In this section,
-we’ll look at a number of types that are built into the language. We split the
-types into two subsets: scalar and compound.
+Toutes les valeurs en Rust sont d'un certain *type*, qui indique à Rust quels
+type de donnée est en train d'être spécifié afin qu'il puisse savoir comment
+traiter la donnée. Dans cette section, nous allons nous intéresser à certains
+types de données inclus dans langage. Nous divisions habituellement chaque type
+dans deux catégories : les scalaires et les composés.
 
-Throughout this section, keep in mind that Rust is a *statically typed*
-language, which means that it must know the types of all variables at compile
-time. The compiler can usually infer what type we want to use based on the
-value and how we use it. In cases when many types are possible, such as when we
-converted a `String` to a numeric type using `parse` in Chapter 2, we must add
-a type annotation, like this:
+Tout au long de cette section, gardez à l'esprit que Rust est langage
+*statiquement typé*, ce qui signifie qu'il doit connaître les types de toutes
+les variables lors de la compilation. Le compilateur peut souvent déduire quel
+type utiliser en se basant sur la valeur et comment elle est utilisée. Dans les
+cas où plusieurs types sont envisageables, comme lorsque nous avons converti
+une `String` en un type numérique en utilisant `parse` dans le Chapitre 2, nous
+devons ajouter une annotation de type, comme ceci :
 
 ```rust
 let guess: u32 = "42".parse().expect("Not a number!");
 ```
 
-If we don’t add the type annotation here, Rust will display the following
-error, which means the compiler needs more information from us to know which
-possible type we want to use:
+Si nous n'ajoutons pas l'annotation de type ici, Rust affichera l'erreur
+suivante, signifiant que le compilateur a besoin de plus d'informations pour
+déterminer quel type nous souhaitons utiliser :
 
 ```text
 error[E0282]: type annotations needed
@@ -31,34 +33,37 @@ error[E0282]: type annotations needed
   |         consider giving `guess` a type
 ```
 
-You’ll see different type annotations as we discuss the various data types.
+Vous découvrirez différentes annotations de type au fur et à mesure que nous
+discuterons des nombreux types de données.
 
-### Scalar Types
+### Types scalaires
 
-A *scalar* type represents a single value. Rust has four primary scalar types:
-integers, floating-point numbers, Booleans, and characters. You’ll likely
-recognize these from other programming languages, but let’s jump into how they
-work in Rust.
+Un type *scalaire* représente une seule valeur. Rust possède quatre types
+scalaires principaux : les entiers, les nombres à virgule flottante, les
+Booléens et les caractères. Vous les reconnaîtrez surement d'autres langages de
+programmation, mais allons voir comment ils fonctionnent en Rust.
 
-#### Integer Types
+#### Types entiers
 
-An *integer* is a number without a fractional component. We used one integer
-type earlier in this chapter, the `u32` type. This type declaration indicates
-that the value it’s associated with should be an unsigned integer (signed
-integer types start with `i` instead of `u`) that takes up 32 bits of space.
-Table 3-1 shows the built-in integer types in Rust. Each variant in the Signed
-and Unsigned columns (for example, *i16*) can be used to declare the type of an
-integer value.
+Un *entier* est un nombre sans partie décimale. Nous avons utilisé un entier
+plus tôt dans ce chapitre, le type `u32`. Cette déclaration de type indique 
+que la valeur à laquelle elle est associée doit être un entier non signé
+prenant 32 bits d'espace mémoire (le u de `u32` étant un raccourci pour
+*unsigned*, "non signé", au contraire du `i32` pouvant prendre des valeurs 
+négatives, le i signifiant simplement *integer*, "entier"). Le Tableau 3-1 
+montre les types d'entiers inclus dans le langage. Chaque variante dans les
+colonnes "Signé" et "Non Signé" (par exemple, *i16*) peut être utilisé pour
+déclarer le type d'une valeur entière.
 
-<span class="caption">Table 3-1: Integer Types in Rust</span>
+<span class="caption">Tableau 3-1: Les types d'entier en Rust</span>
 
-| Length | Signed | Unsigned |
-|--------|--------|----------|
-| 8-bit  | i8     | u8       |
-| 16-bit | i16    | u16      |
-| 32-bit | i32    | u32      |
-| 64-bit | i64    | u64      |
-| arch   | isize  | usize    |
+| Taille | Signé  | Non signé |
+|--------|--------|-----------|
+| 8-bit  | i8     | u8        |
+| 16-bit | i16    | u16       |
+| 32-bit | i32    | u32       |
+| 64-bit | i64    | u64       |
+| arch   | isize  | usize     |
 
 Each variant can be either signed or unsigned and has an explicit size.
 Signed and unsigned refers to whether it’s possible for the number to be
