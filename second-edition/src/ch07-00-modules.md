@@ -1,24 +1,29 @@
-# Using Modules to Reuse and Organize Code
+# Utiliser les Modules pour réutiliser et organiser le code
 
-When you start writing programs in Rust, your code might live solely in the
-`main` function. As your code grows, you’ll eventually move functionality into
-other functions for reuse and better organization. By splitting your code into
-smaller chunks, each chunk is easier to understand on its own. But what happens
-if you have too many functions? Rust has a module system that enables the reuse
-of code in an organized fashion.
+Quand vous commencez à écrire des programmes en Rust, votre code pourrait
+demeurer uniquement dans la fonction `main`. Au fur et à mesure que votre code
+grossit, vous pourriez éventuellement déplacer des fonctionnalités dans
+d'autres fonctions pour les réutiliser et améliorer son organisation. En
+découpant votre code en petits morceaux, chaque morceau devient plus facile à
+comprendre. Mais qu'est-ce qui se passe quand vous avez trop de fonctions ?
+Rust dispose d'un système de modules qui permet la réutilisation du code de
+manière organisée.
 
-In the same way that you extract lines of code into a function, you can extract
-functions (and other code, like structs and enums) into different modules. A
-*module* is a namespace that contains definitions of functions or types, and
-you can choose whether those definitions are visible outside their module
-(public) or not (private). Here’s an overview of how modules work:
+De la même façon que vous déplacez des lignes de code dans une fonction, vous
+pouvez déplacer des fonctions (et d'autres codes, comme les structs et les
+enum) dans différents modules. Un *module* est un espace de nom qui contient
+des définitions de fonctions ou de types, et vous pouvez choisir quelles
+définitions sont visibles en dehors de leur module (elle est publique) ou non
+(elle est privée). Voici un aperçu du fonctionnement des modules :
 
-* The `mod` keyword declares a new module. Code within the module appears
-  either immediately following this declaration within curly brackets or in
-  another file.
-* By default, functions, types, constants, and modules are private. The `pub`
-  keyword makes an item public and therefore visible outside its namespace.
-* The `use` keyword brings modules, or the definitions inside modules, into
-  scope so it’s easier to refer to them.
+* Le mot-clé `mod` déclare un nouveau module. Le code dans le module apparaît
+  immédiatement après cette déclaration à l'intérieur d'accolades, ou dans un
+  autre fichier.
+* Par défaut, les fonctions, types, constantes et modules sont privés. Le
+  mot-clé `pub` rends cet élément public et par conséquent visible en dehors de
+  son espace de nom.
+* Le mot-clé `use` remonte des modules, ou des définitions à l'intérieur des
+  modules, dans la portée actuelle pour que ce soit plus facile de s'y référer.
 
-We’ll look at each of these parts to see how they fit into the whole.
+Nous allons examiner chacune de ces parties pour voir comment elles s'intègrent
+dans toute la chaîne.
