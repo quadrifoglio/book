@@ -312,17 +312,20 @@ fonction `try_me` n'est pas autorisé à appeller
 
 #### Résoudre les erreurs
 
-Here are some suggestions for changing the code in an attempt to fix the
-errors. Before you try each one, make a guess as to whether it will fix the
-errors, and then compile the code to see whether or not you’re right, using the
-privacy rules to understand why.
+Voici quelques suggestions de changement du code pour tenter de résoudre les
+erreurs. Avant de les essayer, essayez de deviner quelle erreur chacune d'elles
+résout, et compilez ensuite le code pour vérifier si vous avez raison, en
+utilisant les règles du mode privé pour comprendre pourquoi.
 
-* What if the `inside` module was public?
-* What if `outermost` was public and `inside` was private?
-* What if, in the body of `inner_function`, you called
-  `::outermost::middle_secret_function()`? (The two colons at the beginning mean
-  that we want to refer to the modules starting from the root module.)
+* Que se passerait-il si le module `inside` devenait public ?
+* Que se passerait-il si `outermost` devenait public et que `inside` restait
+  privé ?
+* Que se passerait-il si, dans le corps de `inner_function`, vous appeliez
+  `::outermost::middle_secret_function()` ? (les deux double-points au début
+  signifient que nous voulons faire référence aux modules à partir du module
+  racine)
 
-Feel free to design more experiments and try them out!
+N'hésitez pas à concevoir d'autre expériences et à les essayer !
 
-Next, let’s talk about bringing items into scope with the `use` keyword.
+Dans la partie suivante, nous alons parler de la technique pour introduire des
+éléments dans la portée avec le mot-clé `use`.
