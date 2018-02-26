@@ -289,27 +289,28 @@ sur les erreurs !
 
 #### Rechercher les erreurs
 
-The `try_me` function is in the root module of our project. The module named
-`outermost` is private, but the second privacy rule states that the `try_me`
-function is allowed to access the `outermost` module because `outermost` is in
-the current (root) module, as is `try_me`.
+La fonction `try_me` est dans le module racine de notre projet. Le module
+`outermost` est privé, mais la seconde règle du mode privé implique que la
+fonction `try_me` est autorisée à accéder au module `outermost` car `outermost`
+est dans le même module (la racine) que `try_me`.
 
-The call to `outermost::middle_function` will work because `middle_function` is
-public, and `try_me` is accessing `middle_function` through its parent module
-`outermost`. We determined in the previous paragraph that this module is
-accessible.
+L'appel à `outermost::middle_function` va fonctionner car `middle_function` est
+publique, et `try_me` va utiliser `middle_function` par le biais de son module
+parent `outermost`. Nous avons établi dans le paragraphe précédent que ce
+module était accessible.
 
-The call to `outermost::middle_secret_function` will cause a compilation error.
-`middle_secret_function` is private, so the second rule applies. The root
-module is neither the current module of `middle_secret_function` (`outermost`
-is), nor is it a child module of the current module of `middle_secret_function`.
+L'appel à la fonction `outermost::middle_secret_function` va provoquer une
+erreur de compilation. `middle_secret_function` est privé, donc la seconde
+règle s'applique. Le module racine n'est pas le module de
+`middle_secret_function` (c'est `outermost` son module), et ce n'est pas non
+plus un module enfant du module `middle_secret_function`.
 
-The module named `inside` is private and has no child modules, so it can only
-be accessed by its current module `outermost`. That means the `try_me` function
-is not allowed to call `outermost::inside::inner_function` or
-`outermost::inside::secret_function`.
+Le module `inside` est privé et n'a pas de modules enfants, donc il peut
+seulement être utilisé par son module `outermost`. Cela veut dire que la
+fonction `try_me` n'est pas autorisé à appeller
+`outermost::inside::inner_function` ou `outermost::inside::secret_function`.
 
-#### Fixing the Errors
+#### Résoudre les erreurs
 
 Here are some suggestions for changing the code in an attempt to fix the
 errors. Before you try each one, make a guess as to whether it will fix the
