@@ -1,10 +1,10 @@
-## Referring to Names in Different Modules
+## Importer des dénominations de différents modules 
 
-We’ve covered how to call functions defined within a module using the module
-name as part of the call, as in the call to the `nested_modules` function shown
-here in Listing 7-7:
+Nous avons vu comment appeler des fonctions définies dans un module en
+utilisant le nom du module comme une partie de l'appel, comme dans l'appel à la
+fonction `nested_modules` tel que montrée ici dans l'entrée 7-7 :
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Nom du fichier : src/main.rs</span>
 
 ```rust
 pub mod a {
@@ -20,19 +20,20 @@ fn main() {
 }
 ```
 
-<span class="caption">Listing 7-7: Calling a function by fully specifying its
-enclosing module’s path</span>
+<span class="caption">Entrée 7-7 : appel d'une fonction en précisant
+entièrement le chemin des modules qui l'enveloppent</span>
 
-As you can see, referring to the fully qualified name can get quite lengthy.
-Fortunately, Rust has a keyword to make these calls more concise.
+Comme vous pouvez le constater, utiliser le chemin complet peut être un peu
+long. Heureusement, Rust a un mot-clé pour rendre ces appels plus concis.
 
-### Bringing Names into Scope with the `use` Keyword
+### Importer des dénominations dans la portée avec le mot-clé `use`
 
-Rust’s `use` keyword shortens lengthy function calls by bringing the modules of
-the function you want to call into scope. Here’s an example of bringing the
-`a::series::of` module into a binary crate’s root scope:
+Le mot-clé `use` de Rust simplifie les longs appels des fonctions en important
+les modules des fonctions que vous voulez appeler dans la portée (NdT : scope).
+Voici un exemple d'ajout du module `a::series::of` dans la portée de la racine
+d'un crate binaire :
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Nom du fichier : src/main.rs</span>
 
 ```rust
 pub mod a {
@@ -50,16 +51,17 @@ fn main() {
 }
 ```
 
-The line `use a::series::of;` means that rather than using the full
-`a::series::of` path wherever we want to refer to the `of` module, we can use
-`of`.
+La ligne `use a::series::of;` signifie que plutôt qu'utiliser tout le chemin
+`a::series::of` a chaque fois nous voulons utiliser le module `of`, nous
+pouvons utiliser `of`.
 
-The `use` keyword brings only what we’ve specified into scope: it does not
-bring children of modules into scope. That’s why we still have to use
-`of::nested_modules` when we want to call the `nested_modules` function.
+Le mot-clé `use` importe uniquement ce que nous avons demandé dans la portée :
+cela n'importe pas les enfants du module dans la portée. C'est pourquoi nous
+devons toujours utiliser `of::nested_modules` losque nous souhaitons appeler
+la fonction `nested_modules`.
 
-We could have chosen to bring the function into scope by instead specifying the
-function in the `use` as follows:
+Nous aurions pu choisir d'importer la fonction dans la portée en précisant
+plutôt la fonction dans le `use`, comme ci-dessous :
 
 ```rust
 pub mod a {
@@ -77,13 +79,15 @@ fn main() {
 }
 ```
 
-Doing so allows us to exclude all the modules and reference the function
-directly.
+Faire ainsi nous permet d'exclure tous les modules et de référencer directement
+la fonction.
 
-Because enums also form a sort of namespace like modules, we can bring an
-enum’s variants into scope with `use` as well. For any kind of `use` statement,
-if you’re bringing multiple items from one namespace into scope, you can list
-them using curly brackets and commas in the last position, like so:
+Comme les énumérateurs (NdT : enums) forment eux aussi un sorte d'espace de nom
+(NdT : namespace) comme les modules, nous pouvons ici aussi importer une
+variante d'énumérateurs dans la portée. Pour n'importe quel type d'instruction
+`use`, si vous voulez importer plusieurs éléments d'un même espace de nom dans
+la portée, vous pouvez les lister en utilisant des accollades et des virgules
+dans le dernier emplacement, comme ceci :
 
 ```rust
 enum TrafficLight {
@@ -101,12 +105,16 @@ fn main() {
 }
 ```
 
-We’re still specifying the `TrafficLight` namespace for the `Green` variant
-because we didn’t include `Green` in the `use` statement.
+Nous continuons à préciser l'espace de nom `TrafficLight` pour la variante
+`Green` car nous n'avons pas inclus `Green` dans l'instruction `use`.
 
-### Bringing All Names into Scope with a Glob
+### Importer toutes les dénominations dans la portée
 
-To bring all the items in a namespace into scope at once, we can use the `*`  syntax, which is called the *glob operator*. This example brings all the variants of an enum into scope without having to list each specifically:
+Pour importer tous les éléments d'un espace de nom dans la portée en une seule
+fois, nous pouvons utiliser la syntaxe `*`, qui s'appelle
+*l'opérateur global (NdT : glob operator)*. L'exemple suivant importe toutes
+les variantes d'un énumérateur dans la portée sans avoir à les lister un par
+un :
 
 ```rust
 enum TrafficLight {
@@ -124,17 +132,18 @@ fn main() {
 }
 ```
 
-The `*` will bring into scope all the visible items in the `TrafficLight`
-namespace. You should use globs sparingly: they are convenient, but this might
-also pull in more items than you expected and cause naming conflicts.
+Le `*` va importer tout les éléments visibles dans l'espace de nom de
+`TrafficLight`. Vous devriez utiliser les opérateurs globaux avec modération :
+ils sont partiques, mais cela peut aussi importer plus d'éléments que vous
+aviez prévu et mener à des conflits de noms.
 
-### Using `super` to Access a Parent Module
+### Utiliser `super` pour accéder à un module parent
 
-As we saw at the beginning of this chapter, when you create a library crate,
-Cargo makes a `tests` module for you. Let’s go into more detail about that now.
-In your `communicator` project, open *src/lib.rs*:
+Comme nous l'avons vu au début de ce chapitre, quand vous créez un crate de
+bibliothèque, Cargo crée un module `tests` pour vous. Analysons cela plus en
+détail maintenant. Dans notre projet `communicator`, ouvrez *src/lib.rs* :
 
-<span class="filename">Filename: src/lib.rs</span>
+<span class="filename">Nom du fichier : src/lib.rs</span>
 
 ```rust,ignore
 pub mod client;
@@ -150,11 +159,12 @@ mod tests {
 }
 ```
 
-Chapter 11 explains more about testing, but parts of this example should make
-sense now: we have a module named `tests` that lives next to our other modules
-and contains one function named `it_works`. Even though there are special
-annotations, the `tests` module is just another module! So our module hierarchy
-looks like this:
+Le chapitre 11 expliquera plus en détail les tests, mais les éléments de cet
+exemple devrait avoir du sens désormais : nous avons un module qui s'appelle
+`tests` qui vie a coté de nos autres modules et contient une fonction
+`it_works`. Même si nous avons des annotations spéciales, le module de tests
+n'est qu'un module en plus ! Donc notre hierarchie de modules ressemble à
+ceci :
 
 ```text
 communicator
@@ -164,11 +174,12 @@ communicator
  └── tests
 ```
 
-Tests are for exercising the code within our library, so let’s try to call our
-`client::connect` function from this `it_works` function, even though we won’t
-be checking any functionality right now. This won’t work yet:
+Les tests permettent de vérifier le code au sein de notre bibliothèque, donc
+essayons d'appeler notre fonction `client::connect` dans cette fonction
+`it_works`, même si nous ne vérifions aucune fonctionnalité pour le moment.
+Ceci ne fonctionnera pas pour le moment :
 
-<span class="filename">Filename: src/lib.rs</span>
+<span class="filename">Nom du fichier : src/lib.rs</span>
 
 ```rust
 #[cfg(test)]
@@ -180,7 +191,7 @@ mod tests {
 }
 ```
 
-Run the tests by invoking the `cargo test` command:
+Lancez les tests en utilisant la commande `cargo test` :
 
 ```text
 $ cargo test
@@ -192,12 +203,13 @@ error[E0433]: failed to resolve. Use of undeclared type or module `client`
   |         ^^^^^^ Use of undeclared type or module `client`
 ```
 
-The compilation failed, but why? We don’t need to place `communicator::` in
-front of the function like we did in *src/main.rs* because we are definitely
-within the `communicator` library crate here. The reason is that paths are
-always relative to the current module, which here is `tests`. The only
-exception is in a `use` statement, where paths are relative to the crate root
-by default. Our `tests` module needs the `client` module in its scope!
+La compilation a échoué, mais pourquoi ? Nous n'avons pas besoin d'ajouter
+`communicator::` devant les fonctions telle que nous les avons créés dans
+*src/main.rs* car nous sommes bien ici dans le crate de la bibliothèque
+`communicator`. La raison est que les chemins sont toujours relatifs au module
+courant, qui est ici `tests`. La seule exception est dans une instruction
+`use`, où les chemins sont par défaut relatifs à la racine du crate. Notre
+module `tests` a besoin du module `client` dans sa portée !
 
 So how do we get back up one module in the module hierarchy to call the
 `client::connect` function in the `tests` module? In the `tests` module, we can
