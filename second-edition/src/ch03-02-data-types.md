@@ -65,57 +65,59 @@ déclarer le type d'une valeur entière.
 | 64-bit | i64    | u64       |
 | arch   | isize  | usize     |
 
-Each variant can be either signed or unsigned and has an explicit size.
-Signed and unsigned refers to whether it’s possible for the number to be
-negative or positive; in other words, whether the number needs to have a sign
-with it (signed) or whether it will only ever be positive and can therefore be
-represented without a sign (unsigned). It’s like writing numbers on paper: when
-the sign matters, a number is shown with a plus sign or a minus sign; however,
-when it’s safe to assume the number is positive, it’s shown with no sign.
-Signed numbers are stored using two’s complement representation (if you’re
-unsure what this is, you can search for it online; an explanation is outside
-the scope of this book).
+Chaque variante peut-être signée ou non-signée et possède une taille explicite.
+Signée et non-signée indique s'il est possible ou non d'être négatif ou positif
+; en d'autres termes, si l'on peut lui attribuer un signe (signé) ou s'il sera
+toujours positif et que l'on peut donc le représenter sans un signe
+(non-signé). C'est comme écrire des nombres sur le papier : quand le signe
+importe, un nombre est écrit avec un signe plus ou un signe moins ; en
+revanche, quand on peut supposer que le nombre est positif, il est écrit sans
+son signe. Les nombres signés sont stockés en utilisant le complément à deux
+(si vous n'êtes pas sûr de ce qu'est le complément à deux, vous pouvez le
+rechercher sur internet ; une telle explication ne fait pas partie de
+l'objectif de ce livre).
 
-Each signed variant can store numbers from -(2<sup>n - 1</sup>) to 2<sup>n -
-1</sup> - 1 inclusive, where `n` is the number of bits that variant uses. So an
-`i8` can store numbers from -(2<sup>7</sup>) to 2<sup>7</sup> - 1, which equals
--128 to 127. Unsigned variants can store numbers from 0 to 2<sup>n</sup> - 1,
-so a `u8` can store numbers from 0 to 2<sup>8</sup> - 1, which equals 0 to 255.
+Chaque variante signée peut stocker des nombres allant de -(2<sup>n - 1</sup>)
+à 2<sup>n - 1</sup> - 1 inclus, où `n` est le nombre de bits que cette variante
+utilise. Un `i8` peut donc stocker des nombres allant de -(2<sup>7</sup>) à
+2<sup>7</sup> - 1, ce qui est égal à -128 jusqu'à 127.  Les variantes non
+signées pouvant aller de 0 à 2<sup>n</sup> - 1, un `u8` peut donc stocker des
+nombres allant de 0 à 2<sup>8</sup> - 1, ce qui équivaut à 0 jusqu'à 255.
 
-Additionally, the `isize` and `usize` types depend on the kind of computer your
-program is running on: 64-bits if you’re on a 64-bit architecture and 32-bits
-if you’re on a 32-bit architecture.
+De plus, les types `isize` et `usize` dépendent du type d'ordinateur sur lequel
+votre programme va s'exécuter: 64-bits si vous utilisez une architecture 64-bit
+ou 32-bits si vous utilisez une architecture 32-bit.
 
-You can write integer literals in any of the forms shown in Table 3-2. Note
-that all number literals except the byte literal allow a type suffix, such as
-`57u8`, and `_` as a visual separator, such as `1_000`.
+Vous pouvez écrire des nombres entiers littérals dans chacune des formes décrites dans le Tableau 3-2. Notez que chaque nombre littéral excepté l'octet accepte un suffixe de type, comme `57u8`, et `_` comme séparateur visuel, par exemple `1_000`.
 
-<span class="caption">Table 3-2: Integer Literals in Rust</span>
+<span class="caption">Tableau 3-2: Les Entiers Littérals en Rust</span>
 
-| Number literals  | Example       |
-|------------------|---------------|
-| Decimal          | `98_222`      |
-| Hex              | `0xff`        |
-| Octal            | `0o77`        |
-| Binary           | `0b1111_0000` |
-| Byte (`u8` only) | `b'A'`        |
+| Nombre litéral         | Exemple       |
+|------------------------|---------------|
+| Décimal                | `98_222`      |
+| Hexadécimal            | `0xff`        |
+| Octal                  | `0o77`        |
+| Binaire                | `0b1111_0000` |
+| Octet (`u8` seulement) | `b'A'`        |
 
-So how do you know which type of integer to use? If you’re unsure, Rust’s
-defaults are generally good choices, and integer types default to `i32`: it’s
-generally the fastest, even on 64-bit systems. The primary situation in which
-you’d use `isize` or `usize` is when indexing some sort of collection.
+Comment pouvez-vous déterminer le type d'entier à utiliser? Si vous n'êtes pas
+sûr, les choix par défaut de Rust sont généralement de bons choix, et le type
+d'entier par défaut est `i32` : c'est souvent le plus rapide, même sur des
+systèmes 64-bit. La principale raison pour laquelle on utilise un `isize` ou un
+`usize` serait lorsque que l'on indexe une quelconque collection.
 
-#### Floating-Point Types
+#### Types à Virgule Flottante
 
-Rust also has two primitive types for *floating-point numbers*, which are
-numbers with decimal points. Rust’s floating-point types are `f32` and `f64`,
-which are 32 bits and 64 bits in size, respectively. The default type is `f64`
-because on modern CPUs it’s roughly the same speed as `f32` but is capable of
-more precision.
+Rust possède également deux types primitifs pour les *nombres à virgule
+flottante*, les nombres à virgule. Les types à virgule flottante de Rust sont
+les `f32` et les `f64`, qui ont respectivement une taille de 32 bits et 64
+bits. Le type par défaut est le `f64` car sur nos processeurs modernes un tel
+type est quasiment aussi rapide qu'un `f32` mais est capable d'une plus grande
+précision.
 
-Here’s an example that shows floating-point numbers in action:
+Voici un exemple montrant un nombre à virgule flottante en action :
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Ficher: src/main.rs</span>
 
 ```rust
 fn main() {
@@ -125,8 +127,9 @@ fn main() {
 }
 ```
 
-Floating-point numbers are represented according to the IEEE-754 standard. The
-`f32` type is a single-precision float, and `f64` has double precision.
+Les nombres à virgule flottante sont représentés en accord avec le standard
+IEEE-754. Le type `f32` est un *float* à simple précision, et le `f64` est à
+double précision.
 
 #### Numeric Operations
 
