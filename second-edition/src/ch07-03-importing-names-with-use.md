@@ -211,39 +211,43 @@ courant, qui est ici `tests`. La seule exception est dans une instruction
 `use`, où les chemins sont par défaut relatifs à la racine du crate. Notre
 module `tests` a besoin du module `client` dans sa portée !
 
-So how do we get back up one module in the module hierarchy to call the
-`client::connect` function in the `tests` module? In the `tests` module, we can
-either use leading colons to let Rust know that we want to start from the root
-and list the whole path, like this:
+Donc comment pouvons-nous remonter un module dans la hierarchie de modules afin
+d'utiliser la fonction `client::connect` dans le module `tests` ? Dans le
+module `tests`, nous pouvons utiliser les doubles deux-points pour faire
+comprendre à Rust que nous souhaitons commencer à partir de la racine et lister
+le chemin complet, comme ceci :
 
 ```rust,ignore
 ::client::connect();
 ```
 
-Or, we can use `super` to move up one module in the hierarchy from our current
-module, like this:
+Ou sinon, nous pouvons utiliser `super` pour remonter d'un module dans la
+hiérarchie par rapport au module actuel, comme ceci :
 
 ```rust,ignore
 super::client::connect();
 ```
 
-These two options don’t look that different in this example, but if you’re
-deeper in a module hierarchy, starting from the root every time would make your
-code lengthy. In those cases, using `super` to get from the current module to
-sibling modules is a good shortcut. Plus, if you’ve specified the path from the
-root in many places in your code and then you rearrange your modules by moving
-a subtree to another place, you’d end up needing to update the path in several
-places, which would be tedious.
+Ces deux options ne semble pas être différentes dans le cas de cet exemple,
+mais si vous êtes plus profondémment dans la hierarchie de modules, commencer
+le chemin à partir de la racine à chaque fois rendra votre code plus long. Dans
+ce cas, utiliser `super` pour vous déplacer du module courrant vers des modules
+frères est un bon raccourci. De plus, si vous précisez le chemin à partir de la
+racine dans de nombreux endroits de votre code et qu'ensuite vous réagencez vos
+modules en déplaçant un sous-arbre vers un autre emplacement, vous allez avoir
+besoin de mettre à jour le chemin dans de nombreux endroits, ce qui serait
+pénible.
 
-It would also be annoying to have to type `super::` in each test, but you’ve
-already seen the tool for that solution: `use`! The `super::` functionality
-changes the path you give to `use` so it is relative to the parent module
-instead of to the root module.
+Cela pourrait aussi être pénible d'avoir à écrire `super::` dans chaque test,
+mais vous avez déjà vu l'outil pour résoudre ce problème : `use` ! La
+fonctionnalité `super::` change le chemin que vous donnez à `use` afin qu'il
+soit relatif au module parent plutôt qu'au module racine.
 
-For these reasons, in the `tests` module especially, `use super::something` is
-usually the best solution. So now our test looks like this:
+C'est pour cela que, en particulier dans le module `tests`,
+`use super::something` est bien souvent la meilleur solution. Donc maintenant
+notre test ressemble à ceci :
 
-<span class="filename">Filename: src/lib.rs</span>
+<span class="filename">Nom du fichier : src/lib.rs</span>
 
 ```rust
 #[cfg(test)]
@@ -257,8 +261,8 @@ mod tests {
 }
 ```
 
-When we run `cargo test` again, the test will pass and the first part of the
-test result output will be the following:
+Quand nous lancons `cargo test` à nouveau, le test va être un succès et la
+première partie du resultat du test donnera ceci :
 
 ```text
 $ cargo test
@@ -271,12 +275,13 @@ test tests::it_works ... ok
 test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
 ```
 
-## Summary
+## Résumé
 
-Now you know some new techniques for organizing your code! Use these techniques
-to group related functionality together, keep files from becoming too long, and
-present a tidy public API to your library users.
+Maintenant vous connaissez quelques techniques pour organiser votre code !
+Utilisez-les pour regrouper des fonctionnalités similaires ensemble, éviter
+d'avoir des fichiers trop longs, et présenter une API publique organisée aux
+utilisateurs de votre bibliothèque.
 
-Next, we’ll look at some collection data structures in the standard library
-that you can use in your nice, neat code!
-
+Au point suivant, nous allons étudier quelques structures de collections de
+données de la bibliothèque standard que vous pourrez utiliser dans votre super
+code bien organisé !
