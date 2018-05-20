@@ -10,7 +10,7 @@ nous avons utilisé comme dépendance quand le projet du jeu du plus ou moins.
 Nous allons créer une structure de bibliothèque qui va apporter des
 fonctionnalités pour des réseaux génériques; nous nous concentrerons sur
 l'organisation des modules et des fonctions, mais nous ne nous préoccuperons
-pas du code qui est dans le corps des fonctions. Nous allons appeller notre
+pas du code qui est dans le corps des fonctions. Nous allons appeler notre
 bibliothèque `communicator`. Par défaut, Cargo va créer une bibliothèque sauf
 si un autre type de projet est précisé : si nous enlevons l'option `--bin` que
 nous avons utilisé tout au long des chapitres précédents, notre projet sera une
@@ -138,7 +138,7 @@ fonctions `connect` ne sont pas en conflit l'un envers l'autre, car elles sont
 dans des espaces de nom différents.
 
 De cette façon, les modules construisent une hiérarchie. Le contenu de
-*src/lib.rs* sont à la plus haute place. Voici ce à quoi ressemble
+*src/lib.rs* est au plus haut niveau. Voici ce à quoi ressemble
 l'organisation de notre exemple dans le module 7-1 quand nous analysons la
 hiérarchie :
 
@@ -208,8 +208,8 @@ Si ces modules avaient beaucoup de fonctions, et que ces fonctions devenaient
 très verbeuses, il serait difficile de parcourir ce fichier pour trouver le
 code avec lequel nous voulons travailler. Puisque ces fonctions sont imbriquées
 dans un ou plusieurs blocs `mod`, les lignes de code à l'intérieur des
-fonctions vont également s'allonger. Ce sont des bonnes raisons pour séparer
-les modules `client`, `network`, et `server` de *src/lib.rs* et les placer dans
+fonctions vont également s'allonger. Ce sont de bonnes raisons pour séparer les
+modules `client`, `network`, et `server` de *src/lib.rs* et les placer dans
 leurs propres fichiers.
 
 Premièrement, remplacez le code du module `client` avec seulement la
@@ -260,9 +260,9 @@ fn connect() {
 
 Observez que nous n'avons pas besoin de faire une déclaration avec `mod` dans
 ce fichier, car nous avons déjà déclaré le module `client` avec `mod` dans
-*src/lib.rs*. Ce fichier donne juste le *contenu* du module `client`. Si nous
-ajoutons un `mod client` ici, on ajouterait alors au module `client` son propre
-sous-module qui s'appelle aussi `client` !
+*src/lib.rs*. Ce fichier donne seulement le *contenu* du module `client`. Si
+nous ajoutons un `mod client` ici, on ajouterait alors au module `client` son
+propre sous-module qui s'appelle aussi `client` !
 
 Rust ne sait que chercher dans *src/lib.rs* par défaut. Si nous voulons ajouter
 plus de fichiers à notre projet, nous devons dire à Rust dans *src/lib.rs* de

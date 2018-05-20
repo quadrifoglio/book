@@ -52,12 +52,12 @@ fn main() {
 ```
 
 La ligne `use a::series::of;` signifie que plutôt qu'utiliser tout le chemin
-`a::series::of` a chaque fois nous voulons utiliser le module `of`, nous
+`a::series::of` à chaque fois nous voulons utiliser le module `of`, nous
 pouvons utiliser `of`.
 
 Le mot-clé `use` importe uniquement ce que nous avons demandé dans la portée :
 cela n'importe pas les enfants du module dans la portée. C'est pourquoi nous
-devons toujours utiliser `of::nested_modules` losque nous souhaitons appeler
+devons toujours utiliser `of::nested_modules` lorsque nous souhaitons appeler
 la fonction `nested_modules`.
 
 Nous aurions pu choisir d'importer la fonction dans la portée en précisant
@@ -82,11 +82,11 @@ fn main() {
 Faire ainsi nous permet d'exclure tous les modules et de référencer directement
 la fonction.
 
-Comme les énumérateurs (NdT : enums) forment eux aussi un sorte d'espace de nom
-(NdT : namespace) comme les modules, nous pouvons ici aussi importer une
+Comme les énumérateurs (NdT : enums) forment eux aussi une sorte d'espace de
+nom (NdT : namespace) comme les modules, nous pouvons ici aussi importer une
 variante d'énumérateurs dans la portée. Pour n'importe quel type d'instruction
 `use`, si vous voulez importer plusieurs éléments d'un même espace de nom dans
-la portée, vous pouvez les lister en utilisant des accollades et des virgules
+la portée, vous pouvez les lister en utilisant des accolades et des virgules
 dans le dernier emplacement, comme ceci :
 
 ```rust
@@ -132,9 +132,9 @@ fn main() {
 }
 ```
 
-Le `*` va importer tout les éléments visibles dans l'espace de nom de
+Le `*` va importer tous les éléments visibles dans l'espace de nom de
 `TrafficLight`. Vous devriez utiliser les opérateurs globaux avec modération :
-ils sont partiques, mais cela peut aussi importer plus d'éléments que vous
+ils sont pratique, mais cela peut aussi importer plus d'éléments que vous
 aviez prévu et mener à des conflits de noms.
 
 ### Utiliser `super` pour accéder à un module parent
@@ -161,9 +161,9 @@ mod tests {
 
 Le chapitre 11 expliquera plus en détail les tests, mais les éléments de cet
 exemple devrait avoir du sens désormais : nous avons un module qui s'appelle
-`tests` qui vie a coté de nos autres modules et contient une fonction
-`it_works`. Même si nous avons des annotations spéciales, le module de tests
-n'est qu'un module en plus ! Donc notre hierarchie de modules ressemble à
+`tests` qui vie à côté de nos autres modules et contient une fonction
+`it_works`. Même si nous avons des annotations spéciales, le module de test
+n'est qu'un module en plus ! Donc notre hiérarchie de modules ressemble à
 ceci :
 
 ```text
@@ -204,14 +204,14 @@ error[E0433]: failed to resolve. Use of undeclared type or module `client`
 ```
 
 La compilation a échoué, mais pourquoi ? Nous n'avons pas besoin d'ajouter
-`communicator::` devant les fonctions telle que nous les avons créés dans
+`communicator::` devant les fonctions telles que nous les avons créés dans
 *src/main.rs* car nous sommes bien ici dans le crate de la bibliothèque
 `communicator`. La raison est que les chemins sont toujours relatifs au module
 courant, qui est ici `tests`. La seule exception est dans une instruction
 `use`, où les chemins sont par défaut relatifs à la racine du crate. Notre
 module `tests` a besoin du module `client` dans sa portée !
 
-Donc comment pouvons-nous remonter un module dans la hierarchie de modules afin
+Donc comment pouvons-nous remonter un module dans la hiérarchie de modules afin
 d'utiliser la fonction `client::connect` dans le module `tests` ? Dans le
 module `tests`, nous pouvons utiliser les doubles deux-points pour faire
 comprendre à Rust que nous souhaitons commencer à partir de la racine et lister
@@ -228,10 +228,10 @@ hiérarchie par rapport au module actuel, comme ceci :
 super::client::connect();
 ```
 
-Ces deux options ne semble pas être différentes dans le cas de cet exemple,
-mais si vous êtes plus profondémment dans la hierarchie de modules, commencer
+Ces deux options ne semblent pas être différentes dans le cas de cet exemple,
+mais si vous êtes plus profondément dans la hiérarchie de modules, commencer
 le chemin à partir de la racine à chaque fois rendra votre code plus long. Dans
-ce cas, utiliser `super` pour vous déplacer du module courrant vers des modules
+ce cas, utiliser `super` pour vous déplacer du module courant vers des modules
 frères est un bon raccourci. De plus, si vous précisez le chemin à partir de la
 racine dans de nombreux endroits de votre code et qu'ensuite vous réagencez vos
 modules en déplaçant un sous-arbre vers un autre emplacement, vous allez avoir
@@ -244,7 +244,7 @@ fonctionnalité `super::` change le chemin que vous donnez à `use` afin qu'il
 soit relatif au module parent plutôt qu'au module racine.
 
 C'est pour cela que, en particulier dans le module `tests`,
-`use super::something` est bien souvent la meilleur solution. Donc maintenant
+`use super::something` est bien souvent la meilleure solution. Donc maintenant
 notre test ressemble à ceci :
 
 <span class="filename">Nom du fichier : src/lib.rs</span>
@@ -261,8 +261,8 @@ mod tests {
 }
 ```
 
-Quand nous lancons `cargo test` à nouveau, le test va être un succès et la
-première partie du resultat du test donnera ceci :
+Quand nous lançons `cargo test` à nouveau, le test va être un succès et la
+première partie du résultat du test donnera ceci :
 
 ```text
 $ cargo test
