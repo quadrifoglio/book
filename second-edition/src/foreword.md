@@ -1,16 +1,17 @@
-# Foreword
+# Préface
 
-It wasn’t always so clear, but the Rust programming language is fundamentally
-about *empowerment*: no matter what kind of code you are writing now, Rust
-empowers you to reach farther, to program with confidence in a wider variety of
-domains than you did before.
+Ce ne fut pas toujours très clair, mais le langage Rust a pour but de permettre
+*l'autonomisation* : quelque soit le programme que vous êtes actuellement en train
+d'écrire, Rust vous permet d'aller plus loin, de programmer avec confiance dans un
+plus large champ de domaines qu'auparavant.
 
-Take, for example, “systems-level” work that deals with low-level details of
-memory management, data representation, and concurrency. Traditionally, this
-realm of programming is seen as arcane, accessible only to a select few who
-have devoted the necessary years learning to avoid its infamous pitfalls. And
-even those who practice it do so with caution, lest their code be open to
-exploits, crashes, or corruption.
+Prenons pour l'exemple, le travail de "system-level" qui gère tous les détails
+bas niveaux de la gestion de la mémoire, de la représentation des données, et de
+l'exécution en parallèle. Traditionnellement, ce domaine de la programmation
+est souvent vu comme mystique, accessible seulement à un petit nombre d'élus qui ont
+passé de nombreuses années à parfaire leur savoir pour éviter ces infâmes écueils. Et
+même ceux qui ont été introduit à ces arcanes les applique avec précaution, de peur
+d'ouvrir leur code aux exploitations, plantages ou corruptions.
 
 Rust breaks down these barriers by eliminating the old pitfalls and providing a
 friendly, polished set of tools to help you along the way. Programmers who need
