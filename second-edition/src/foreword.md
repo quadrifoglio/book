@@ -6,22 +6,21 @@ d'écrire, Rust vous permet d'aller plus loin, de programmer avec confiance dans
 plus large champ de domaines qu'auparavant.
 
 Prenons pour l'exemple, le travail de "system-level" qui gère tous les détails
-bas niveaux de la gestion de la mémoire, de la représentation des données, et de
-l'exécution en parallèle. Traditionnellement, ce domaine de la programmation
-est souvent vu comme mystique, accessible seulement à un petit nombre d'élus qui ont
-passé de nombreuses années à parfaire leur savoir pour éviter ces infâmes écueils. Et
-même ceux qui ont été introduit à ces arcanes les applique avec précaution, de peur
-d'ouvrir leur code aux exploitations, plantages ou corruptions.
+bas niveaux de la gestion de la mémoire à la représentation des données, tout en
+s'occupant du parallélisme. Traditionnellement, ce domaine de la programmation
+est souvent vu comme mystique, accessible seulement à un petit nombre d'élus qui
+ont passé de nombreuses années à parfaire leur savoir pour éviter ces infâmes
+écueils. Et même ceux qui ont été introduit à ces arcanes les applique avec précaution,
+de peur d'ouvrir leur code aux exploitations, plantages ou corruptions.
 
-Rust abat ces barrières en éliminant ces vieux écueils et en fournissant un ensemble
-d'outils amicaux qui vous aident tout au long de votre développement. Les développeurs
-qui ont besoin de "toucher" aux contrôles bas niveaux peuvent le faire avec
-Rust, sans
-prendre le risque trop commun de provoquer des plantages ou d'ajouter des failles de
-sécurité, et sans à avoir à apprendre en détails toutes les subtilités d'une vague
-chaîne d'outils. Encore mieux, le langage est conçu pour vous guider naturellement
-vers l'écriture d'un code sûr qui est efficient en termes de vitesse d'exécution
-et d'usage de la mémoire.
+Le langage Rust abat ces barrières en éliminant ces vieux écueils et en fournissant un
+ensemble d'outils amicaux qui vous aident tout au long de votre développement.
+Les développeurs qui ont besoin de "toucher" aux contrôles bas niveaux peuvent le
+faire avec Rust, sans prendre le risque trop commun de provoquer des plantages ou
+d'ajouter des failles de sécurité, et sans à avoir à apprendre en détails toutes les
+subtilités d'une vague chaîne d'outils. Encore mieux, le langage est conçu pour vous
+guider naturellement vers l'écriture d'un code sûr qui est efficient en termes de
+vitesse d'exécution et d'usage de la mémoire.
 
 Les développeurs qui ont déjà travaillé sur du code bas niveau peuvent également 
 utiliser Rust pour revoir à la hausse leurs ambitions. Par exemple, introduire
