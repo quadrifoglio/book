@@ -1,26 +1,31 @@
-# Fearless Concurrency
+# La concurrence intrépide
 
-Handling concurrent programming safely and efficiently is another of Rust’s
-major goals. *Concurrent programming*, where different parts of a program
-execute independently, and *parallel programming*, where different parts
-program execute at the same time, are becoming increasingly important as more
-computers take advantage of their multiple processors. Historically,
-programming in these contexts has been difficult and error prone: Rust hopes to
-change that.
+Gérer de manière sûre et efficace la concurrence est un autre des objectifs de
+Rust. La *programmation simultanée (NdT: concurrent programming)*, dans laquelle
+les différents éléments d'un programme s'exécute indépendamment, et la
+*programmation parralèle (NdT: parallel programming)*, dans laquelle les
+différents éléments s'exécutent en même temps, ont pris de l'importance au fur
+et à mesure que les ordinateurs tirent profit de leurs processeurs multiples.
+Historiquement, programmer dans ces domaines a toujours été difficile et source
+d'erreurs : Rust espère changer cela.
 
-Initially, the Rust team thought that ensuring memory safety and preventing
-concurrency problems were two separate challenges to be solved with different
-methods. Over time, the team discovered that the ownership and type systems are
-a powerful set of tools to help manage memory safety *and* concurrency
-problems! By leveraging ownership and type checking, many concurrency errors
-are compile-time errors in Rust rather than runtime errors. Therefore, rather
-than making you spend lots of time trying to reproduce the exact circumstances
-under which a runtime concurrency bug occurs, incorrect code will refuse to
-compile and present an error explaining the problem. As a result, you can fix
-your code while you’re working on it rather than potentially after it has been
-shipped to production. We’ve nicknamed this aspect of Rust *fearless*
-*concurrency*. Fearless concurrency allows you to write code that is free of
-subtle bugs and is easy to refactor without introducing new bugs.
+Au départ, l'équipe de Rust pensait que veiller à la sécurité de la mémoire et
+éviter les problèmes de concurrence étaient deux challenges séparés qui devaient
+être résolus avec des méthodes distinctes. Progressivement, l'équipe a découvert
+que l'appropriation *(NdT: ownership)* et le système de typage sont des jeux
+d'outils puissants pour gérer la sécurité de la mémoire *et* les problèmes de
+concurrence ! En capitalisant sur l'appropriation et la vérification de type, de
+nombreuses erreurs de concurrence deviennent des erreurs au moment de la
+compilation avec Rust plutôt que des erreurs au moment de l'exécution. Par
+conséquent, plutôt que vous faire perdre beaucoup de temps à essayer de
+reproduire les conditions exactes que lors de l'apparition de l'erreur de
+concurrence, le code incorrect va refuser de compiler et afficher une erreur
+expliquant le problème. Au final, vous pouvez corriger votre code pendant que
+vous travaillez dessus plutôt que potentiellement après qu'il est été envoyé en
+production. Nous avons surnommé élément de Rust la *concurence intrépide (NdT :
+fearless concurrency)*. La concurence intrépide vous permet d'écrire du code qui
+est exempt de bogues discrets et qu'il est facile de remanier *(NdT : refactor)*
+sans introduire de nous bogues.
 
 > Note: For simplicity’s sake, we’ll refer to many of the problems as
 > *concurrent* rather than being more precise by saying *concurrent and/or
