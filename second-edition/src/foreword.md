@@ -1,26 +1,27 @@
 # Préface
 
 Ce ne fut pas toujours très clair, mais le langage Rust a pour but de permettre
-*l'émancipation* : quelque soit le programme que vous êtes actuellement en
-train d'écrire, Rust vous permet d'aller plus loin, de programmer avec confiance
-dans un plus large champ de domaines qu'auparavant.
+*l'émancipation* : quelque soit le programme que vous êtes actuellement en train
+d'écrire, Rust vous permet d'aller plus loin, de programmer avec confiance dans
+un plus large champ de domaines qu'auparavant.
 
-Prenons par exemple le travail du niveau système *(NdT : system-level)* qui gère tous les détails
-bas niveaux de la mémoire, de la représentation des données, et du parallélisme. Traditionnellement, ce domaine de la programmation
-est souvent perçue comme mystique, accessible seulement à un petit nombre d'élus qui
-ont passé de nombreuses années à parfaire leur savoir pour éviter leurs pièges tristement célèbres. Et même ceux qui ont été introduit à ces arcanes les manipulent avec
-précaution, de peur d'ouvrir leur code aux failles, plantages ou
+Prenons par exemple le travail du niveau système *(NdT : system-level)* qui gère
+tous les détails bas niveaux de la mémoire, de la représentation des données, et
+du parallélisme. Traditionnellement, ce domaine de la programmation est souvent
+perçue comme mystique, accessible seulement à un petit nombre d'élus qui ont
+passé de nombreuses années à parfaire leur savoir pour éviter leurs pièges
+tristement célèbres. Et même ceux qui ont été introduit à ces arcanes les
+manipulent avec précaution, de peur d'ouvrir leur code aux failles, plantages ou
 corruptions.
 
 Le langage Rust abat ces barrières en éliminant ces vieux écueils et en
 fournissant un ensemble d'outils amicaux qui vous aident tout au long de votre
-développement. Les développeurs qui ont besoin de "plonger" dans les contrôles bas
-niveaux peuvent le faire avec Rust, sans prendre les risques habituels de
-plantages ou de failles de sécurité, et sans à avoir à
-apprendre en détails toutes les subtilités d'une chaîne d'outils instables. Encore
-mieux, le langage est conçu pour vous guider naturellement vers l'écriture d'un
-code sûr qui est efficient en termes de vitesse d'exécution et d'usage de la
-mémoire.
+développement. Les développeurs qui ont besoin de "plonger" dans les contrôles
+bas niveaux peuvent le faire avec Rust, sans prendre les risques habituels de
+plantages ou de failles de sécurité, et sans à avoir à apprendre en détails
+toutes les subtilités d'une chaîne d'outils instables. Encore mieux, le langage
+est conçu pour vous guider naturellement vers l'écriture d'un code sûr qui est
+efficient en termes de vitesse d'exécution et d'usage de la mémoire.
 
 Les développeurs qui ont déjà travaillé sur du code bas niveau peuvent également
 utiliser Rust pour revoir à la hausse leurs ambitions. Par exemple, introduire
@@ -33,17 +34,17 @@ accident.
 Mais Rust n'est pas seulement limité à la programmation système bas niveau. Il
 est suffisamment expressif et ergonomique pour rendre les applications en ligne
 de commande, les serveurs web, et bien d'autres types de code très agréables à
-développer (vous retrouverez des exemples simples de cela
-plus loin dans le livre). Travailler avec Rust vous permet de développer des
-compétences qui peuvent être transmises d'un domaine à un autre ; vous pouvez
-apprendre le Rust en développant une application web, puis utiliser ces mêmes
-acquis pour du développement sur Raspberry Pi.
+développer (vous retrouverez des exemples simples de cela plus loin dans le
+livre). Travailler avec Rust vous permet de développer des compétences qui
+peuvent être transmises d'un domaine à un autre ; vous pouvez apprendre le Rust
+en développant une application web, puis utiliser ces mêmes acquis pour du
+développement sur Raspberry Pi.
 
 Ce livre englobe pleinement le potentiel du Rust pour permettre à ses
-utilisateurs *d'augmenter leurs pouvoirs*. C'est un ouvrage convivial et accessible destiné à
-vous aider à améliorer non seulement votre connaissance de Rust, mais aussi
-vos compétences et votre confiance en tant que développeur en général. Alors,
-plongez vous dans ce livre, préparez vous à apprendre ... et bienvenue dans la
-communauté Rust !
+utilisateurs *d'augmenter leurs pouvoirs*. C'est un ouvrage convivial et
+accessible destiné à vous aider à améliorer non seulement votre connaissance de
+Rust, mais aussi vos compétences et votre confiance en tant que développeur en
+général. Alors, plongez vous dans ce livre, préparez vous à apprendre ... et
+bienvenue dans la communauté Rust !
 
-— Nicholas Matsakis and Aaron Turon
+— Nicholas Matsakis and Aaron Turon 
