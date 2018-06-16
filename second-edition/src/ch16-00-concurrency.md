@@ -10,7 +10,9 @@ Historiquement, programmer dans ces domaines a toujours été difficile et sourc
 d'erreurs : Rust espère changer cela.
 
 Au départ, l'équipe de Rust pensait que veiller à la sécurité de la mémoire et
-éviter les problèmes de concurrence étaient deux challenges séparés qui devaient
+éviter les problèmes de concurrence étaFR
+9+
+ient deux challenges séparés qui devaient
 être résolus avec des méthodes distinctes. Progressivement, l'équipe a découvert
 que l'appropriation *(NdT: ownership)* et le système de typage sont des jeux
 d'outils puissants pour gérer la sécurité de la mémoire *et* les problèmes de
@@ -27,28 +29,30 @@ fearless concurrency)*. La concurence intrépide vous permet d'écrire du code q
 est exempt de bogues discrets et qu'il est facile de remanier *(NdT : refactor)*
 sans introduire de nous bogues.
 
-> Note: For simplicity’s sake, we’ll refer to many of the problems as
-> *concurrent* rather than being more precise by saying *concurrent and/or
-> parallel*. If this book were about concurrency and/or parallelism, we’d be
-> more specific. For this chapter, please mentally substitute *concurrent
-> and/or parallel* whenever we use *concurrent*.
+> Note : pour des raisons de simplicité, nous qualifirons de problèmes
+> *de concurence* plutôt que d'utiliser précisément les termes
+> *de concurrence et/ou de parallélisme*. Si ce livre portait uniquement sur la
+> concurence et/ou le parallélisme, nous serions plus précis. Pour ce chapitre,
+> merci de remplacer mentalement *concurrence* par
+> *concurrence et/ou parallélisme*.
 
-Many languages are dogmatic about the solutions they offer for handling
-concurrent problems. For example, Erlang has elegant functionality for
-message-passing concurrency but has only obscure ways to share state between
-threads. Supporting only a subset of possible solutions is a reasonable
-strategy for higher-level languages, because a higher-level language promises
-benefits from giving up some control to gain abstractions. However, lower-level
-languages are expected to provide the solution with the best performance in any
-given situation and have fewer abstractions over the hardware. Therefore, Rust
-offers a variety of tools for modeling problems in whatever way is appropriate
-for your situation and requirements.
+De nombreux languages proposent des solutions dogmatiques pour gérer les
+problèmes de concurence. Par exemple, Erlang a une fonctionnalité élégante pour
+échanger des messages pour la concurence mais partage l'état entre les tâches de
+manière obscure. Implémenter seulement un sous-ensemble de solutions possibles
+est une stratégie acceptable pour les languages de haut niveau. Cependant, les
+languages de bas niveau se doivent de fournir la solution qui offre la meilleur
+performance quelle que soit la situation et ne doit pas être influencée par le
+matériel. C'est pourquoi Rust offre une variété d'outils pour gérer les
+problèmes de manière appropriée à votre situation et à vos besoins.
 
-Here are the topics we’ll cover in this chapter:
-
-* How to create threads to run multiple pieces of code at the same time
-* *Message-passing* concurrency, where channels send messages between threads
-* *Shared-state* concurrency, where multiple threads have access to some piece
-  of data
-* The `Sync` and `Send` traits, which extend Rust’s concurrency guarantees to
-  user-defined types as well as types provided by the standard library
+Voici les sujets que nous allons aborder dans ce chapitre :
+* Comment créer des tâches pour exécuter différentes parties du code au même
+  moment
+* La concurence avec *l'envoi de messages*, où des canaux envoient des messages
+  entre les tâches
+* La concurence avec *le partage d'état*, où plusieures tâches accèdent à
+  certaines parties des données
+* Les traits ` Sync` et `Send`, qui étendent les garanties de Rust pour la
+  concurence aux types définis par l'utilisateur ainsi qu'aux types fournis par
+  la bibliothèque standard
