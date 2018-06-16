@@ -1,22 +1,26 @@
-## Using Threads to Run Code Simultaneously
+## Utiliser des Tâches pour exécuter du code simultanément
 
-In most current operating systems, an executed program’s code is run in a
-*process*, and the operating system manages multiple processes at once. Within
-your program, you can also have independent parts that run simultaneously. The
-features that run these independent parts are called *threads*.
+Dans la plus part des systèmes d'exploitation, le code d'un programme exécuté
+l'est dans un *processus*, et le système d'exploiration gère plusieurs
+processus à la fois. Au sein de votre programme, vous pouvez aussi avoir des
+parties indépendantes qui peuvent s'exécuter en même temps. Les fonctionnalités
+qui exécutent ces parties indépendantes sont appellées les *tâches
+(NdT: threads)*.
 
-Splitting the computation in your program into multiple threads can improve
-performance because the program does multiple tasks at the same time, but it
-also adds complexity. Because threads can run simultaneously, there’s no
-inherent guarantee about the order in which parts of your code on different
-threads will run. This can lead to problems, such as:
+Diviser les calculs de votre programme en plusieurs tâches peut améliorer les
+performances car le programme fait plusieures taches au même moment, mais cela
+le rends plus complexe. Comme les tâches peuvent s'exécuter simultanément, il
+n'y a pas de garantie inhérente sur l'ordre d'exécution des différentes tâches
+qui contiennent des parties de votre code. Cela peux mener à différents
+problèmes, comme :
 
-* Race conditions, where threads are accessing data or resources in an
-  inconsistent order
-* Deadlocks, where two threads are waiting for each other to finish using a
-  resource the other thread has, preventing both threads from continuing
-* Bugs that happen only in certain situations and are hard to reproduce and fix
-  reliably
+* Des *conditions de course (NdT : race conditions)*, où les tâches accèdent
+  aux données ou aux ressources dans un ordre incohérent
+* Des *impasses (NdT : deadlocks)*, durant lesquelles deux tâches attendent
+  chacune que l'une finisse d'utiliser les ressources que l'autre a, empêchant
+  les deux tâches de s'exécuter
+* Des bogues qui arrivent seulement dans certaines conditions et qui sont dures
+  à reproduire et à corriger de manière fiable
 
 Rust attempts to mitigate the negative effects of using threads, but
 programming in a multithreaded context still takes careful thought and requires
