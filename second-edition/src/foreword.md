@@ -1,7 +1,7 @@
 # Préface
 
 Ce ne fut pas toujours très clair, mais le langage Rust a pour but de permettre
-*l'émancipation* : quelque soit le programme que vous êtes actuellement en train
+*l'autonomie* : quelque soit le programme que vous êtes actuellement en train
 d'écrire, Rust vous permet d'aller plus loin, de programmer avec confiance dans
 un plus large champ de domaines qu'auparavant.
 
@@ -41,10 +41,10 @@ en développant une application web, puis utiliser ces mêmes acquis pour du
 développement sur Raspberry Pi.
 
 Ce livre englobe pleinement le potentiel du Rust pour permettre à ses
-utilisateurs *d'augmenter leurs pouvoirs*. C'est un ouvrage convivial et
-accessible destiné à vous aider à améliorer non seulement votre connaissance de
-Rust, mais aussi vos compétences et votre confiance en tant que développeur en
-général. Alors, plongez vous dans ce livre, préparez vous à apprendre ... et
-bienvenue dans la communauté Rust !
+utilisateurs *d'être autonome*. C'est un ouvrage convivial et accessible
+destiné à vous aider à améliorer non seulement votre connaissance de Rust, mais
+ aussi vos compétences et votre confiance en tant que développeur en général.
+Alors, plongez vous dans ce livre, préparez vous à apprendre ... et bienvenue
+dans la communauté Rust !
 
 — Nicholas Matsakis and Aaron Turon 
